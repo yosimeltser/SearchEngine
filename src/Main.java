@@ -22,9 +22,9 @@ public class Main {
             }
         }
         System.out.println ("");
+        System.out.println (""); System.out.println ("");
         System.out.println ("");
-        System.out.println ("");
-        System.out.println ("");
+
     }
 
     private static int NemberOfLines(FileReader fr, BufferedReader br) throws FileNotFoundException {
