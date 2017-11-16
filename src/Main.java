@@ -21,9 +21,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        System.out.println ("");
-        System.out.println (""); System.out.println ("");
-        System.out.println ("");
 
     }
 
