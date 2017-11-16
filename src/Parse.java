@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.regex.Pattern;
 
 public class Parse {
     private LinkedList <String> text;
