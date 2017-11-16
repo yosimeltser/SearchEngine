@@ -1,48 +1,45 @@
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class Main {
-    private static final String FILENAME = "C:\\Users\\yosefmeltser\\Desktop\\study\\איחזור מידע\\עבודות\\עבודת בית 1\\FB396001\\FB396001";
+
 
     public static void main(String[] args) throws FileNotFoundException {
-        BufferedReader br = null;
-        FileReader fr = null;
-        fr = new FileReader(FILENAME);
-        br = new BufferedReader(fr);
-        int count = NemberOfLines(fr, br);
-        String[] arrOfTexts = new String[count];
-        int index = 0;
-        while (index < count) {
-            try {
-                br.reset();
-            } catch (IOException e) {
-                e.printStackTrace();
+
+
+            String s="6%";
+            String [] need_to_parse=s.split(" +");
+            for(int i=0;i<need_to_parse.length;i++ ){
+                need_to_parse[i]=delCommas(need_to_parse[i]);
+                need_to_parse[i]=roudUp(need_to_parse[i]);
+                need_to_parse[i]=convPrecent((need_to_parse[i]));
+                System.out.println(need_to_parse[i]);
             }
         }
-
-    }
-
-    private static int NemberOfLines(FileReader fr, BufferedReader br) throws FileNotFoundException {
-
-        try {
-            int counter = 0;
-            String line = "";
-            String firstHandler = "";
-            while ((line = br.readLine()) != null) {
-                firstHandler = br.readLine();
-                if (firstHandler.startsWith("<TEXT>")) {
-                    counter++;
-                }
-
-            }
-            return counter;
-        } catch (IOException e) {
-            e.printStackTrace();
+    //Example: from 3.55555 -> 3.56
+    //converts the second digit after the floating point up
+    private static String roudUp(String s) {
+        if(s.matches("\\d+\\.\\d+")) {
+            double x=Double.parseDouble(s);
+            x = Math.round(x*100);
+            x=x/100 ;
+            String n= Double.toString(x);
+            return n;
         }
-
-        return 0;
+        return s;
     }
+    //Example: 1,345 -> 1345
+    //removes commas from the numbers
 
+    private static String delCommas(String s) {
+        if(s.matches("^(([-+] ?)?[0-9]+(,[0-9]+)+)?((.[0-9]+))")) {
+            s.contains(",");
+           return  s.replace(",","");
+        }
+        return s;
+    }
+    private static String convPrecent (String s){
+       String n= s.replaceAll("%|perecentge"," percent");
+        return n;
+    }
 }
+
