@@ -140,13 +140,6 @@ private static int checkIfMonth(String s){
             return s;
         }
     }
-    private boolean containsIgnoreCase(List<String> list, String soughtFor) {
-        for (String current : list) {
-            if (current.equalsIgnoreCase(soughtFor)) {
-                return true;
-            }
-        }
-        return false;
-    }
+
 }
 
