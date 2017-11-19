@@ -1,9 +1,6 @@
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
-
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+
 
 public class Parse {
     private LinkedList <String> text;
@@ -76,7 +73,7 @@ private static int checkIfMonth(String s){
         //fits to the next pattens
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
         if(arr[i+1].matches("^\\d{4}$|\\d{2}$")){
-            if(arr[i-1].matches("^\\d{1,2}[th]+$"))
+            if(i>0 && arr[i-1].matches("^\\d{1,2}[th]+$"))
             {
                 arr[i-1]=formattingDayMonth(arr[i-1]);
                 s=arr[i-1].substring(0,arr[i-1].length()-2)+"/"+s+"/"+arr[i+1]  ;
@@ -85,7 +82,7 @@ private static int checkIfMonth(String s){
                 arr[i+1]="";
                 return i+2;
             }
-            else if(arr[i-1].matches("^\\d{1,2}$"))
+            else if(i>0 && arr[i-1].matches("^\\d{1,2}$"))
             {
                 arr[i-1]=formattingDayMonth(arr[i-1]);
                 if (arr[i+1].matches("^\\d{2}$")){
@@ -123,7 +120,7 @@ private static int checkIfMonth(String s){
                 return i+1;
             }
         }
-        if (arr[i-1].matches("^\\d{1,2}$")) {
+        if (i>0 && arr[i-1].matches("^\\d{1,2}$")) {
             arr[i-1]=formattingDayMonth(arr[i-1]);
             s = arr[i-1] + "/" + s;
             arr[i-1]=s;
@@ -133,7 +130,7 @@ private static int checkIfMonth(String s){
      return 0;
     }
     private String formattingDayMonth(String s) {
-        if (s.matches("^\\d[th ,]+$")){
+        if (s.matches("^\\d([th ,])*$")){
             return "0"+s;
         }
         else {
