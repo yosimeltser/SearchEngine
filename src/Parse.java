@@ -1,3 +1,8 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
@@ -6,9 +11,30 @@ import java.util.regex.Pattern;
 public class Parse {
     private LinkedList <String> text;
     private static Pattern pattern = Pattern.compile("\\s+");
+    private static HashSet<String> stopword=new HashSet<String>();
+    private static void DSstopwords()  {
+        String line;
+        BufferedReader br = null;
+        FileReader fr = null;
+        try {
+            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        br = new BufferedReader(fr);
+        try {
+        while ((line = br.readLine()) != null ){
+            stopword.add(line);
+        }
+        fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Parse (LinkedList<String> s){
         this.text=s;
+        DSstopwords();
     }
     public void ParseNumbers (){
         Iterator<String> itr=text.iterator();

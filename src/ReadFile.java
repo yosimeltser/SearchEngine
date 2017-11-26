@@ -32,17 +32,29 @@ public class ReadFile {
            while ((line = br.readLine()) != null ) {
                if (line.startsWith("<TEXT>")) {
                    while ((!line.startsWith("</TEXT>") && ((line = br.readLine()) != null ))) {
+                       if(line.startsWith("Language:")){
+                           line=moveForwardLines(br);
+                       }
                        doc +=line;
                    }
                    documents.add(doc);
                    doc="";
                }
            }
-           System.out.println("");
+          br.close();
        } catch (IOException e) {
            e.printStackTrace();
        }
 
        return documents;
+   }
+   private static String moveForwardLines(BufferedReader line) throws IOException {
+       String s=line.readLine();
+       while(!s.startsWith("  [Text]"))
+       {
+         s= line.readLine();
+       }
+        return s.substring(8);
+
    }
 }
