@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.LinkedList;
 
 /**
@@ -14,47 +11,63 @@ public class ReadFile {
     ReadFile(String path ) {
        this.path=path;
    }
+
     //method responsible for reading files and transfer them into data stractures
    public  LinkedList <String> fileReader (){
        BufferedReader br = null;
        FileReader fr = null;
-       try {
-           fr = new FileReader(path);
-       } catch (FileNotFoundException e) {
-           e.printStackTrace();
-       }
-       br = new BufferedReader(fr);
+       File folder = new File(path);
+       File[] listOfFiles = folder.listFiles();
        LinkedList <String> documents= new LinkedList<>();
-       try {
-           String doc="";
-           String line = "";
-           String firstHandler = "";
-           while ((line = br.readLine()) != null ) {
-               if (line.startsWith("<TEXT>")) {
-                   while ((!line.startsWith("</TEXT>") && ((line = br.readLine()) != null ))) {
-                       if(line.startsWith("Language:")){
-                           line=moveForwardLines(br);
-                       }
-                       doc +=line;
-                   }
-                   documents.add(doc);
-                   doc="";
-               }
+       for (int i = 0; i < listOfFiles.length; i++) {
+             if (listOfFiles[i].isDirectory()) {
+                 try {
+                     String [] s=listOfFiles[i].list();
+                     //check
+                     fr = new FileReader(listOfFiles[i]+"\\"+s[0]);
+                     br = new BufferedReader(fr);
+
+                     try {
+                         String doc="";
+                         String line = "";
+                         while ((line = br.readLine()) != null ) {
+                             if (line.startsWith("<TEXT>")) {
+                                 while ((!line.startsWith("</TEXT>") && ((line = br.readLine()) != null ))) {
+                                     if(line.startsWith("Language:")){
+                                         line=moveForwardLines(br);
+                                     }
+                                     doc +=line;
+                                 }
+                                 documents.add(doc);
+                                 doc="";
+                             }
+                         }
+                         br.close();
+                     } catch (IOException e) {
+                         e.printStackTrace();
+                     }
+
+                 } catch (FileNotFoundException e) {
+                     e.printStackTrace();
+                 }
+             }
            }
-          br.close();
-       } catch (IOException e) {
-           e.printStackTrace();
+           return documents;
        }
 
-       return documents;
-   }
+
+// in case that the doc contains [text]-avoid from sentences that contains meta data about the article
    private static String moveForwardLines(BufferedReader line) throws IOException {
        String s=line.readLine();
-       while(!s.startsWith("  [Text]"))
-       {
-         s= line.readLine();
+       if(s!= null && s.startsWith("Article")) {
+           while (s != null && !s.startsWith("  [Text]")) {
+               s = line.readLine();
+           }
+
        }
+       if(s!=null)
         return s.substring(8);
+       else return "";
 
    }
 }
