@@ -13,17 +13,31 @@ public class ReadFile {
    }
 
     //method responsible for reading files and transfer them into data stractures
-   public  LinkedList <String> fileReader (){
+   public  void fileReader (){
        BufferedReader br = null;
        FileReader fr = null;
+       Parse p= new Parse();
        File folder = new File(path);
        File[] listOfFiles = folder.listFiles();
        LinkedList <String> documents= new LinkedList<>();
+       int trashHold=100;
+       int counter=0;
        for (int i = 0; i < listOfFiles.length; i++) {
-             if (listOfFiles[i].isDirectory()) {
+           //counter+1
+           //one more file added to the chunk of 100 files
+           //transfer a chunk to the parser
+           counter+=1;
+           System.out.println(i);
+           if (trashHold==counter) {
+               counter=0;
+               p.ParseFile(documents);
+               //chech if an object was deleted
+               documents=null;
+               documents=new LinkedList<>();
+           }
+           if (listOfFiles[i].isDirectory()) {
                  try {
                      String [] s=listOfFiles[i].list();
-                     //check
                      fr = new FileReader(listOfFiles[i]+"\\"+s[0]);
                      br = new BufferedReader(fr);
 
@@ -33,9 +47,9 @@ public class ReadFile {
                          while ((line = br.readLine()) != null ) {
                              if (line.startsWith("<TEXT>")) {
                                  while ((!line.startsWith("</TEXT>") && ((line = br.readLine()) != null ))) {
-                                     if(line.startsWith("Language:")){
-                                         line=moveForwardLines(br);
-                                     }
+//                                     if(line.startsWith("Language:")){
+//                                         line=moveForwardLines(br);
+//                                     }
                                      doc +=line;
                                  }
                                  documents.add(doc);
@@ -52,7 +66,6 @@ public class ReadFile {
                  }
              }
            }
-           return documents;
        }
 
 

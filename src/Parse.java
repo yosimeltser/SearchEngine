@@ -35,27 +35,29 @@ public class Parse {
         while (itr.hasNext()){
             String s= itr.next();
             int x;
-            //List<String> myList = new ArrayList<String>(Arrays.asList(pattern.split(s)));
-            String [] need_to_parse=pattern.split(s);
-            for(int i=0;i<need_to_parse.length;i++ ){
-                need_to_parse[i]=delCommas(need_to_parse[i]);
-                need_to_parse[i]=roudUp(need_to_parse[i]);
-                need_to_parse[i]=convPrecent(need_to_parse[i]);
+            ArrayList<String> need_to_parse = new ArrayList<String>(Arrays.asList(pattern.split(s)));
+            //String [] need_to_parse=pattern.split(s);
+            for(int i=0;i<need_to_parse.size();i++ ){
+                need_to_parse.set(i,delCommas(need_to_parse.get(i)));
+                need_to_parse.set(i,roudUp(need_to_parse.get(i)));
+                need_to_parse.set(i,convPrecent(need_to_parse.get(i)));
                 USA(need_to_parse,i);
-                if ((x = checkIfMonth(need_to_parse[i])) > 0) {
-                    if (i < need_to_parse.length) {
+                x =checkIfMonth(need_to_parse.get(i));
+                if (x > 0) {
+                    if (i < need_to_parse.size()) {
                         i=month_year(x,need_to_parse,i);
                     }
                 }
-            }
+            }    System.out.println();
         }
+
     }
     //NEW RULE
 //We have noticed that the token U.S has a lot of instances
 //So we decided that there is more chances that the user serached for "usa" instead U.A
-    private static void USA (String [] need_to_parse,int i) {
-        if (need_to_parse[i].equals("U.S")) {
-            need_to_parse[i]= "usa";
+    private static void USA ( ArrayList<String>  need_to_parse,int i) {
+        if (need_to_parse.get(i).equals("U.S")) {
+            need_to_parse.set(i,"usa");
         }
     }
     //returns the number of a month if  string s is a month
@@ -92,7 +94,7 @@ public class Parse {
     private  String convPrecent (String s){
         return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
-    private int month_year(int x, String[] arr, int i){
+    private int month_year(int x, ArrayList<String> arr, int i){
         String s="";
         if(x<10)
             s="0"+x;
@@ -103,67 +105,71 @@ public class Parse {
 
         //fits to the next pattens
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
-        if(Pattern.compile("^\\d{4}$|\\d{2}$").matcher(arr[i+1]).matches()){
-            if(i>0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr[i-1]).matches())
+        if(Pattern.compile("^\\d{4}[.]$|\\d{2}[.]$").matcher(arr.get(i+1)).matches()){
+            if(arr.get(i+1).contains(".")){
+                arr.set(i+1,arr.get(i+1).substring(0,arr.get(i+1).length()));
+            }
+            if(i>0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i-1)).matches())
             {
-                arr[i-1]=formattingDayMonth(arr[i-1]);
-                s=arr[i-1].substring(0,arr[i-1].length()-2)+"/"+s+"/"+arr[i+1]  ;
-                arr[i-1]=s;
-                arr[i]="";
-                arr[i+1]="";
+                arr.set(i-1,formattingDayMonth(arr.get(i-1)));
+                s=arr.get(i-1).substring(0,arr.get(i-1).length()-2)+"/"+s+"/"+arr.get(i+2);
+                arr.set(i-1,s);
+                arr.set(i,"");
+                arr.set(i+1,"");
                 return i+1;
             }
-            else if(i>0 && Pattern.compile("^\\d{1,2}$").matcher(arr[i-1]).matches())
+            else if(i>0 && Pattern.compile("^\\d{1,2}$").matcher(arr.get(i-1)).matches())
             {
-                arr[i-1]=formattingDayMonth(arr[i-1]);
-                if ( Pattern.compile("^\\d{2}$").matcher(arr[i+1]).matches()){
-                    s = arr[i - 1] + "/" + s + "/" +"19"+ arr[i + 1];
+                arr.set(i-1,formattingDayMonth(arr.get(i-1)));
+                if ( Pattern.compile("^\\d{2}$").matcher(arr.get(i+1)).matches()){
+                    s = arr.get(i-1) + "/" + s + "/" +"19"+ arr.get(i+1);
                 }
                 else  {
-                    s = arr[i - 1] + "/" + s + "/" + arr[i + 1];
+                    s = arr.get(i-1) + "/" + s + "/" + arr.get(i+1);
                 }
-                arr[i-1]=s;
-                arr[i]="";
-                arr[i+1]="";
+                arr.set(i-1,s);
+                arr.set(i,"");
+                arr.set(i+1,"");
                 return i+1;
-
             }
-            else if ( Pattern.compile("^\\d{4}$").matcher(arr[i+1]).matches()){
-                s=s+"/"+arr[i+1];
-                arr[i]=s;
-                arr[i+1]="";
+
+            else   if ( Pattern.compile("^\\d{4}[.]$").matcher(arr.get(i+1)).matches()){
+                s=s+"/"+arr.get(i+1);
+                arr.set(i,s);
+                arr.set(i+1,"");
                 return i+1;
             }
         }
         //Month DD , Month DD YYYY
-        if (Pattern.compile("^\\d{1,2}[,]*").matcher(arr[i+1]).matches()){
-            if ( Pattern.compile("^\\d{4}$").matcher(arr[i+2]).matches()){
-                s = arr[i+1].substring(0,arr[i+1].length()-1) + "/" + s + "/" + arr[i + 2];
-                arr[i]=s;
-                arr[i+1]="";
-                arr[i+2]="";
+        if (Pattern.compile("^\\d{1,2}[,]*").matcher(arr.get(i+1)).matches()){
+            if ( Pattern.compile("^\\d{4}$").matcher(arr.get(i+2)).matches()){
+                s = arr.get(i+1).substring(0,arr.get(i+1).length()-1) + "/" + s + "/" + arr.get(i+2);
+                arr.set(i,s);
+                arr.set(i+1,"");
+                arr.set(i+2,"");
                 return i+2;
             }
             else{
-                s = arr[i+1] + "/" + s;
-                arr[i]=s;
-                arr[i+1]="";
+                s = arr.get(i+1) + "/" + s;
+                arr.set(i,s);
+                arr.set(i+1,"");
                 return i+1;
             }
         }
-        if (i>0 && Pattern.compile("^\\d{1,2}$").matcher(arr[i-1]).matches()) {
-            arr[i-1]=formattingDayMonth(arr[i-1]);
-            s = arr[i-1] + "/" + s;
-            arr[i-1]=s;
-            arr[i]="";
+        if (i>0 && Pattern.compile("^\\d{1,2}$").matcher(arr.get(i-1)).matches()) {
+            arr.set(i-1,formattingDayMonth(arr.get(i-1)));
+            s = arr.get(i-1) + "/" + s;
+            arr.set(i-1,s);
+            arr.set(i,"");
             return i;
         }
         //NEW RULE
         //first rule
         //22-23 January => 22/01 23/01
-        if (i>0 &&Pattern.compile("^\\d{2}-\\d{2}$").matcher(arr[i-1]).matches()){
-            arr[i-1]=arr[i-1].substring(0,2)+"/"+s;
-            arr[i]=arr[i-1].substring(3,5)+"/"+s;
+        if (i>0 &&Pattern.compile("^\\d{2}-\\d{2}$").matcher(arr.get(i-1)).matches()){
+            String d= arr.get(i-1);
+            arr.set(i-1,arr.get(i-1).substring(0,2)+"/"+s);
+            arr.set(i,d.substring(3,5)+"/"+s);
             return i;
         }
         return i;
