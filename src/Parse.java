@@ -2,14 +2,12 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.regex.Pattern;
 
 
 public class Parse {
-    private LinkedList <String> text;
+    //private LinkedList <String> text;
     private static Pattern pattern = Pattern.compile("\\s+");
     private static HashSet<String> stopword=new HashSet<String>();
     private static void DSstopwords()  {
@@ -32,15 +30,12 @@ public class Parse {
         }
     }
 
-    public Parse (LinkedList<String> s){
-        this.text=s;
-        DSstopwords();
-    }
-    public void ParseNumbers (){
+    public void ParseFile (LinkedList<String> text){
         Iterator<String> itr=text.iterator();
         while (itr.hasNext()){
             String s= itr.next();
             int x;
+            //List<String> myList = new ArrayList<String>(Arrays.asList(pattern.split(s)));
             String [] need_to_parse=pattern.split(s);
             for(int i=0;i<need_to_parse.length;i++ ){
                 need_to_parse[i]=delCommas(need_to_parse[i]);
@@ -166,7 +161,7 @@ public class Parse {
         //NEW RULE
         //first rule
         //22-23 January => 22/01 23/01
-        if (Pattern.compile("^\\d{2}-\\d{2}$").matcher(arr[i-1]).matches()){
+        if (i>0 &&Pattern.compile("^\\d{2}-\\d{2}$").matcher(arr[i-1]).matches()){
             arr[i-1]=arr[i-1].substring(0,2)+"/"+s;
             arr[i]=arr[i-1].substring(3,5)+"/"+s;
             return i;
