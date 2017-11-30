@@ -16,7 +16,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\Users\\yosefmeltser\\Desktop\\study\\איחזור מידע\\עבודות\\עבודת בית 1\\stopwords.txt");
+            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -51,7 +51,8 @@ public class Parse {
                         }
                     }
                 }
-            }
+
+            }System.out.println("");
         }
     }
 
@@ -122,7 +123,7 @@ public class Parse {
 
         //fits to the next patterns
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
-        if (Pattern.compile("^\\d{4}[.]$|\\d{2}[.]$").matcher(arr.get(i + 1)).matches()) {
+        if (Pattern.compile("^\\d{4}[.]?$|\\d{2}[.]?$").matcher(arr.get(i + 1)).matches()) {
             arr.set(i + 1, deleteDots(arr.get(i + 1)));
             //DDth Month YYYY
             if (i > 0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i - 1)).matches()) {
@@ -145,7 +146,7 @@ public class Parse {
                 arr.set(i + 1, "");
                 return i + 1;
              //Month Year
-            } else if (Pattern.compile("^\\d{4}[.]$").matcher(arr.get(i + 1)).matches()) {
+            } else if (Pattern.compile("^\\d{4}$").matcher(arr.get(i + 1)).matches()) {
                 s = s + "/" + arr.get(i + 1);
                 arr.set(i, s);
                 arr.set(i + 1, "");
@@ -155,7 +156,7 @@ public class Parse {
         //Month DD , Month DD YYYY
         if (Pattern.compile("^\\d{1,2}[,]*").matcher(arr.get(i + 1)).matches()) {
             //Month DD YYYY
-            if (Pattern.compile("^\\d{4}$").matcher(arr.get(i + 2)).matches()) {
+            if (Pattern.compile("^\\d{4}[.]?$").matcher(arr.get(i + 2)).matches()) {
                 arr.set(i + 2, deleteDots(arr.get(i + 2)));
                 s = arr.get(i + 1).substring(0, arr.get(i + 1).length() - 1) + "/" + s + "/" + arr.get(i + 2);
                 arr.set(i, s);
