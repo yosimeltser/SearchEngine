@@ -68,7 +68,7 @@ public class Parse {
 //We have noticed that the token U.S has a lot of instances
 //So we decided that there is more chances that the user serached for "usa" instead U.A
     private static void USA(ArrayList<String> need_to_parse, int i) {
-        if (need_to_parse.get(i).equals("U.S")) {
+        if (need_to_parse.get(i).equals("U.S.")) {
             need_to_parse.set(i, "usa");
         }
     }
@@ -123,7 +123,7 @@ public class Parse {
 
         //fits to the next patterns
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
-        if (Pattern.compile("^\\d{4}[.]?$|\\d{2}[.]?$").matcher(arr.get(i + 1)).matches()) {
+        if (Pattern.compile("^\\d{4}[.,]?$|\\d{2}[.,]?$").matcher(arr.get(i + 1)).matches()) {
             arr.set(i + 1, deleteDots(arr.get(i + 1)));
             //DDth Month YYYY
             if (i > 0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i - 1)).matches()) {
@@ -156,7 +156,7 @@ public class Parse {
         //Month DD , Month DD YYYY
         if (Pattern.compile("^\\d{1,2}[,]*").matcher(arr.get(i + 1)).matches()) {
             //Month DD YYYY
-            if (Pattern.compile("^\\d{4}[.]?$").matcher(arr.get(i + 2)).matches()) {
+            if (Pattern.compile("^\\d{4}[.,]?$").matcher(arr.get(i + 2)).matches()) {
                 arr.set(i + 2, deleteDots(arr.get(i + 2)));
                 s = arr.get(i + 1).substring(0, arr.get(i + 1).length() - 1) + "/" + s + "/" + arr.get(i + 2);
                 arr.set(i, s);
@@ -201,9 +201,9 @@ public class Parse {
         }
     }
 
-    //deleting dots from the end of a sentence
+    //deleting dots & commas from the end of a sentence
     private static String deleteDots(String s) {
-        if (s.contains(".")) {
+        if (s.contains(".")|| s.contains(",")) {
             String news = s.substring(0, s.length() - 1);
             return news;
         }

@@ -31,7 +31,7 @@ public class ReadFile {
            if (trashHold==counter) {
                counter=0;
                p.ParseFile(documents);
-               //chech if an object was deleted
+               //check if an object was deleted
                documents=null;
                documents=new LinkedList<>();
            }
@@ -47,9 +47,9 @@ public class ReadFile {
                          while ((line = br.readLine()) != null ) {
                              if (line.startsWith("<TEXT>")) {
                                  while ((!line.startsWith("</TEXT>") && ((line = br.readLine()) != null ))) {
-//                                     if(line.startsWith("Language:")){
-//                                         line=moveForwardLines(br);
-//                                     }
+                                     if(line.startsWith("Language:")){
+                                         line=moveForwardLines(br);
+                                     }
                                      doc +=line;
                                  }
                                  documents.add(doc);
@@ -70,17 +70,18 @@ public class ReadFile {
 
 
 // in case that the doc contains [text]-avoid from sentences that contains meta data about the article
-   private static String moveForwardLines(BufferedReader line) throws IOException {
-       String s=line.readLine();
-       if(s!= null && s.startsWith("Article")) {
-           while (s != null && !s.startsWith("  [Text]")) {
-               s = line.readLine();
-           }
+private static String moveForwardLines(BufferedReader line) throws IOException {
+    String s = line.readLine();
+  //  System.out.println(s);
+    //   if(s!= null && s.startsWith("Article")) {
+    while (s != null && !(s.startsWith("  [Text]") || s.startsWith("  [Excerpts]") || s.startsWith("  [Excerpt]"))) {
+      //  System.out.println(s);
+        s = line.readLine();
+    }
 
-       }
-       if(s!=null)
+    if (s != null)
         return s.substring(8);
-       else return "";
+    else return "";
 
-   }
+}
 }
