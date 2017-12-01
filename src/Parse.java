@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Parse {
     //private LinkedList <String> text;
-    private static Pattern pattern = Pattern.compile("[\\s+\\+:(){}\\[\\]]");
+    private static Pattern pattern = Pattern.compile("[\\s\\+:(){}\\[\\]]+");
     private static HashSet<String> stopword = new HashSet<String>();
     //make data structure of stop worlds
     private static void DSstopwords() {
@@ -32,6 +32,7 @@ public class Parse {
     }
 
     public void ParseFile(LinkedList<String> text) {
+        Stemmer stem=new Stemmer();
         DSstopwords();
         Iterator<String> itr = text.iterator();
         while (itr.hasNext()) {
@@ -53,8 +54,10 @@ public class Parse {
                     }
                     capitalLetters(need_to_parse,i);
                 }
-
             }
+            stem.addArrayList(need_to_parse);
+            stem.chunkStem();
+            //need_to_parse=null;
         }
     }
 
