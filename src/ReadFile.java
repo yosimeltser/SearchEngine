@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 /**
  * Created by yosefmeltser on 16/11/2017.
@@ -7,7 +8,6 @@ import java.util.LinkedList;
 
 public class ReadFile {
     private final String path;
-
     ReadFile(String path ) {
        this.path=path;
    }
@@ -46,10 +46,12 @@ public class ReadFile {
                          String line = "";
                          while ((line = br.readLine()) != null ) {
                              if (line.startsWith("<DOCNO>")){
-                                 System.out.println(line);
-                                 line.replaceAll("<DOCNO>","");
-                                 line.replaceAll("</DOCNO>","");
-                                 line.replaceAll(" ","");
+                                 line=Pattern.compile("<DOCNO>").matcher(line).replaceAll("");
+                                 line=Pattern.compile("</DOCNO>").matcher(line).replaceAll("");
+                                 line=Pattern.compile(" ").matcher(line).replaceAll("");
+//                                 line.replaceAll("<DOCNO>","");
+//                                 line.replaceAll("</DOCNO>","");
+//                                 line.replaceAll(" ","");
                                  doc+=line+ " ";
                              }
                              if (line.startsWith("<TEXT>")) {
