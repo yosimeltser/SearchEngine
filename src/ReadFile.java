@@ -45,8 +45,15 @@ public class ReadFile {
                          String doc="";
                          String line = "";
                          while ((line = br.readLine()) != null ) {
+                             if (line.startsWith("<DOCNO>")){
+                                 System.out.println(line);
+                                 line.replaceAll("<DOCNO>","");
+                                 line.replaceAll("</DOCNO>","");
+                                 line.replaceAll(" ","");
+                                 doc+=line+ " ";
+                             }
                              if (line.startsWith("<TEXT>")) {
-                                 while ((!line.startsWith("</TEXT>") && ((line = br.readLine()) != null ))) {
+                                 while (((line = br.readLine()) != null ) && (!line.startsWith("</TEXT>") )) {
                                      if(line.startsWith("Language:")){
                                          line=moveForwardLines(br);
                                      }

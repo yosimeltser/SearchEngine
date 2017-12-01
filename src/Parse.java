@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class Parse {
     //private LinkedList <String> text;
-    private static Pattern pattern = Pattern.compile("\\s+");
+    private static Pattern pattern = Pattern.compile("[\\s+\\+:(){}\\[\\]]");
     private static HashSet<String> stopword = new HashSet<String>();
     //make data structure of stop worlds
     private static void DSstopwords() {
@@ -16,7 +16,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
+            fr = new FileReader("C:\\Users\\yosefmeltser\\Desktop\\study\\איחזור מידע\\עבודות\\עבודת בית 1\\stopwords.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -38,8 +38,9 @@ public class Parse {
             String s = itr.next();
             int x;
             ArrayList<String> need_to_parse = new ArrayList<String>(Arrays.asList(pattern.split(s)));
-            for (int i = 0; i < need_to_parse.size(); i++) {
-                if (deleteStop(i,need_to_parse)) {
+            //i=1 because the first term in the string is the DOC_NUMBER
+            for (int i = 1; i < need_to_parse.size(); i++) {
+                if (deleteStop(i,need_to_parse) && need_to_parse.get(i)!="") {
                     need_to_parse.set(i, delCommas(need_to_parse.get(i)));
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
                     need_to_parse.set(i, convPrecent(need_to_parse.get(i)));
@@ -50,10 +51,49 @@ public class Parse {
                             i = month_year(x, need_to_parse, i);
                         }
                     }
+                    capitalLetters(need_to_parse,i);
                 }
 
-            }System.out.println("");
+            }
         }
+    }
+
+    private int capitalLetters(ArrayList<String> need_to_parse, int i) {
+        int index=i;
+        String s=need_to_parse.get(i);
+        String buffer="";
+        boolean flag=false;
+        boolean conc=false;
+        if(!s.equals("") && Character.isUpperCase(s.charAt(0))){
+            s=s.replaceAll(",","");
+            s=s.toLowerCase();
+            need_to_parse.set(index,s);
+            buffer+=s;
+            flag=true;
+            while (flag){
+                if (index+1<need_to_parse.size()) {
+                index++;
+                    s = need_to_parse.get(index);
+                    if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
+                        s = s.toLowerCase();
+                        s = s.replaceAll(",", "");
+                        buffer += " " + s;
+                        need_to_parse.set(index, s);
+                        conc = true;
+                    }
+                }
+                else {
+                    if (index>0) {
+                        index--;
+                    }
+                    flag=false;
+                }
+            }
+        }
+        if (conc){
+            need_to_parse.add(buffer);
+        }
+        return index;
     }
 
     //delete stop words
@@ -123,7 +163,7 @@ public class Parse {
 
         //fits to the next patterns
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
-        if (Pattern.compile("^\\d{4}[.,]?$|\\d{2}[.,]?$").matcher(arr.get(i + 1)).matches()) {
+        if (i+1<arr.size() &&Pattern.compile("^\\d{4}[.,]?$|\\d{2}[.,]?$").matcher(arr.get(i + 1)).matches()) {
             arr.set(i + 1, deleteDots(arr.get(i + 1)));
             //DDth Month YYYY
             if (i > 0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i - 1)).matches()) {
@@ -146,7 +186,7 @@ public class Parse {
                 arr.set(i + 1, "");
                 return i + 1;
              //Month Year
-            } else if (Pattern.compile("^\\d{4}$").matcher(arr.get(i + 1)).matches()) {
+            } else if (i+1<arr.size() && Pattern.compile("^\\d{4}$").matcher(arr.get(i + 1)).matches()) {
                 s = s + "/" + arr.get(i + 1);
                 arr.set(i, s);
                 arr.set(i + 1, "");
@@ -154,7 +194,7 @@ public class Parse {
             }
         }
         //Month DD , Month DD YYYY
-        if (Pattern.compile("^\\d{1,2}[,]*").matcher(arr.get(i + 1)).matches()) {
+        if (i+1<arr.size() && Pattern.compile("^\\d{1,2}[,]*").matcher(arr.get(i + 1)).matches()) {
             //Month DD YYYY
             if (Pattern.compile("^\\d{4}[.,]?$").matcher(arr.get(i + 2)).matches()) {
                 arr.set(i + 2, deleteDots(arr.get(i + 2)));
