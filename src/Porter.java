@@ -1,6 +1,39 @@
+
+/*
+
+   Porter stemmer in Java. The original paper is in
+
+       Porter, 1980, An algorithm for suffix stripping, Program, Vol. 14,
+       no. 3, pp 130-137,
+
+   See also http://www.tartarus.org/~martin/PorterStemmer
+
+   History:
+
+   Release 1
+
+   Bug 1 (reported by Gonzalo Parra 16/10/99) fixed as marked below.
+   The words 'aed', 'eed', 'oed' leave k at 'a' for step 3, and b[k-1]
+   is then out outside the bounds of b.
+
+   Release 2
+
+   Similarly,
+
+   Bug 2 (reported by Steve Dyrdahl 22/2/00) fixed as marked below.
+   'ion' by itself leaves j = -1 in the test for 'ion' in step 5, and
+   b[j] is then outside the bounds of b.
+
+   Release 3
+
+   Considerably revised 4/9/00 in the light of many helpful suggestions
+   from Brian Goetz of Quiotix Corporation (brian@quiotix.com).
+
+   Release 4
+
+*/
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Stemmer, implementing the Porter Stemming Algorithm
@@ -16,36 +49,11 @@ class Stemmer
             i_end, /* offset to end of stemmed word */
             j, k;
     private static final int INC = 50;
-    private static ArrayList<String> need_to_parse= null;
-    private static HashSet<String> hash= null;
     /* unit of size whereby b is increased */
     public Stemmer()
     {  b = new char[INC];
         i = 0;
         i_end = 0;
-        hash= new HashSet<String>();
-    }
-    public void  addArrayList(ArrayList<String> _need_to_parse){
-        need_to_parse=_need_to_parse;
-    }
-    public void chunkStem() {
-        for (int k=1;k<need_to_parse.size();k++) {
-            String s = need_to_parse.get(k);
-            int j = 0;
-            while (j < s.length()) {
-                add(s.charAt(j));
-                j++;
-            }
-            stem();
-            String wordStemmed = new String(b);
-            wordStemmed=wordStemmed.trim();
-            if (!hash.contains(wordStemmed)) {
-                hash.add(wordStemmed);
-                b=new char[INC];
-                i=0;
-            }
-        }
-        System.out.println();
     }
 
     /**
@@ -53,17 +61,13 @@ class Stemmer
      * adding characters, you can call stem(void) to stem the word.
      */
 
-    public void add(char ch){
-//    {  if (i == b.length)
-//    {  char[] new_b = new char[i+INC];
-//        for (int c = 0; c < i; c++) new_b[c] = b[c];
-//        b = new_b;
-//    }
-//        b[i++] = ch;
-    if (i!=b.length){
-        b[i]=ch;
-        i++;
+    public void add(char ch)
+    {  if (i == b.length)
+    {  char[] new_b = new char[i+INC];
+        for (int c = 0; c < i; c++) new_b[c] = b[c];
+        b = new_b;
     }
+        b[i++] = ch;
     }
 
 
