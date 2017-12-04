@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 public class ReadFile {
     private final String path;
+    //constructor accepts the path to the corpus
     ReadFile(String path ) {
        this.path=path;
    }
@@ -23,9 +24,9 @@ public class ReadFile {
        int trashHold=100;
        int counter=0;
        for (int i = 0; i < listOfFiles.length; i++) {
-           //counter+1
+           // each time we read 100 files
            //one more file added to the chunk of 100 files
-           //transfer a chunk to the parser
+           //transfer a chunk to the parser when reaches to threshold
            counter+=1;
            System.out.println(i);
            if (trashHold==counter) {
@@ -42,30 +43,34 @@ public class ReadFile {
                      br = new BufferedReader(fr);
 
                      try {
-                         String doc="";
+                         StringBuilder doc=new StringBuilder();
                          String line = "";
                          while ((line = br.readLine()) != null ) {
+                             // takes the doc ID and puts it in each beginning of the document
                              if (line.startsWith("<DOCNO>")){
                                  line=Pattern.compile("<DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile("</DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile(" ").matcher(line).replaceAll("");
-//                                 line.replaceAll("<DOCNO>","");
-//                                 line.replaceAll("</DOCNO>","");
-//                                 line.replaceAll(" ","");
-                                 doc+=line+ " ";
+                                 doc.append(line);
+                                 doc.append(" ");
                              }
                              if (line.startsWith("<TEXT>")) {
                                  while (((line = br.readLine()) != null ) && (!line.startsWith("</TEXT>") )) {
                                      if(line.startsWith("Language:")){
                                          line=moveForwardLines(br);
                                      }
-                                     doc +=line;
+                                     //concatenate all the document as one string
+                                     doc.append(line);
                                  }
-                                 documents.add(doc);
-                                 doc="";
+                                 //adds the container another doc
+                                 documents.add(doc.toString());
+                                 // reset the document
+                                 doc=new StringBuilder();
                              }
                          }
+                         //free resources
                          br.close();
+                         fr.close();
                      } catch (IOException e) {
                          e.printStackTrace();
                      }
@@ -81,10 +86,7 @@ public class ReadFile {
 // in case that the doc contains [text]-avoid from sentences that contains meta data about the article
 private static String moveForwardLines(BufferedReader line) throws IOException {
     String s = line.readLine();
-  //  System.out.println(s);
-    //   if(s!= null && s.startsWith("Article")) {
     while (s != null && !(s.startsWith("  [Text]") || s.startsWith("  [Excerpts]") || s.startsWith("  [Excerpt]"))) {
-      //  System.out.println(s);
         s = line.readLine();
     }
 

@@ -1,4 +1,3 @@
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -10,10 +9,11 @@ import java.util.regex.Pattern;
 
 public class Parse {
     //private LinkedList <String> text;
-    private static Pattern pattern = Pattern.compile("[\\s\\+:(){}\\[\\]]+");
-    private static HashSet<String> stopword = new HashSet<String>();
+    //\+:(){}\[\]
+    private static Pattern pattern = Pattern.compile("[\\s]+");
+    private static HashSet<String> stopword = new HashSet<>();
 
-    //make data structure of stop worlds
+    //make data structure for stop words
     private static void DSstopwords() {
         String line;
         BufferedReader br = null;
@@ -35,20 +35,23 @@ public class Parse {
     }
 
     public void ParseFile(LinkedList<String> text) {
-        Stemmer stem = new Stemmer();
+        //Stemmer stem = new Stemmer();
+        // create the data structure for the stop words
         DSstopwords();
         Iterator<String> itr = text.iterator();
+        // iterates all the files that came from readFile
         while (itr.hasNext()) {
             String s = itr.next();
             int x;
-            ArrayList<String> need_to_parse = new ArrayList<String>(Arrays.asList(pattern.split(s)));
+            ArrayList<String> need_to_parse = new ArrayList<>(Arrays.asList(pattern.split(s)));
             //i=1 because the first term in the string is the DOC_NUMBER
             for (int i = 1; i < need_to_parse.size(); i++) {
+                //first thing check if the word isn't a stop word
                 if (deleteStop(i, need_to_parse) && need_to_parse.get(i) != "") {
                     delCommas(need_to_parse, i);
+                    USA(need_to_parse, i);
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
                     need_to_parse.set(i, convPrecent(need_to_parse.get(i)));
-                    USA(need_to_parse, i);
                     x = checkIfMonth(need_to_parse.get(i));
                     if (x > 0) {
                         if (i < need_to_parse.size()) {
@@ -57,16 +60,13 @@ public class Parse {
                     }
                     capitalLetters(need_to_parse, i);
                 }
-            }
-            StemmerGenerator stemGen = new StemmerGenerator(stem, need_to_parse);
-            stemGen.chunkStem();
-        }
-        int z = 0;
-        z++;
-    }
 
+            }System.out.println();
+        }
+    }
+    //delete everything that is not alphanumeric except dots
     private void delCommas(ArrayList<String> need_to_parse, int i) {
-        need_to_parse.set(i, Pattern.compile("[^\\w && [^.]]+").matcher(need_to_parse.get(i)).replaceAll(""));
+        need_to_parse.set(i, Pattern.compile("[^\\w && [^.-]]+").matcher(need_to_parse.get(i)).replaceAll(""));
     }
 
     private int capitalLetters(ArrayList<String> need_to_parse, int i) {
@@ -106,7 +106,7 @@ public class Parse {
         return index;
     }
 
-    //delete stop words
+    //deletes stop words
     private static boolean deleteStop(int i, ArrayList<String> need_to_parse) {
         if (stopword.contains(need_to_parse.get(i))) {
             need_to_parse.set(i, "");
@@ -117,7 +117,7 @@ public class Parse {
 
     //NEW RULE
 //We have noticed that the token U.S has a lot of instances
-//So we decided that there is more chances that the user serached for "usa" instead U.A
+//So we decided that there is more chances that the user serached for "usa" instead U.S.
     private static void USA(ArrayList<String> need_to_parse, int i) {
         if (need_to_parse.get(i).equals("U.S.")) {
             need_to_parse.set(i, "usa");
@@ -128,7 +128,7 @@ public class Parse {
     private static int checkIfMonth(String s) {
         //check if to define it as static at the beginning of the class
         String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        s = deleteDots(s);
+    //    s = deleteDots(s);
         for (int i = 0; i < month.length; i++) {
             if (month[i].equalsIgnoreCase(s))
                 return i + 1;
@@ -149,17 +149,18 @@ public class Parse {
         }
         else
         {
-           return  Pattern.compile("[.]+").matcher(s).replaceAll("");
+            return  Pattern.compile("[.]+").matcher(s).replaceAll("");
         }
     }
 
-
+// implements the law that every occurrences of % or "percentage"
     private String convPrecent(String s) {
         return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
 
     private int month_year(int x, ArrayList<String> arr, int i) {
         String s = "";
+        // in order to display months with zero
         if (x < 10)
             s = "0" + x;
 
@@ -169,8 +170,13 @@ public class Parse {
 
         //fits to the next patterns
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
-        if (i + 1 < arr.size() && Pattern.compile("^\\d{4}[.,]?$|\\d{2}[.,]?$").matcher(arr.get(i + 1)).matches()) {
-            arr.set(i + 1, deleteDots(arr.get(i + 1)));
+        // TRY
+        if (i+1 < arr.size()){
+            delCommas(arr,i+1);
+            arr.set(i + 1, roudUp(arr.get(i+1)));
+        }
+        if (i+1 < arr.size() && Pattern.compile("^\\d{4}?$|\\d{2}?$").matcher(arr.get(i + 1)).matches()) {
+            arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
             //DDth Month YYYY
             if (i > 0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i - 1)).matches()) {
                 arr.set(i - 1, formattingDayMonth(arr.get(i - 1)));
@@ -200,10 +206,14 @@ public class Parse {
             }
         }
         //Month DD , Month DD YYYY
-        if (i + 1 < arr.size() && Pattern.compile("^\\d{1,2}[,]*").matcher(arr.get(i + 1)).matches()) {
+        if (i + 1 < arr.size() && Pattern.compile("^\\d{1,2}$").matcher(arr.get(i + 1)).matches()) {
             //Month DD YYYY
-            if (Pattern.compile("^\\d{4}[.,]?$").matcher(arr.get(i + 2)).matches()) {
-                arr.set(i + 2, deleteDots(arr.get(i + 2)));
+            if(i+2<arr.size()){
+                delCommas(arr,i+2);
+                arr.set(i + 2, roudUp(arr.get(i+2)));
+            }
+            if (Pattern.compile("^\\d{4}$").matcher(arr.get(i + 2)).matches()) {
+                arr.set(i + 2, /*deleteDots*/(arr.get(i + 2)));
                 s = arr.get(i + 1).substring(0, arr.get(i + 1).length() - 1) + "/" + s + "/" + arr.get(i + 2);
                 arr.set(i, s);
                 arr.set(i + 1, "");
@@ -212,7 +222,7 @@ public class Parse {
             }
             //Month DD
             else {
-                arr.set(i + 1, deleteDots(arr.get(i + 1)));
+                arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
                 s = arr.get(i + 1) + "/" + s;
                 arr.set(i, s);
                 arr.set(i + 1, "");
@@ -238,7 +248,7 @@ public class Parse {
         }
         return i;
     }
-
+// responsible to add zero to dates that have days that are smaller than ten.
     private String formattingDayMonth(String s) {
         if (Pattern.compile("^\\d([th ,])*$").matcher(s).matches()) {
             return "0" + s;
