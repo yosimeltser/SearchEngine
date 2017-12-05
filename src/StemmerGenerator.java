@@ -9,9 +9,9 @@ public class StemmerGenerator {
     private Stemmer stem;
     LinkedList<ArrayList<String> > ParsedDocs;
     //represents  docs list of 100 files
-    LinkedList<Document> Docs;
+    LinkedList<Document> Docs = new LinkedList<>() ;
     //DOCUMENT FREQUENCY OF THE TERMS
-    private static HashMap <String, Integer>  termDf;
+    private static HashMap <String, Integer>  termDf = new HashMap<>();
     int tHold;
     private static HashSet<String> hash=new HashSet<String>(0);
     public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
@@ -27,7 +27,7 @@ public class StemmerGenerator {
                 stem.stem();
                 String wordStemmed= stem.toString().trim();
                 //df
-                if (!doc.contains(wordStemmed)){
+                if ( !wordStemmed.equals("") && !doc.contains(wordStemmed)){
                     //First time that we see the term in doc
                     if (termDf.containsKey(wordStemmed)){
                         termDf.put(wordStemmed,termDf.get(wordStemmed)+1);
@@ -42,7 +42,6 @@ public class StemmerGenerator {
             }
             Docs.add(doc);
         }
-
+        System.out.println();
     }
-int z=1+1;
 }

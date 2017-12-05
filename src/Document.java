@@ -19,10 +19,10 @@ public class Document {
     }
     public void add (String s){
         if (termFr.containsKey(s)) {
-            int fr=termFr.get(s);
-            termFr.put(s,fr++);
+            int fr=termFr.get(s)+1;
+            termFr.put(s,fr);
         }
-        else  {
+        else if (!s.equals(""))  {
             termFr.put(s,1);
         }
     }

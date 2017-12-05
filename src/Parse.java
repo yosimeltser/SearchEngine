@@ -8,8 +8,7 @@ import java.util.regex.Pattern;
 
 
 public class Parse {
-    //private LinkedList <String> text;
-    //\+:(){}\[\]
+
     private static Pattern pattern = Pattern.compile("[\\s]+");
     private static HashSet<String> stopword = new HashSet<>();
     private LinkedList <ArrayList<String> > Docs;
@@ -157,6 +156,11 @@ public class Parse {
 
     // implements the law that every occurrences of % or "percentage"
     private String convPrecent(String s) {
+//        if(s.startsWith("percentage"))
+//            s.replace("percentage","percent");
+
+            
+        
         return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
 
