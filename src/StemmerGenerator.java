@@ -1,25 +1,48 @@
+import javafx.util.Pair;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class StemmerGenerator {
     private Stemmer stem;
-    private ArrayList<String> need_to_parse;
+    LinkedList<ArrayList<String> > ParsedDocs;
+    //represents  docs list of 100 files
+    LinkedList<Document> Docs;
+    //DOCUMENT FREQUENCY OF THE TERMS
+    private static HashMap <String, Integer>  termDf;
+    int tHold;
     private static HashSet<String> hash=new HashSet<String>(0);
-    public StemmerGenerator(Stemmer _stem, ArrayList<String> _need_to_parse) {
+    public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
         this.stem=_stem;
-        need_to_parse=_need_to_parse;
+        ParsedDocs=_Docs;
     }
     public void chunkStem() {
-        for (int k=1;k<need_to_parse.size(); k++){
-            String s = need_to_parse.get(k);
-            stem.add(s.toCharArray(),s.length());
-            stem.stem();
-            String wordStemmed= stem.toString().trim();
-            if (!hash.contains(wordStemmed)) {
-                hash.add(wordStemmed);
-            }
-        }
-        int z= 1+2;
-    }
+        for (ArrayList<String>  need_to_parse:ParsedDocs) {
+            Document doc=  new  Document (need_to_parse.get(0));
+            for (int k=1;k<need_to_parse.size(); k++){
+                String s = need_to_parse.get(k);
+                stem.add(s.toCharArray(),s.length());
+                stem.stem();
+                String wordStemmed= stem.toString().trim();
+                //df
+                if (!doc.contains(wordStemmed)){
+                    //First time that we see the term in doc
+                    if (termDf.containsKey(wordStemmed)){
+                        termDf.put(wordStemmed,termDf.get(wordStemmed)+1);
+                    }
+                    else {
+                        termDf.put(wordStemmed,1);
+                    }
 
+                }
+                //tf
+                doc.add(wordStemmed);
+            }
+            Docs.add(doc);
+        }
+
+    }
+int z=1+1;
 }

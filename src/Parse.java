@@ -12,7 +12,7 @@ public class Parse {
     //\+:(){}\[\]
     private static Pattern pattern = Pattern.compile("[\\s]+");
     private static HashSet<String> stopword = new HashSet<>();
-
+    private LinkedList <ArrayList<String> > Docs;
     //make data structure for stop words
     private static void DSstopwords() {
         String line;
@@ -35,7 +35,7 @@ public class Parse {
     }
 
     public void ParseFile(LinkedList<String> text) {
-        //Stemmer stem = new Stemmer();
+        Docs =  new LinkedList<ArrayList<String>>();
         // create the data structure for the stop words
         DSstopwords();
         Iterator<String> itr = text.iterator();
@@ -60,10 +60,14 @@ public class Parse {
                     }
                     capitalLetters(need_to_parse, i);
                 }
-
-            }System.out.println();
+            }
+            Docs.add(need_to_parse);
         }
+        Stemmer stem = new Stemmer();
+        StemmerGenerator stemGen = new StemmerGenerator(stem, Docs);
+        stemGen.chunkStem();
     }
+
     //delete everything that is not alphanumeric except dots
     private void delCommas(ArrayList<String> need_to_parse, int i) {
         need_to_parse.set(i, Pattern.compile("[^\\w && [^.-]]+").matcher(need_to_parse.get(i)).replaceAll(""));
@@ -128,7 +132,7 @@ public class Parse {
     private static int checkIfMonth(String s) {
         //check if to define it as static at the beginning of the class
         String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    //    s = deleteDots(s);
+        //    s = deleteDots(s);
         for (int i = 0; i < month.length; i++) {
             if (month[i].equalsIgnoreCase(s))
                 return i + 1;
@@ -146,14 +150,12 @@ public class Parse {
             x = x / 100;
             String n = Double.toString(x);
             return n;
-        }
-        else
-        {
-            return  Pattern.compile("[.]+").matcher(s).replaceAll("");
+        } else {
+            return Pattern.compile("[.]+").matcher(s).replaceAll("");
         }
     }
 
-// implements the law that every occurrences of % or "percentage"
+    // implements the law that every occurrences of % or "percentage"
     private String convPrecent(String s) {
         return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
@@ -171,11 +173,11 @@ public class Parse {
         //fits to the next patterns
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
         // TRY
-        if (i+1 < arr.size()){
-            delCommas(arr,i+1);
-            arr.set(i + 1, roudUp(arr.get(i+1)));
+        if (i + 1 < arr.size()) {
+            delCommas(arr, i + 1);
+            arr.set(i + 1, roudUp(arr.get(i + 1)));
         }
-        if (i+1 < arr.size() && Pattern.compile("^\\d{4}?$|\\d{2}?$").matcher(arr.get(i + 1)).matches()) {
+        if (i + 1 < arr.size() && Pattern.compile("^\\d{4}?$|\\d{2}?$").matcher(arr.get(i + 1)).matches()) {
             arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
             //DDth Month YYYY
             if (i > 0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i - 1)).matches()) {
@@ -208,9 +210,9 @@ public class Parse {
         //Month DD , Month DD YYYY
         if (i + 1 < arr.size() && Pattern.compile("^\\d{1,2}$").matcher(arr.get(i + 1)).matches()) {
             //Month DD YYYY
-            if(i+2<arr.size()){
-                delCommas(arr,i+2);
-                arr.set(i + 2, roudUp(arr.get(i+2)));
+            if (i + 2 < arr.size()) {
+                delCommas(arr, i + 2);
+                arr.set(i + 2, roudUp(arr.get(i + 2)));
             }
             if (Pattern.compile("^\\d{4}$").matcher(arr.get(i + 2)).matches()) {
                 arr.set(i + 2, /*deleteDots*/(arr.get(i + 2)));
@@ -248,7 +250,8 @@ public class Parse {
         }
         return i;
     }
-// responsible to add zero to dates that have days that are smaller than ten.
+
+    // responsible to add zero to dates that have days that are smaller than ten.
     private String formattingDayMonth(String s) {
         if (Pattern.compile("^\\d([th ,])*$").matcher(s).matches()) {
             return "0" + s;
