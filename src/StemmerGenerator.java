@@ -1,16 +1,13 @@
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class StemmerGenerator {
     private Stemmer stem;
     LinkedList<ArrayList<String> > ParsedDocs;
     //represents  docs list of 100 files
     //LinkedList<Document> Docs = new LinkedList<>() ;
-    HashMap <String,LinkedList<Document>> termToDocs;
+    TreeMap<String,LinkedList<Document>> termToDocs;
 
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap <String, Integer>  termDf = new HashMap<>();
@@ -19,7 +16,7 @@ public class StemmerGenerator {
     public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
         this.stem=_stem;
         ParsedDocs=_Docs;
-        termToDocs=new HashMap<String,LinkedList<Document>>();
+        termToDocs=new TreeMap<String,LinkedList<Document>>();
     }
     public void chunkStem() {
         Indexer index= new Indexer();

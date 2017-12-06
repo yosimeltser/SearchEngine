@@ -1,16 +1,14 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class Indexer {
-    Map <String,LinkedList<Document>> Docs;
+    TreeMap <String,LinkedList<Document>> Docs;
+    public static int i=0;
     public Indexer() {
     }
-    public void setDocs (HashMap<String, LinkedList<Document>> _docs) {
+    public void setDocs (TreeMap<String, LinkedList<Document>> _docs) {
         this.Docs=_docs;
         tempPosting();
     }
@@ -18,7 +16,8 @@ public class Indexer {
     private void tempPosting() {
         BufferedWriter bw = null;
         try {
-            bw = new BufferedWriter( new FileWriter( "postingList.txt",true ));
+            bw = new BufferedWriter( new FileWriter( "postingList.txt"+i));
+            i++;
         } catch (IOException e) {
             e.printStackTrace();
         }
