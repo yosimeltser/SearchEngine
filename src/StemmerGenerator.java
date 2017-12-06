@@ -9,16 +9,21 @@ public class StemmerGenerator {
     private Stemmer stem;
     LinkedList<ArrayList<String> > ParsedDocs;
     //represents  docs list of 100 files
-    LinkedList<Document> Docs = new LinkedList<>() ;
+    //LinkedList<Document> Docs = new LinkedList<>() ;
+    HashMap <String,LinkedList<Document>> termToDocs;
+
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap <String, Integer>  termDf = new HashMap<>();
+    //Dictionary
     int tHold;
-    private static HashSet<String> hash=new HashSet<String>(0);
     public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
         this.stem=_stem;
         ParsedDocs=_Docs;
+        termToDocs=new HashMap<String,LinkedList<Document>>();
     }
     public void chunkStem() {
+
+        Indexer index= new Indexer();
         for (ArrayList<String>  need_to_parse:ParsedDocs) {
             Document doc=  new  Document (need_to_parse.get(0));
             for (int k=1;k<need_to_parse.size(); k++){
@@ -27,7 +32,15 @@ public class StemmerGenerator {
                 stem.stem();
                 String wordStemmed= stem.toString().trim();
                 //df
-                if ( !wordStemmed.equals("") && !doc.contains(wordStemmed)){
+                if ( !wordStemmed.equals("") && !doc.contains(wordStemmed) ){
+                    if (termToDocs.containsKey(wordStemmed)) {
+                            termToDocs.get(wordStemmed).addFirst(doc);
+                    }
+                    else {
+                        LinkedList<Document> docs= new LinkedList<Document>();
+                        docs.add(doc);
+                        termToDocs.put(wordStemmed,docs);
+                    }
                     //First time that we see the term in doc
                     if (termDf.containsKey(wordStemmed)){
                         termDf.put(wordStemmed,termDf.get(wordStemmed)+1);
@@ -40,8 +53,8 @@ public class StemmerGenerator {
                 //tf
                 doc.add(wordStemmed);
             }
-            Docs.add(doc);
         }
+        index.setDocs(termToDocs);
         System.out.println();
     }
 }
