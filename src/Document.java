@@ -26,4 +26,7 @@ public class Document {
             termFr.put(s,1);
         }
     }
+    public void setSize(int _size){
+        this.docLength=_size;
+    }
 }

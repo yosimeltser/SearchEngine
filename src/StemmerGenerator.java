@@ -22,10 +22,10 @@ public class StemmerGenerator {
         termToDocs=new HashMap<String,LinkedList<Document>>();
     }
     public void chunkStem() {
-
         Indexer index= new Indexer();
         for (ArrayList<String>  need_to_parse:ParsedDocs) {
             Document doc=  new  Document (need_to_parse.get(0));
+            doc.setSize(need_to_parse.size()-1);
             for (int k=1;k<need_to_parse.size(); k++){
                 String s = need_to_parse.get(k);
                 stem.add(s.toCharArray(),s.length());
@@ -55,6 +55,5 @@ public class StemmerGenerator {
             }
         }
         index.setDocs(termToDocs);
-        System.out.println();
     }
 }
