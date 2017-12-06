@@ -16,7 +16,7 @@ public class Indexer {
     private void tempPosting() {
         BufferedWriter bw = null;
         try {
-            bw = new BufferedWriter( new FileWriter( "postingList.txt"+i));
+            bw = new BufferedWriter( new FileWriter( "postingList" +i+".txt"));
             i++;
         } catch (IOException e) {
             e.printStackTrace();

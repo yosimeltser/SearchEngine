@@ -9,16 +9,28 @@ import java.util.regex.Pattern;
 
 public class Parse {
 
-    private static Pattern pattern = Pattern.compile("[\\s]+");
+    private static Pattern whitespace = Pattern.compile("[\\s]+");
     private static HashSet<String> stopword = new HashSet<>();
     private LinkedList <ArrayList<String> > Docs;
+    Pattern del_chars,round_up,yyyy_yy,dd_th,yyyy;
     //make data structure for stop words
+
+    public Parse() {
+        DSstopwords();
+         del_chars = Pattern.compile("[^\\w && [^.-]]+");
+        round_up=Pattern.compile("\\d+\\.\\d+");
+        yyyy_yy=Pattern.compile("^\\d{4}?$|^\\d{2}?$");
+        dd_th=Pattern.compile("^\\d{1,2}[th]+$");
+        yyyy=Pattern.compile("^\\d{4}$");
+
+    }
+// inserts all the stopwords into a hash
     private static void DSstopwords() {
         String line;
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\Users\\yosef\\IdeaProjects\\stopwords.txt");
+            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -36,13 +48,13 @@ public class Parse {
     public void ParseFile(LinkedList<String> text) {
         Docs =  new LinkedList<ArrayList<String>>();
         // create the data structure for the stop words
-        DSstopwords();
+
         Iterator<String> itr = text.iterator();
         // iterates all the files that came from readFile
         while (itr.hasNext()) {
             String s = itr.next();
             int x;
-            ArrayList<String> need_to_parse = new ArrayList<>(Arrays.asList(pattern.split(s)));
+            ArrayList<String> need_to_parse = new ArrayList<>(Arrays.asList(whitespace.split(s)));
             //i=1 because the first term in the string is the DOC_NUMBER
             for (int i = 1; i < need_to_parse.size(); i++) {
                 //first thing check if the word isn't a stop word
@@ -69,7 +81,7 @@ public class Parse {
 
     //delete everything that is not alphanumeric except dots
     private void delCommas(ArrayList<String> need_to_parse, int i) {
-        need_to_parse.set(i, Pattern.compile("[^\\w && [^.-]]+").matcher(need_to_parse.get(i)).replaceAll(""));
+        need_to_parse.set(i, del_chars.matcher(need_to_parse.get(i)).replaceAll(""));
     }
 
     private int capitalLetters(ArrayList<String> need_to_parse, int i) {
@@ -143,7 +155,7 @@ public class Parse {
     //converts the second digit after the floating point up
     //PLUS IF NOT A NUMBER DELETE THE DOTS
     private String roudUp(String s) {
-        if (Pattern.compile("\\d+\\.\\d+").matcher(s).matches()) {
+        if (round_up.matcher(s).matches()) {
             double x = Double.parseDouble(s);
             x = Math.round(x * 100);
             x = x / 100;
@@ -156,12 +168,17 @@ public class Parse {
 
     // implements the law that every occurrences of % or "percentage"
     private String convPrecent(String s) {
-//        if(s.startsWith("percentage"))
-//            s.replace("percentage","percent");
+        if (s.startsWith("percentage")) {
+            s = s.replace("percentage", "percent");
+            return s;
+        } else if (s.indexOf('%') > 0) {
+            s=s.replaceAll("%"," percent");
+            return  s;
+        }
 
-            
+        else return s;
         
-        return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
+      //  return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
 
     private int month_year(int x, ArrayList<String> arr, int i) {
@@ -181,10 +198,10 @@ public class Parse {
             delCommas(arr, i + 1);
             arr.set(i + 1, roudUp(arr.get(i + 1)));
         }
-        if (i + 1 < arr.size() && Pattern.compile("^\\d{4}?$|\\d{2}?$").matcher(arr.get(i + 1)).matches()) {
+        if (i + 1 < arr.size() && yyyy_yy.matcher(arr.get(i + 1)).matches()) {
             arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
             //DDth Month YYYY
-            if (i > 0 && Pattern.compile("^\\d{1,2}[th]+$").matcher(arr.get(i - 1)).matches()) {
+            if (i > 0 && dd_th.matcher(arr.get(i - 1)).matches()) {
                 arr.set(i - 1, formattingDayMonth(arr.get(i - 1)));
                 s = arr.get(i - 1).substring(0, arr.get(i - 1).length() - 2) + "/" + s + "/" + arr.get(i + 1);
                 arr.set(i - 1, s);
@@ -204,7 +221,7 @@ public class Parse {
                 arr.set(i + 1, "");
                 return i + 1;
                 //Month Year
-            } else if (i + 1 < arr.size() && Pattern.compile("^\\d{4}$").matcher(arr.get(i + 1)).matches()) {
+            } else if (i + 1 < arr.size() && yyyy.matcher(arr.get(i + 1)).matches()) {
                 s = s + "/" + arr.get(i + 1);
                 arr.set(i, s);
                 arr.set(i + 1, "");
@@ -218,7 +235,7 @@ public class Parse {
                 delCommas(arr, i + 2);
                 arr.set(i + 2, roudUp(arr.get(i + 2)));
             }
-            if (Pattern.compile("^\\d{4}$").matcher(arr.get(i + 2)).matches()) {
+            if (yyyy.matcher(arr.get(i + 2)).matches()) {
                 arr.set(i + 2, /*deleteDots*/(arr.get(i + 2)));
                 s = arr.get(i + 1).substring(0, arr.get(i + 1).length() - 1) + "/" + s + "/" + arr.get(i + 2);
                 arr.set(i, s);

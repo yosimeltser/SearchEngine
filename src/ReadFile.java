@@ -21,7 +21,7 @@ public class ReadFile {
        File folder = new File(path);
        File[] listOfFiles = folder.listFiles();
        LinkedList <String> documents= new LinkedList<>();
-       int trashHold=100;
+       int trashHold=25;
        int counter=0;
        for (int i = 0; i < listOfFiles.length; i++) {
            // each time we read 100 files
