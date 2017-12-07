@@ -17,7 +17,7 @@ public class Parse {
 
     public Parse() {
         DSstopwords();
-         del_chars = Pattern.compile("[^\\w && [^.-]]+");
+         del_chars = Pattern.compile("[^\\w && [^&.-]]+");
         round_up=Pattern.compile("\\d+\\.\\d+");
         yyyy_yy=Pattern.compile("^\\d{4}?$|^\\d{2}?$");
         dd_th=Pattern.compile("^\\d{1,2}[th]+$");
@@ -230,14 +230,15 @@ public class Parse {
         }
         //Month DD , Month DD YYYY
         if (i + 1 < arr.size() && Pattern.compile("^\\d{1,2}$").matcher(arr.get(i + 1)).matches()) {
-            //Month DD YYYY
+            //Month DD, YYYY
             if (i + 2 < arr.size()) {
                 delCommas(arr, i + 2);
                 arr.set(i + 2, roudUp(arr.get(i + 2)));
             }
             if (yyyy.matcher(arr.get(i + 2)).matches()) {
+                arr.set(i + 1, formattingDayMonth(arr.get(i + 1)));
                 arr.set(i + 2, /*deleteDots*/(arr.get(i + 2)));
-                s = arr.get(i + 1).substring(0, arr.get(i + 1).length() - 1) + "/" + s + "/" + arr.get(i + 2);
+                s = arr.get(i + 1) + "/" + s + "/" + arr.get(i + 2);
                 arr.set(i, s);
                 arr.set(i + 1, "");
                 arr.set(i + 2, "");
@@ -273,8 +274,8 @@ public class Parse {
     }
 
     // responsible to add zero to dates that have days that are smaller than ten.
-    private String formattingDayMonth(String s) {
-        if (Pattern.compile("^\\d([th ,])*$").matcher(s).matches()) {
+    private static String formattingDayMonth(String s) {
+        if (Pattern.compile("^\\d([th])*$").matcher(s).matches()) {
             return "0" + s;
         } else {
             return s;
