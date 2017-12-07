@@ -30,7 +30,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
+            fr = new FileReader("C:\\Users\\yosef\\IdeaProjects\\stopwords.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

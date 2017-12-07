@@ -1,5 +1,6 @@
 
 
+import java.io.File;
 import java.util.*;
 
 public class StemmerGenerator {
@@ -11,15 +12,16 @@ public class StemmerGenerator {
 
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap <String, Integer>  termDf = new HashMap<>();
+    private Indexer index;
     //Dictionary
     int tHold;
     public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
         this.stem=_stem;
         ParsedDocs=_Docs;
         termToDocs=new TreeMap<String,LinkedList<Document>>();
+        index= new Indexer();
     }
     public void chunkStem() {
-        Indexer index= new Indexer();
         for (ArrayList<String>  need_to_parse:ParsedDocs) {
             Document doc=  new  Document (need_to_parse.get(0));
             doc.setSize(need_to_parse.size()-1);
@@ -50,6 +52,24 @@ public class StemmerGenerator {
                 //tf
                 doc.add(wordStemmed);
             }
+        }
+        for(Map.Entry<String, LinkedList<Document>> entry : termToDocs.entrySet()){
+            entry.getValue().sort( new Comparator<Document>(){
+                @Override
+                public int compare(Document d1,Document d2){
+                    String key=entry.getKey();
+                    if ( d1.termFr.get(key) > d2.termFr.get(key)){
+                        return -1;
+                    }
+                    else if ( d1.termFr.get(key) < d2.termFr.get(key)){
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+
+                }
+            });
         }
         index.setDocs(termToDocs);
     }
