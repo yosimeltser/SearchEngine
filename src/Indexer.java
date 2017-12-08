@@ -37,7 +37,7 @@ public class Indexer {
                 e.printStackTrace();
             }
         }
-        if (i == 71) {
+        if (i == 3) {
             mergeFiles();
         }
     }
@@ -53,10 +53,10 @@ public class Indexer {
             //priority Queue of terms
             PriorityQueue<termLine> pQ = new PriorityQueue<termLine>();
             //hash function
-            //Key->termline Value->buffer reader
-            HashMap<termLine, ArrayList<BufferedReader>> readFromFileHash = new HashMap<termLine, ArrayList<BufferedReader>>();
+            //Key->termLine Value->buffer reader
+            HashMap<termLine, LinkedList<BufferedReader>> readFromFileHash = new HashMap<termLine, LinkedList<BufferedReader>>();
+            int k = 0;
             for (File f : listOfFiles) {
-                int k = 0;
                 bufferedReaderArr[k] = new BufferedReader(new FileReader(f));
                 //Reads 3 lines from each file
                 String line1 = bufferedReaderArr[k].readLine();
@@ -77,20 +77,22 @@ public class Indexer {
                 //get to the next file
                 k++;
             }
-            while (readFromFileHash.size() == 0 || pQ.size() == 0) {
+            while ((readFromFileHash.size() != 0 || pQ.size() != 0)) {
                 //Move The Best Choice Into The Disc
-                //IF THERE ARE COUPLE OF CHOICES THAT ARE WITH THE SAME KEY, MERGE THEM UP
                 termLine best = pQ.poll();
-                ArrayList<BufferedReader> brArr = readFromFileHash.get(best);
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FinalPostingList"));
+                LinkedList<BufferedReader> brArr = readFromFileHash.get(best);
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FinalPostingList.txt"));
                 //Unique Key
                 if (brArr.size() == 1) {
                     String s = best.term + best.Link;
                     bufferedWriter.write(s);
-                    //Read Next Line If Exists
-                    BufferedReader br=brArr.get(0);
+                    bufferedWriter.flush();
+                    System.out.println(s);
+                    //Read The Next Line If Exists
+                    BufferedReader br=brArr.getFirst();
                     String line = br.readLine();
                     readFromFileHash.remove(best);
+                    //IF THE FILE HAS AT LEAST ONE OR MORE LINE THAN CONTINUE THE READING, ELSE STOP.
                     if (line!=null) {
                         termLine lineCon=convertToTermLine(line);
                         pQ.add(lineCon);
@@ -99,53 +101,119 @@ public class Indexer {
                 }
                 //Duplicate Keys
                 else if (brArr.size() > 1) {
+                    //GET THE SECOND DUPLICATED KEY
                     termLine best1 = pQ.poll();
-                    BufferedReader br1 = brArr.get(0);
-                    brArr.remove(0);
-//                    if (brArr.size() == 0) {
-//                        readFromFileHash.remove(best);
-//                    }
-                    String s = best.term + mergePostEqualTerms(best.Link, best1.Link);
+                    BufferedReader br1 = brArr.removeFirst();
+                    String s = best.term +" "+mergePostEqualTerms(best.Link, best1.Link);
                     termLine merged= convertToTermLine(s);
                     pQ.add(merged);
-
-                    //UPDATE KEY IN HASH MAP
-                    ArrayList<BufferedReader> temp= readFromFileHash.get(merged);
+                    //UPDATE KEY IN HASH MAP (first remove and then add again, the brute force way)
+                    LinkedList<BufferedReader> temp= readFromFileHash.get(merged);
                     readFromFileHash.remove(merged);
                     readFromFileHash.put(merged,temp);
-
                     //randomly read one line in one of the files
                     termLine termNext1=convertToTermLine(br1.readLine());
                     addHash(termNext1,br1,readFromFileHash);
                     pQ.add(termNext1);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+//MERGING VALUES EQUALS KEYS
+    //FOR EXAMPLE DOG->D1 AND DOG->D2 => DOG->D1,D2
     private String mergePostEqualTerms(String link, String link1) {
-        return "";
-    }
+            String tf0, tf1;
+            StringBuilder ss = new StringBuilder();
+            //gives each time a string after removing whitespace
+            StringTokenizer st0 = new StringTokenizer(link);
+            StringTokenizer st1 = new StringTokenizer(link1);
+            String next0 = st0.nextToken();
+            String next1 = st1.nextToken();
+            //if we didn't arrive the last string in the string Tokenizer
+            while (st0.hasMoreTokens() && st1.hasMoreTokens()) {
+                tf0 = getTF(next0);
+                tf1 = getTF(next1);
+                int x = Integer.parseInt(tf0);
+                int y = Integer.parseInt(tf1);
+                //compares the tf's
+                if (x > y) {
+                    ss.append(next0 + " ");
+                    next0 = st0.nextToken();
+                } else if (y > x) {
+                    ss.append(next1 + " ");
+                    next1 = st1.nextToken();
+                } else {
+                    ss.append(next0 + " ");
+                    ss.append(next1 + " ");
+                    next0 = st0.nextToken();
+                    next1 = st1.nextToken();
+                }
+            }
+            if (st0.countTokens() != 0) {
+                while (st0.hasMoreTokens()) {
+                    tf0 = getTF(next0);
+                    tf1 = getTF(next1);
+                    int x = Integer.parseInt(tf0);
+                    int y = Integer.parseInt(tf1);
+                    if (x > y) {
+                        ss.append(next0 + " ");
+                        next0 = st0.nextToken();
+                    } else if (y > x) {
+                        ss.append(next1 + " ");
+                    } else {
+                        ss.append(next0 + " ");
+                        ss.append(next1 + " ");
+                        next0 = st0.nextToken();
+                    }
+                }
+                ss.append(next0);
+            } else {
+                while (st1.hasMoreTokens()) {
+                    tf0 = getTF(next0);
+                    tf1 = getTF(next1);
+                    int x = Integer.parseInt(tf0);
+                    int y = Integer.parseInt(tf1);
+                    if (x > y) {
+                        ss.append(next0 + " ");
+                    } else if (y > x) {
+                        ss.append(next1 + " ");
+                        next1 = st1.nextToken();
+                    } else {
+                        ss.append(next0 + " ");
+                        ss.append(next1 + " ");
+                        next1 = st1.nextToken();
+                    }
+                }
+                ss.append(next1);
+            }
+            return ss.toString();
+        }
 
-    private void addHash(termLine key, BufferedReader value, HashMap<termLine, ArrayList<BufferedReader>> hashMap) {
-        ArrayList<BufferedReader> tempList = null;
+        //extracting the tf's from the string
+        private static String getTF(String st) {
+            int index = st.indexOf(',');
+            int close = st.indexOf('>');
+            return st.substring(index + 1, close);
+        }
+
+    //ADD FUNCTION THAT ALLOWS DUPLICATE VALUES BY COLLISIONS, EACH DUPLICATED VALUE IS ADDED TO THE HASH MAP VALUE.
+    private void addHash(termLine key, BufferedReader value, HashMap<termLine, LinkedList<BufferedReader>> hashMap) {
+        LinkedList<BufferedReader> tempList = null;
         if (hashMap.containsKey(key)) {
             tempList = hashMap.get(key);
-            if (tempList == null)
-                tempList = new ArrayList<BufferedReader>();
             tempList.add(value);
         } else {
-            tempList = new ArrayList<BufferedReader>();
+            tempList = new LinkedList<BufferedReader>();
             tempList.add(value);
         }
         hashMap.put(key, tempList);
     }
 
     private termLine convertToTermLine(String line) {
-        int index = line.indexOf("<") - 1;
-        return new termLine(line.substring(0, index), line.substring(index + 1, line.length()));
+        int index = line.indexOf("<");
+        return new termLine(line.substring(0, index-1), line.substring(index,line.length()));
     }
 
     //sorting by tf

@@ -1,4 +1,6 @@
-public class termLine {
+import java.util.Comparator;
+
+public class termLine implements Comparator, Comparable {
     String term;
     String Link;
     public termLine(String _term, String _Link ) {
@@ -22,5 +24,17 @@ public class termLine {
     @Override
     public int hashCode() {
         return this.term.hashCode();
+    }
+    @Override
+    public int compare(Object left, Object right) {
+         termLine t1=(termLine) left;
+         termLine t2=(termLine) right;
+         return t1.term.compareTo(t2.term);
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        termLine t= (termLine)o;
+        return this.term.compareTo(t.term);
     }
 }
