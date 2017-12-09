@@ -6,7 +6,7 @@ public class Indexer {
     public static int i = 0;
 
     public Indexer() {
-        new File("PostingList").mkdir();
+         new File("PostingList").mkdir();
     }
 
 

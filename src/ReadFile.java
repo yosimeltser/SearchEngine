@@ -52,7 +52,7 @@ public class ReadFile {
                                  line=Pattern.compile("</DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile(" ").matcher(line).replaceAll("");
                                  doc.append(line);
-                                 doc.append(" ");
+                                  doc.append(" ");
                              }
                              if (line.startsWith("<TEXT>")) {
                                  while (((line = br.readLine()) != null ) && (!line.startsWith("</TEXT>") )) {

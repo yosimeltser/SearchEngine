@@ -59,7 +59,7 @@ public class StemmerGenerator {
                 public int compare(Document d1,Document d2){
                     String key=entry.getKey();
                     if ( d1.termFr.get(key) > d2.termFr.get(key)){
-                        return -1;
+                          return -1;
                     }
                     else if ( d1.termFr.get(key) < d2.termFr.get(key)){
                         return 1;
