@@ -29,7 +29,7 @@ public class ReadFile {
            //transfer a chunk to the parser when reaches to threshold
            counter+=1;
            System.out.println(i);
-           if (trashHold==counter) {
+           if (trashHold==counter || i==1814) {
                counter=0;
                p.ParseFile(documents);
                //check if an object was deleted
@@ -40,7 +40,7 @@ public class ReadFile {
                  try {
                      String [] s=listOfFiles[i].list();
                      fr = new FileReader(listOfFiles[i]+"\\"+s[0]);
-                     br = new BufferedReader(fr);
+                      br = new BufferedReader(fr);
 
                      try {
                          StringBuilder doc=new StringBuilder();

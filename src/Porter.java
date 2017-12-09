@@ -61,7 +61,7 @@ class Stemmer
      * adding characters, you can call stem(void) to stem the word.
      */
 
-    public void add(char ch)
+     public void add(char ch)
     {  if (i == b.length)
     {  char[] new_b = new char[i+INC];
         for (int c = 0; c < i; c++) new_b[c] = b[c];

@@ -1,12 +1,14 @@
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Indexer {
     TreeMap<String, LinkedList<Document>> Docs;
+    HashMap<String, Integer> termDf;
     public static int i = 0;
 
     public Indexer() {
-         new File("PostingList").mkdir();
+        new File("PostingList").mkdir();
     }
 
 
@@ -37,19 +39,20 @@ public class Indexer {
                 e.printStackTrace();
             }
         }
-        if (i == 3) {
+        if (i == 72) {
             mergeFiles();
         }
     }
 
+
     private void mergeFiles() {
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
-        File folder = new File("PostingList");
+         File folder = new File("PostingList");
         File[] listOfFiles = folder.listFiles();
         try {
             //BUFFER READER FOR EACH FILE
-            BufferedReader[] bufferedReaderArr = new BufferedReader[71];
+            BufferedReader[] bufferedReaderArr = new BufferedReader[72];
             //priority Queue of terms
             PriorityQueue<termLine> pQ = new PriorityQueue<termLine>();
             //hash function
@@ -77,26 +80,29 @@ public class Indexer {
                 //get to the next file
                 k++;
             }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FinalPostingList.txt"));
             while ((readFromFileHash.size() != 0 || pQ.size() != 0)) {
                 //Move The Best Choice Into The Disc
                 termLine best = pQ.poll();
                 LinkedList<BufferedReader> brArr = readFromFileHash.get(best);
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FinalPostingList.txt"));
                 //Unique Key
                 if (brArr.size() == 1) {
                     String s = best.term + best.Link;
                     bufferedWriter.write(s);
+                    bufferedWriter.newLine();
                     bufferedWriter.flush();
-                    System.out.println(s);
                     //Read The Next Line If Exists
-                    BufferedReader br=brArr.getFirst();
-                    String line = br.readLine();
-                    readFromFileHash.remove(best);
-                    //IF THE FILE HAS AT LEAST ONE OR MORE LINE THAN CONTINUE THE READING, ELSE STOP.
-                    if (line!=null) {
-                        termLine lineCon=convertToTermLine(line);
-                        pQ.add(lineCon);
-                        addHash(lineCon,br,readFromFileHash);
+                    BufferedReader br = brArr.getFirst();
+                    //added by zohar
+                    if (br != null) {
+                        String line = br.readLine();
+                        readFromFileHash.remove(best);
+                        //IF THE FILE HAS AT LEAST ONE OR MORE LINE THAN CONTINUE THE READING, ELSE STOP.
+                        if (line != null) {
+                            termLine lineCon = convertToTermLine(line);
+                            pQ.add(lineCon);
+                            addHash(lineCon, br, readFromFileHash);
+                        }
                     }
                 }
                 //Duplicate Keys
@@ -104,99 +110,77 @@ public class Indexer {
                     //GET THE SECOND DUPLICATED KEY
                     termLine best1 = pQ.poll();
                     BufferedReader br1 = brArr.removeFirst();
-                    String s = best.term +" "+mergePostEqualTerms(best.Link, best1.Link);
-                    termLine merged= convertToTermLine(s);
+                    String s = best.term + " " + mergePostEqualTerms(best.Link, best1.Link);
+                    termLine merged = convertToTermLine(s);
                     pQ.add(merged);
                     //UPDATE KEY IN HASH MAP (first remove and then add again, the brute force way)
-                    LinkedList<BufferedReader> temp= readFromFileHash.get(merged);
+                    LinkedList<BufferedReader> temp = readFromFileHash.get(merged);
                     readFromFileHash.remove(merged);
-                    readFromFileHash.put(merged,temp);
+                    readFromFileHash.put(merged, temp);
                     //randomly read one line in one of the files
-                    termLine termNext1=convertToTermLine(br1.readLine());
-                    addHash(termNext1,br1,readFromFileHash);
-                    pQ.add(termNext1);
+                    String line = br1.readLine();
+                    if (line != null) {
+                        termLine termNext1 = convertToTermLine(line);
+                        addHash(termNext1, br1, readFromFileHash);
+                        pQ.add(termNext1);
+                    }
                 }
+
+            }
+            for (BufferedReader br:bufferedReaderArr) {
+             br.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-//MERGING VALUES EQUALS KEYS
+
+    //MERGING VALUES EQUALS KEYS
     //FOR EXAMPLE DOG->D1 AND DOG->D2 => DOG->D1,D2
     private String mergePostEqualTerms(String link, String link1) {
-            String tf0, tf1;
-            StringBuilder ss = new StringBuilder();
-            //gives each time a string after removing whitespace
-            StringTokenizer st0 = new StringTokenizer(link);
-            StringTokenizer st1 = new StringTokenizer(link1);
-            String next0 = st0.nextToken();
-            String next1 = st1.nextToken();
-            //if we didn't arrive the last string in the string Tokenizer
-            while (st0.hasMoreTokens() && st1.hasMoreTokens()) {
-                tf0 = getTF(next0);
-                tf1 = getTF(next1);
-                int x = Integer.parseInt(tf0);
-                int y = Integer.parseInt(tf1);
-                //compares the tf's
-                if (x > y) {
-                    ss.append(next0 + " ");
-                    next0 = st0.nextToken();
-                } else if (y > x) {
-                    ss.append(next1 + " ");
-                    next1 = st1.nextToken();
-                } else {
-                    ss.append(next0 + " ");
-                    ss.append(next1 + " ");
-                    next0 = st0.nextToken();
-                    next1 = st1.nextToken();
-                }
-            }
-            if (st0.countTokens() != 0) {
-                while (st0.hasMoreTokens()) {
-                    tf0 = getTF(next0);
-                    tf1 = getTF(next1);
-                    int x = Integer.parseInt(tf0);
-                    int y = Integer.parseInt(tf1);
-                    if (x > y) {
-                        ss.append(next0 + " ");
-                        next0 = st0.nextToken();
-                    } else if (y > x) {
-                        ss.append(next1 + " ");
-                    } else {
-                        ss.append(next0 + " ");
-                        ss.append(next1 + " ");
-                        next0 = st0.nextToken();
-                    }
-                }
-                ss.append(next0);
+        Pattern hyphen = Pattern.compile("\\s+");
+        String[] newl0 = hyphen.split(link);
+        String[] newline1 = hyphen.split(link1);
+        StringBuilder s = new StringBuilder();
+        int index0, index1, close0, close1, i = 0, j = 0;
+        String tf0, tf1;
+        while (i < newl0.length && j < newline1.length) {
+            index0 = newl0[i].indexOf(',', 0);
+            index1 = newline1[j].indexOf(',', 0);
+            close0 = newl0[i].indexOf('>', 0);
+            close1 = newline1[j].indexOf('>', 0);
+            tf0 = newl0[i].substring(index0 + 1, close0);
+            tf1 = newline1[j].substring(index1 + 1, close1);
+            int x = Integer.parseInt(tf0);
+            int y = Integer.parseInt(tf1);
+            if (x > y) {
+                s.append(newl0[i]);
+                i++;
+            } else if (y > x) {
+                s.append(newline1[j]);
+                j++;
             } else {
-                while (st1.hasMoreTokens()) {
-                    tf0 = getTF(next0);
-                    tf1 = getTF(next1);
-                    int x = Integer.parseInt(tf0);
-                    int y = Integer.parseInt(tf1);
-                    if (x > y) {
-                        ss.append(next0 + " ");
-                    } else if (y > x) {
-                        ss.append(next1 + " ");
-                        next1 = st1.nextToken();
-                    } else {
-                        ss.append(next0 + " ");
-                        ss.append(next1 + " ");
-                        next1 = st1.nextToken();
-                    }
-                }
-                ss.append(next1);
+                s.append(newl0[i]);
+                s.append(newline1[j]);
+                i++;
+                j++;
             }
-            return ss.toString();
         }
+        for (int k = i; i < newl0.length; i++) {
+            s.append(newl0[k]);
+        }
+        for (int k = j; k < newline1.length; k++) {
+            s.append(newline1[k]);
+        }
+        return s.toString();
+    }
 
-        //extracting the tf's from the string
-        private static String getTF(String st) {
-            int index = st.indexOf(',');
-            int close = st.indexOf('>');
-            return st.substring(index + 1, close);
-        }
+    //extracting the tf's from the string
+    private static String getTF(String st) {
+        int index = st.indexOf(',');
+        int close = st.indexOf('>');
+        return st.substring(index + 1, close);
+    }
 
     //ADD FUNCTION THAT ALLOWS DUPLICATE VALUES BY COLLISIONS, EACH DUPLICATED VALUE IS ADDED TO THE HASH MAP VALUE.
     private void addHash(termLine key, BufferedReader value, HashMap<termLine, LinkedList<BufferedReader>> hashMap) {
@@ -213,7 +197,7 @@ public class Indexer {
 
     private termLine convertToTermLine(String line) {
         int index = line.indexOf("<");
-        return new termLine(line.substring(0, index-1), line.substring(index,line.length()));
+        return new termLine(line.substring(0, index - 1), line.substring(index, line.length()));
     }
 
     //sorting by tf

@@ -61,7 +61,7 @@ public class Parse {
             for (int i = 1; i < need_to_parse.size(); i++) {
                 //first thing check if the word isn't a stop word
                 if (deleteStop(i, need_to_parse) && need_to_parse.get(i) != "") {
-                    deleteChars(need_to_parse, i);
+                     deleteChars(need_to_parse, i);
                     USA(need_to_parse, i);
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
                     need_to_parse.set(i, convPrecent(need_to_parse.get(i)));

@@ -15,7 +15,7 @@ public class Document {
         this.docLength=_docLength;
     }
     public boolean contains (String s) {
-         return termFr.containsKey(s);
+          return termFr.containsKey(s);
     }
     public void add (String s){
         if (termFr.containsKey(s)) {

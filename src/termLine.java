@@ -35,6 +35,6 @@ public class termLine implements Comparator, Comparable {
     @Override
     public int compareTo(Object o) {
         termLine t= (termLine)o;
-          return this.term.compareTo(t.term);
+           return this.term.compareTo(t.term);
     }
 }

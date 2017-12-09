@@ -1,14 +1,18 @@
 
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class StemmerGenerator {
+    private static int  i=0;
     private Stemmer stem;
     LinkedList<ArrayList<String> > ParsedDocs;
     //represents  docs list of 100 files
     //LinkedList<Document> Docs = new LinkedList<>() ;
-    TreeMap<String,LinkedList<Document>> termToDocs;
+    public TreeMap<String,LinkedList<Document>> termToDocs;
 
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap <String, Integer>  termDf = new HashMap<>();
@@ -22,13 +26,14 @@ public class StemmerGenerator {
         index= new Indexer();
     }
     public void chunkStem() {
+        i++;
         for (ArrayList<String>  need_to_parse:ParsedDocs) {
             Document doc=  new  Document (need_to_parse.get(0));
             doc.setSize(need_to_parse.size()-1);
             for (int k=1;k<need_to_parse.size(); k++){
                 String s = need_to_parse.get(k);
                 stem.add(s.toCharArray(),s.length());
-                stem.stem();
+                 stem.stem();
                 String wordStemmed= stem.toString().trim();
                 //df
                 if ( !wordStemmed.equals("") && !doc.contains(wordStemmed) ){
@@ -71,6 +76,22 @@ public class StemmerGenerator {
                 }
             });
         }
+//        if (i == 3) {
+//            //Empty the ram from the df Dictionary
+//            //Cut him to the disc
+//            try {
+//                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Df.txt"));
+//                for (Map.Entry<String, Integer> entry : termDf.entrySet()) {
+//                    String key=entry.getKey();
+//                    bufferedWriter.write("Key = " + key + ", Value = " + entry.getValue());
+//                    termDf.remove(key);
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        };
+
         index.setDocs(termToDocs);
+
     }
 }
