@@ -76,21 +76,22 @@ public class StemmerGenerator {
                 }
             });
         }
-//        if (i == 3) {
-//            //Empty the ram from the df Dictionary
-//            //Cut him to the disc
-//            try {
-//                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Df.txt"));
-//                for (Map.Entry<String, Integer> entry : termDf.entrySet()) {
-//                    String key=entry.getKey();
-//                    bufferedWriter.write("Key = " + key + ", Value = " + entry.getValue());
-//                    termDf.remove(key);
-//                }
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        };
-
+        if (i == 73) {
+            //Empty the ram from the df Dictionary
+            //Cut him to the disc
+            try {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Df.txt"));
+                for (Map.Entry<String, Integer> entry : termDf.entrySet()) {
+                    String key=entry.getKey();
+                    bufferedWriter.write("Key = " + key + ", Value = " + entry.getValue());
+                    bufferedWriter.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            termDf=null;
+            System.gc();
+        }
         index.setDocs(termToDocs);
 
     }
