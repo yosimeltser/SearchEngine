@@ -51,7 +51,6 @@ public class ReadFile {
                                  line=Pattern.compile("<DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile("</DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile(" ").matcher(line).replaceAll("");
-                                 line+="\n";
                                  doc.append(line);
                                   doc.append(" ");
                              }

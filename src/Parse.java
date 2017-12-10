@@ -12,7 +12,7 @@ public class Parse {
     private static Pattern whitespace = Pattern.compile("\\s+");
     private static HashSet<String> stopword = new HashSet<>();
     private LinkedList<ArrayList<String>> Docs;
-    Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy,hyphen,dot,days;
+    Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy, hyphen, dot, days;
     //make data structure for stop words
 
     public Parse() {
@@ -22,9 +22,9 @@ public class Parse {
         yyyy_yy = Pattern.compile("^\\d{4}?$|^\\d{2}?$");
         dd_th = Pattern.compile("^\\d{1,2}[th]+$");
         yyyy = Pattern.compile("^\\d{4}$");
-        hyphen=Pattern.compile("--+");
-        dot=Pattern.compile("[.]+");
-        days=Pattern.compile("^\\d{1,2}$");
+        hyphen = Pattern.compile("--+");
+        dot = Pattern.compile("[.]+");
+        days = Pattern.compile("^\\d{1,2}$");
 
     }
 
@@ -36,7 +36,7 @@ public class Parse {
         try {
             fr = new FileReader("C:\\Users\\zoharavr\\Downloads\\stopwords.txt");
         } catch (FileNotFoundException e) {
-             e.printStackTrace();
+            e.printStackTrace();
         }
         br = new BufferedReader(fr);
         try {
@@ -59,9 +59,10 @@ public class Parse {
             ArrayList<String> need_to_parse = new ArrayList<>(Arrays.asList(whitespace.split(s)));
             //i=1 because the first term in the string is the DOC_NUMBER
             for (int i = 1; i < need_to_parse.size(); i++) {
+                delTags(need_to_parse, i);
                 //first thing check if the word isn't a stop word
                 if (deleteStop(i, need_to_parse) && need_to_parse.get(i) != "") {
-                     deleteChars(need_to_parse, i);
+                    deleteChars(need_to_parse, i);
                     USA(need_to_parse, i);
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
                     need_to_parse.set(i, convPrecent(need_to_parse.get(i)));
@@ -71,7 +72,7 @@ public class Parse {
                             i = month_year(x, need_to_parse, i);
                         }
                     }
-                    capitalLetters(need_to_parse, i);
+                    i = capitalLetters(need_to_parse, i);
                 }
             }
             Docs.add(need_to_parse);
@@ -81,19 +82,31 @@ public class Parse {
         stemGen.chunkStem();
     }
 
+    //Delete Every Tag that you see
+    //For Example <p> will become empty string (<P>->"")
+    private void delTags(ArrayList<String> need_to_parse, int i) {
+        String s = need_to_parse.get(i);
+        if (!(s.equals("")) && s.charAt(0) == '<' && s.charAt(s.length() - 1) == '>') {
+            need_to_parse.set(i, "");
+        }
+    }
+
     //delete everything that is not alphanumeric except dots
     private void deleteChars(ArrayList<String> need_to_parse, int i) {
-        need_to_parse.set(i,hyphen.matcher(need_to_parse.get(i)).replaceAll(""));
+        need_to_parse.set(i, hyphen.matcher(need_to_parse.get(i)).replaceAll(""));
+        //    String s=need_to_parse.get(i);
         need_to_parse.set(i, del_chars.matcher(need_to_parse.get(i)).replaceAll(""));
     }
 
     private int capitalLetters(ArrayList<String> need_to_parse, int i) {
         int index = i;
+        // deleteChars(need_to_parse,index);
         String s = need_to_parse.get(i);
         String buffer = "";
         boolean flag = false;
         boolean conc = false;
         if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
+            //  s = s.replaceAll(dot.toString(), "");
             s = s.toLowerCase();
             need_to_parse.set(index, s);
             buffer += s;
@@ -101,19 +114,22 @@ public class Parse {
             while (flag) {
                 if (index + 1 < need_to_parse.size()) {
                     index++;
+                    deleteChars(need_to_parse, index);
                     s = need_to_parse.get(index);
                     if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
+                        s = s.replaceAll(dot.toString(), "");
                         s = s.toLowerCase();
                         buffer += " " + s;
                         need_to_parse.set(index, s);
                         conc = true;
-                    }
-                    else {
+                    } else {
                         if (index > 0) {
                             index--;
                         }
                         flag = false;
                     }
+                } else {
+                    break;
                 }
             }
         }
@@ -197,35 +213,36 @@ public class Parse {
         if (i + 1 < arr.size()) {
             deleteChars(arr, i + 1);
             arr.set(i + 1, roudUp(arr.get(i + 1)));
-        }
-        if (i + 1 < arr.size() && yyyy_yy.matcher(arr.get(i + 1)).matches()) {
-            arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
-            //DDth Month YYYY
-            if (i > 0 && dd_th.matcher(arr.get(i - 1)).matches()) {
-                arr.set(i - 1, formattingDayMonth(arr.get(i - 1)));
-                s = arr.get(i - 1).substring(0, arr.get(i - 1).length() - 2) + "/" + s + "/" + arr.get(i + 1);
-                arr.set(i - 1, s);
-                arr.set(i, "");
-                arr.set(i + 1, "");
-                return i + 1;
-                //DD Month YYYY
-            } else if (i > 0 && days.matcher(arr.get(i - 1)).matches()) {
-                arr.set(i - 1, formattingDayMonth(arr.get(i - 1)));
-                if (Pattern.compile("^\\d{2}$").matcher(arr.get(i + 1)).matches()) {
-                    s = arr.get(i - 1) + "/" + s + "/" + "19" + arr.get(i + 1);
-                } else {
-                    s = arr.get(i - 1) + "/" + s + "/" + arr.get(i + 1);
+
+            if (i + 1 < arr.size() && yyyy_yy.matcher(arr.get(i + 1)).matches()) {
+                arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
+                //DDth Month YYYY
+                if (i > 0 && dd_th.matcher(arr.get(i - 1)).matches()) {
+                    arr.set(i - 1, formattingDayMonth(arr.get(i - 1)));
+                    s = arr.get(i - 1).substring(0, arr.get(i - 1).length() - 2) + "/" + s + "/" + arr.get(i + 1);
+                    arr.set(i - 1, s);
+                    arr.set(i, "");
+                    arr.set(i + 1, "");
+                    return i + 1;
+                    //DD Month YYYY
+                } else if (i > 0 && days.matcher(arr.get(i - 1)).matches()) {
+                    arr.set(i - 1, formattingDayMonth(arr.get(i - 1)));
+                    if (Pattern.compile("^\\d{2}$").matcher(arr.get(i + 1)).matches()) {
+                        s = arr.get(i - 1) + "/" + s + "/" + "19" + arr.get(i + 1);
+                    } else {
+                        s = arr.get(i - 1) + "/" + s + "/" + arr.get(i + 1);
+                    }
+                    arr.set(i - 1, s);
+                    arr.set(i, "");
+                    arr.set(i + 1, "");
+                    return i + 1;
+                    //Month Year
+                } else if (i + 1 < arr.size() && yyyy.matcher(arr.get(i + 1)).matches()) {
+                    s = s + "/" + arr.get(i + 1);
+                    arr.set(i, s);
+                    arr.set(i + 1, "");
+                    return i + 1;
                 }
-                arr.set(i - 1, s);
-                arr.set(i, "");
-                arr.set(i + 1, "");
-                return i + 1;
-                //Month Year
-            } else if (i + 1 < arr.size() && yyyy.matcher(arr.get(i + 1)).matches()) {
-                s = s + "/" + arr.get(i + 1);
-                arr.set(i, s);
-                arr.set(i + 1, "");
-                return i + 1;
             }
         }
         //Month DD , Month DD YYYY
@@ -234,23 +251,24 @@ public class Parse {
             if (i + 2 < arr.size()) {
                 deleteChars(arr, i + 2);
                 arr.set(i + 2, roudUp(arr.get(i + 2)));
-            }
-            if (yyyy.matcher(arr.get(i + 2)).matches()) {
-                arr.set(i + 1, formattingDayMonth(arr.get(i + 1)));
-                arr.set(i + 2, /*deleteDots*/(arr.get(i + 2)));
-                s = arr.get(i + 1) + "/" + s + "/" + arr.get(i + 2);
-                arr.set(i, s);
-                arr.set(i + 1, "");
-                arr.set(i + 2, "");
-                return i + 2;
-            }
-            //Month DD
-            else {
-                arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
-                s = arr.get(i + 1) + "/" + s;
-                arr.set(i, s);
-                arr.set(i + 1, "");
-                return i + 1;
+
+                if (yyyy.matcher(arr.get(i + 2)).matches()) {
+                    arr.set(i + 1, formattingDayMonth(arr.get(i + 1)));
+                    arr.set(i + 2, /*deleteDots*/(arr.get(i + 2)));
+                    s = arr.get(i + 1) + "/" + s + "/" + arr.get(i + 2);
+                    arr.set(i, s);
+                    arr.set(i + 1, "");
+                    arr.set(i + 2, "");
+                    return i + 2;
+                }
+                //Month DD
+                else {
+                    arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
+                    s = arr.get(i + 1) + "/" + s;
+                    arr.set(i, s);
+                    arr.set(i + 1, "");
+                    return i + 1;
+                }
             }
         }
         //DD month

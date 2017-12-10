@@ -52,7 +52,7 @@ public class Indexer {
         File[] listOfFiles = folder.listFiles();
         try {
             //BUFFER READER FOR EACH FILE
-            BufferedReader[] bufferedReaderArr = new BufferedReader[72];
+            BufferedReader[] bufferedReaderArr = new BufferedReader[73];
             //priority Queue of terms
             PriorityQueue<termLine> pQ = new PriorityQueue<termLine>();
             //hash function
@@ -151,6 +151,12 @@ public class Indexer {
             close1 = newline1[j].indexOf('>', 0);
             tf0 = newl0[i].substring(index0 + 1, close0);
             tf1 = newline1[j].substring(index1 + 1, close1);
+            if(tf0.contains(",")|| tf1.contains(",")){
+                System.out.println(link);
+                System.out.println(link1);
+                System.out.println(tf0);
+                System.out.println(tf1);
+            }
             int x = Integer.parseInt(tf0);
             int y = Integer.parseInt(tf1);
             if (x > y) {
