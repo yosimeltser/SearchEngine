@@ -16,6 +16,7 @@ public class Parse {
     //make data structure for stop words
 
     public Parse() {
+        //prepare the hash for all the stop words
         DSstopwords();
         del_chars = Pattern.compile("[^\\w && [^%.-]]+");
         round_up = Pattern.compile("\\d+\\.\\d+");
@@ -77,6 +78,7 @@ public class Parse {
             }
             Docs.add(need_to_parse);
         }
+        //sendes the chunk of documents into the stemmer
         Stemmer stem = new Stemmer();
         StemmerGenerator stemGen = new StemmerGenerator(stem, Docs);
         stemGen.chunkStem();
@@ -102,14 +104,14 @@ public class Parse {
         int index = i;
         // deleteChars(need_to_parse,index);
         String s = need_to_parse.get(i);
-        String buffer = "";
+        StringBuilder buffer = new StringBuilder();
         boolean flag = false;
         boolean conc = false;
         if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
             //  s = s.replaceAll(dot.toString(), "");
             s = s.toLowerCase();
             need_to_parse.set(index, s);
-            buffer += s;
+            buffer.append(s);
             flag = true;
             while (flag) {
                 if (index + 1 < need_to_parse.size()) {
@@ -119,7 +121,7 @@ public class Parse {
                     if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
                         s = s.replaceAll(dot.toString(), "");
                         s = s.toLowerCase();
-                        buffer += " " + s;
+                        buffer.append(" " + s);
                         need_to_parse.set(index, s);
                         conc = true;
                     } else {
@@ -134,7 +136,7 @@ public class Parse {
             }
         }
         if (conc) {
-            need_to_parse.add(buffer);
+            need_to_parse.add(buffer.toString());
         }
         return index;
     }

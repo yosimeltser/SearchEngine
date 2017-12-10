@@ -1,9 +1,12 @@
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Document {
     int docLength;
     public HashMap <String,Integer> termFr;
     public String docId;
+    public int maxTermFr;
     public Document(String _docId) {
         this.docId=_docId;
         termFr= new HashMap<String,Integer>();
@@ -28,5 +31,16 @@ public class Document {
     }
     public void setSize(int _size){
         this.docLength=_size;
+    }
+    public void setMaxTf(){
+        Map.Entry<String, Integer> maxEntry = null;
+        for (Map.Entry<String, Integer> entry : termFr.entrySet())
+        {
+            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+            {
+                maxEntry = entry;
+            }
+        }
+        this.maxTermFr=Integer.parseInt(maxEntry.getKey().toString());
     }
 }

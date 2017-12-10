@@ -1,11 +1,17 @@
 import java.io.FileNotFoundException;
+import java.util.regex.Pattern;
 
 public class Main {
 
-    private static final String FILENAME = "C:\\Users\\yosef\\Desktop\\study\\אחזור\\פרויקט מנוע\\corpus\\corpus";
+    private static final String FILENAME = "C:\\Users\\zoharavr\\Downloads\\corpus";
+
     public static void main(String[] args) {
-        ReadFile r=new ReadFile(FILENAME);
+        long start = System.currentTimeMillis();
+        ReadFile r = new ReadFile(FILENAME);
         r.fileReader();
+        long end = System.currentTimeMillis();
+
+
     }
 }
 

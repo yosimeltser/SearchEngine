@@ -57,6 +57,7 @@ public class StemmerGenerator {
                 //tf
                 doc.add(wordStemmed);
             }
+            doc.setMaxTf();
         }
         for(Map.Entry<String, LinkedList<Document>> entry : termToDocs.entrySet()){
             entry.getValue().sort( new Comparator<Document>(){
@@ -76,6 +77,7 @@ public class StemmerGenerator {
                 }
             });
         }
+
         if (i == 73) {
             //Empty the ram from the df Dictionary
             //Cut him to the disc
