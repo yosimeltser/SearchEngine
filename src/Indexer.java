@@ -39,7 +39,7 @@ public class Indexer {
                 e.printStackTrace();
             }
         }
-        if (i == 72) {
+        if (i == 73) {
             mergeFiles();
         }
     }
@@ -154,23 +154,31 @@ public class Indexer {
             int x = Integer.parseInt(tf0);
             int y = Integer.parseInt(tf1);
             if (x > y) {
-                s.append(newl0[i]);
+                s.append(newl0[i]+" ");
                 i++;
             } else if (y > x) {
-                s.append(newline1[j]);
+                s.append(newline1[j]+" ");
                 j++;
             } else {
-                s.append(newl0[i]);
-                s.append(newline1[j]);
+                s.append(newl0[i]+" ");
+                s.append(newline1[j]+" ");
                 i++;
                 j++;
             }
         }
-        for (int k = i; i < newl0.length; i++) {
+        int k ,q;
+        for ( k = i; k < newl0.length-1; k++) {
+            s.append(newl0[k]+" ");
+        }
+        if(k<newl0.length){
             s.append(newl0[k]);
         }
-        for (int k = j; k < newline1.length; k++) {
-            s.append(newline1[k]);
+
+        for ( q = j; q < newline1.length-1; q++) {
+            s.append(newline1[q]+" ");
+        }
+        if(q<newline1.length){
+            s.append(newline1[q]);
         }
         return s.toString();
     }

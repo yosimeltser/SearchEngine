@@ -51,6 +51,7 @@ public class ReadFile {
                                  line=Pattern.compile("<DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile("</DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile(" ").matcher(line).replaceAll("");
+                                 line+="\n";
                                  doc.append(line);
                                   doc.append(" ");
                              }
@@ -59,6 +60,7 @@ public class ReadFile {
                                      if(line.startsWith("Language:")){
                                          line=moveForwardLines(br);
                                      }
+                                     line+="\n";
                                      //concatenate all the document as one string
                                      doc.append(line);
                                  }

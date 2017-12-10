@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class Parse {
 
-    private static Pattern whitespace = Pattern.compile("[\\s]+");
+    private static Pattern whitespace = Pattern.compile("\\s+");
     private static HashSet<String> stopword = new HashSet<>();
     private LinkedList<ArrayList<String>> Docs;
     Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy,hyphen,dot,days;
@@ -17,7 +17,7 @@ public class Parse {
 
     public Parse() {
         DSstopwords();
-        del_chars = Pattern.compile("[^\\w && [^&.-]]+");
+        del_chars = Pattern.compile("[^\\w && [^%.-]]+");
         round_up = Pattern.compile("\\d+\\.\\d+");
         yyyy_yy = Pattern.compile("^\\d{4}?$|^\\d{2}?$");
         dd_th = Pattern.compile("^\\d{1,2}[th]+$");
@@ -34,7 +34,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\Users\\yosef\\IdeaProjects\\stopwords.txt");
+            fr = new FileReader("C:\\Users\\zoharavr\\Downloads\\stopwords.txt");
         } catch (FileNotFoundException e) {
              e.printStackTrace();
         }
@@ -94,7 +94,6 @@ public class Parse {
         boolean flag = false;
         boolean conc = false;
         if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
-            s = s.replaceAll(",", "");
             s = s.toLowerCase();
             need_to_parse.set(index, s);
             buffer += s;
@@ -105,16 +104,16 @@ public class Parse {
                     s = need_to_parse.get(index);
                     if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
                         s = s.toLowerCase();
-                        s = s.replaceAll(",", "");
                         buffer += " " + s;
                         need_to_parse.set(index, s);
                         conc = true;
                     }
-                } else {
-                    if (index > 0) {
-                        index--;
+                    else {
+                        if (index > 0) {
+                            index--;
+                        }
+                        flag = false;
                     }
-                    flag = false;
                 }
             }
         }
