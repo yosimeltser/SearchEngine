@@ -32,13 +32,21 @@ public class StemmerGenerator {
             doc.setSize(need_to_parse.size()-1);
             for (int k=1;k<need_to_parse.size(); k++){
                 String s = need_to_parse.get(k);
-                stem.add(s.toCharArray(),s.length());
-                 stem.stem();
-                String wordStemmed= stem.toString().trim();
+                //DON'T STEM TERMS THAT HAVE MULTIPLE WORDS
+                String wordStemmed;
+                if (s.contains(" ")){
+                    wordStemmed=s;
+                }
+                //Exactly one word
+                else {
+                    stem.add(s.toCharArray(),s.length());
+                    stem.stem();
+                    wordStemmed= stem.toString().trim();
+                }
                 //df
                 if ( !wordStemmed.equals("") && !doc.contains(wordStemmed) ){
                     if (termToDocs.containsKey(wordStemmed)) {
-                            termToDocs.get(wordStemmed).addFirst(doc);
+                        termToDocs.get(wordStemmed).addFirst(doc);
                     }
                     else {
                         LinkedList<Document> docs= new LinkedList<Document>();
@@ -65,7 +73,7 @@ public class StemmerGenerator {
                 public int compare(Document d1,Document d2){
                     String key=entry.getKey();
                     if ( d1.termFr.get(key) > d2.termFr.get(key)){
-                          return -1;
+                        return -1;
                     }
                     else if ( d1.termFr.get(key) < d2.termFr.get(key)){
                         return 1;
