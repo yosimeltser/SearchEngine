@@ -35,7 +35,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\Users\\zoharavr\\Downloads\\stopwords.txt");
+            fr = new FileReader("C:\\Users\\zoharavr\\Downloads\\stopword.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

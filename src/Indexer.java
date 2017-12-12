@@ -3,11 +3,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Indexer {
-    public int line;
     TreeMap<String, LinkedList<Document>> Docs;
-    HashMap<String, String> termDf;
+    HashMap<String, Integer> termDf;
     public static int i = 0;
-
+    public int line;
     public Indexer() {
         new File("PostingList").mkdir();
         line=0;
@@ -33,7 +32,7 @@ public class Indexer {
             try {
                 bw.write(key + " ");
                 for (Document document : value) {
-                    bw.write("<" + document.docId + "," + document.termFr.get(key) + ">" + " ");
+                    bw.write("<" + document.docId + "," + document.terms.get(key).getTf() + ">" + " ");
                     bw.flush();
                 }
                 bw.newLine();
@@ -41,14 +40,14 @@ public class Indexer {
                 e.printStackTrace();
             }
         }
-        if (i == 73) {
+        if (i == 3) {
             mergeFiles();
         }
     }
 
 
     private void mergeFiles() {
-        termDf=(new StemmerGenerator()).getTermDf();
+        HashMap<String, Integer> df= new StemmerGenerator().getDf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
          File folder = new File("PostingList");
@@ -84,19 +83,23 @@ public class Indexer {
                 k++;
             }
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FinalPostingList.txt"));
+            BufferedWriter brDf = new BufferedWriter(new FileWriter("Df.txt"));
             while ((readFromFileHash.size() != 0 || pQ.size() != 0)) {
                 //Move The Best Choice Into The Disc
                 termLine best = pQ.poll();
                 LinkedList<BufferedReader> brArr = readFromFileHash.get(best);
                 //Unique Key
                 if (brArr.size() == 1) {
+                    brDf.write("Key= "+best.term+ " Document Frequency= " + df.get(best.term) + " Line=" +line);
+                    brDf.newLine();
+                    line++;
                     String s = best.term + best.Link;
-                    termDf.put(s,termDf.get(s)+" "+ line);
                     bufferedWriter.write(s);
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                     //Read The Next Line If Exists
                     BufferedReader br = brArr.getFirst();
+                    //added by zohar
                     if (br != null) {
                         String line = br.readLine();
                         readFromFileHash.remove(best);
@@ -130,20 +133,6 @@ public class Indexer {
                 }
 
             }
-                //Empty the ram from the df Dictionary
-                //Cut him to the disc
-                try {
-                    BufferedWriter br = new BufferedWriter(new FileWriter("Df.txt"));
-                    for (Map.Entry<String, String> entry : termDf.entrySet()) {
-                        String key=entry.getKey();
-                        String value=entry.getValue();
-                        int space=value.indexOf(" ");
-                        bufferedWriter.write("Key = " + key + ", Value = " + value.substring(0,space) +"Line="+ value.substring(space+1,value.length()-1));
-                        bufferedWriter.newLine();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             for (BufferedReader br:bufferedReaderArr) {
              br.close();
             }

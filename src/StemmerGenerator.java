@@ -15,18 +15,21 @@ public class StemmerGenerator {
     public TreeMap<String,LinkedList<Document>> termToDocs;
 
     //DOCUMENT FREQUENCY OF THE TERMS
-    private static HashMap <String, String>  termDf = new HashMap<>();
+    private static HashMap <String, Integer>  termDf = new HashMap<>();
+    public static HashMap<String,String> already_seen=new HashMap<>();
     private Indexer index;
     //Dictionary
     int tHold;
     public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
         this.stem=_stem;
         ParsedDocs=_Docs;
-        termToDocs=new TreeMap<String,LinkedList<Document>>();
-         index= new Indexer();
+        termToDocs=new TreeMap<>();
+        index= new Indexer();
     }
-    public StemmerGenerator (){};
-    public  HashMap <String, String> getTermDf (){
+    public StemmerGenerator(){
+
+    }
+    public HashMap <String, Integer> getDf(){
         return termDf;
     }
     public void chunkStem() {
@@ -40,46 +43,50 @@ public class StemmerGenerator {
                 String wordStemmed;
                 if (s.contains(" ")){
                     wordStemmed=s;
+                    already_seen.put(s,wordStemmed);
                 }
                 //Exactly one word
-                else {
+                else if(!already_seen.containsKey(s)){
                     stem.add(s.toCharArray(),s.length());
                     stem.stem();
                     wordStemmed= stem.toString().trim();
+                    already_seen.put(s,wordStemmed);
                 }
+                wordStemmed=already_seen.get(s);
                 //df
                 if ( !wordStemmed.equals("") && !doc.contains(wordStemmed) ){
                     if (termToDocs.containsKey(wordStemmed)) {
                         termToDocs.get(wordStemmed).addFirst(doc);
                     }
                     else {
-                        LinkedList<Document> docs= new LinkedList<Document>();
+                        LinkedList<Document> docs= new LinkedList<>();
                         docs.add(doc);
                         termToDocs.put(wordStemmed,docs);
                     }
                     //First time that we see the term in doc
                     if (termDf.containsKey(wordStemmed)){
-                        termDf.put(wordStemmed,(termDf.get(Integer.valueOf(wordStemmed)+1).toString()));
+                        termDf.put(wordStemmed,termDf.get(wordStemmed)+1);
                     }
                     else {
-                        termDf.put(wordStemmed,"1");
+                        termDf.put(wordStemmed,1);
                     }
 
                 }
                 //tf
-                doc.add(wordStemmed);
+                doc.add(wordStemmed,i);
             }
             doc.setMaxTf();
         }
+        //Sorts by tf, temp posting list
         for(Map.Entry<String, LinkedList<Document>> entry : termToDocs.entrySet()){
             entry.getValue().sort( new Comparator<Document>(){
                 @Override
                 public int compare(Document d1,Document d2){
                     String key=entry.getKey();
-                    if ( d1.termFr.get(key) > d2.termFr.get(key)){
+                    if ( d1.terms.get(key).getTf() > d2.terms.get(key).getTf()){
                         return -1;
                     }
-                    else if ( d1.termFr.get(key) < d2.termFr.get(key)){
+                    else if (  d1.terms.get(key).getTf()  < d2.terms.get(key).getTf()){
                         return 1;
                     }
                     else {
@@ -90,6 +97,22 @@ public class StemmerGenerator {
             });
         }
 
+        if (i == 73) {
+            //Empty the ram from the df Dictionary
+            //Cut him to the disc
+            try {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Df.txt"));
+                for (Map.Entry<String, Integer> entry : termDf.entrySet()) {
+                    String key=entry.getKey();
+                    bufferedWriter.write("Key = " + key + ", Value = " + entry.getValue());
+                    bufferedWriter.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            termDf=null;
+            System.gc();
+        }
         index.setDocs(termToDocs);
 
     }

@@ -1,46 +1,50 @@
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Document {
     int docLength;
-    public HashMap <String,Integer> termFr;
+   // public HashMap <String,Integer> termFr;
+    public HashMap<String,TermData> terms;
     public String docId;
     public int maxTermFr;
+
     public Document(String _docId) {
         this.docId=_docId;
-        termFr= new HashMap<String,Integer>();
+        terms= new HashMap<>();
     }
-    public void addTerm (HashMap<String,Integer> _termFr) {
-        this.termFr=_termFr;
-    }
+//    public void addTerm (HashMap<String,Integer> _termFr) {
+//        this.termFr=_termFr;
+//    }
     public void addDocLength (int _docLength){
         this.docLength=_docLength;
     }
     public boolean contains (String s) {
-          return termFr.containsKey(s);
+          return terms.containsKey(s);
     }
-    public void add (String s){
-        if (termFr.containsKey(s)) {
-            int fr=termFr.get(s)+1;
-             termFr.put(s,fr);
+    //this function adds the new string as an object TermData and sets the first index. if the string already exist
+    public void add (String s, int i){
+        if(terms.containsKey(s)){
+            TermData t=terms.get(s);
+            t.increment();
         }
         else if (!s.equals(""))  {
-            termFr.put(s,1);
+            TermData td=new TermData (s,i);
+            terms.put(s,td);
         }
     }
     public void setSize(int _size){
         this.docLength=_size;
     }
+
     public void setMaxTf(){
-        Map.Entry<String, Integer> maxEntry = null;
-        for (Map.Entry<String, Integer> entry : termFr.entrySet())
-        {
-            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-            {
-                maxEntry = entry;
-            }
-        }
-        this.maxTermFr=Integer.parseInt(maxEntry.getKey().toString());
+//        Map.Entry<String, Integer> maxEntry = null;
+//        for (Map.Entry<String, Integer> entry : termFr.entrySet())
+//        {
+//            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+//            {
+//                maxEntry = entry;
+//            }
+//        }
+//        this.maxTermFr=Integer.parseInt(maxEntry.getValue().toString());
     }
 }
