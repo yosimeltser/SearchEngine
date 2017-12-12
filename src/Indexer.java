@@ -3,12 +3,14 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Indexer {
+    public int line;
     TreeMap<String, LinkedList<Document>> Docs;
-    HashMap<String, Integer> termDf;
+    HashMap<String, String> termDf;
     public static int i = 0;
 
     public Indexer() {
         new File("PostingList").mkdir();
+        line=0;
     }
 
 
@@ -46,6 +48,7 @@ public class Indexer {
 
 
     private void mergeFiles() {
+        termDf=(new StemmerGenerator()).getTermDf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
          File folder = new File("PostingList");
@@ -88,12 +91,12 @@ public class Indexer {
                 //Unique Key
                 if (brArr.size() == 1) {
                     String s = best.term + best.Link;
+                    termDf.put(s,termDf.get(s)+" "+ line);
                     bufferedWriter.write(s);
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                     //Read The Next Line If Exists
                     BufferedReader br = brArr.getFirst();
-                    //added by zohar
                     if (br != null) {
                         String line = br.readLine();
                         readFromFileHash.remove(best);
@@ -127,6 +130,20 @@ public class Indexer {
                 }
 
             }
+                //Empty the ram from the df Dictionary
+                //Cut him to the disc
+                try {
+                    BufferedWriter br = new BufferedWriter(new FileWriter("Df.txt"));
+                    for (Map.Entry<String, String> entry : termDf.entrySet()) {
+                        String key=entry.getKey();
+                        String value=entry.getValue();
+                        int space=value.indexOf(" ");
+                        bufferedWriter.write("Key = " + key + ", Value = " + value.substring(0,space) +"Line="+ value.substring(space+1,value.length()-1));
+                        bufferedWriter.newLine();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             for (BufferedReader br:bufferedReaderArr) {
              br.close();
             }
