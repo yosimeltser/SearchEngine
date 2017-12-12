@@ -7,7 +7,7 @@ public class Document {
     public HashMap<String,TermData> terms;
     public String docId;
     public int maxTermFr;
-
+    Map.Entry<String, TermData> maxEntry;
     public Document(String _docId) {
         this.docId=_docId;
         terms= new HashMap<>();
@@ -37,14 +37,13 @@ public class Document {
     }
 
     public void setMaxTf(){
-//        Map.Entry<String, Integer> maxEntry = null;
-//        for (Map.Entry<String, Integer> entry : termFr.entrySet())
-//        {
-//            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-//            {
-//                maxEntry = entry;
-//            }
-//        }
-//        this.maxTermFr=Integer.parseInt(maxEntry.getValue().toString());
+        maxEntry =null;
+        for (Map.Entry<String, TermData> entry : terms.entrySet())
+        {
+            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+            {
+                maxEntry = entry;
+            }
+        }
     }
 }

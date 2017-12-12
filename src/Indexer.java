@@ -32,7 +32,7 @@ public class Indexer {
             try {
                 bw.write(key + " ");
                 for (Document document : value) {
-                    bw.write("<" + document.docId + "," + document.terms.get(key).getTf() + ">" + " ");
+                    bw.write("<" + document.docId + "," + document.terms.get(key).getTf() + "," + document.terms.get(key).getFirst_index()+ ">" + " ");
                     bw.flush();
                 }
                 bw.newLine();
@@ -40,7 +40,7 @@ public class Indexer {
                 e.printStackTrace();
             }
         }
-        if (i == 3) {
+        if (i == 73) {
             mergeFiles();
         }
     }
@@ -153,10 +153,11 @@ public class Indexer {
         while (i < newl0.length && j < newline1.length) {
             index0 = newl0[i].indexOf(',', 0);
             index1 = newline1[j].indexOf(',', 0);
-            close0 = newl0[i].indexOf('>', 0);
-            close1 = newline1[j].indexOf('>', 0);
+            close0 = newl0[i].indexOf(',', index0+1);
+            close1 = newline1[j].indexOf(',', index1+1);
             tf0 = newl0[i].substring(index0 + 1, close0);
             tf1 = newline1[j].substring(index1 + 1, close1);
+            //-------
             if(tf0.contains(",")|| tf1.contains(",")){
                 System.out.println(link);
                 System.out.println(link1);

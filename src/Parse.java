@@ -66,7 +66,7 @@ public class Parse {
                     deleteChars(need_to_parse, i);
                     USA(need_to_parse, i);
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
-                    need_to_parse.set(i, convPrecent(need_to_parse.get(i)));
+                   convPrecent(need_to_parse.get(i),need_to_parse,i);
                     x = checkIfMonth(need_to_parse.get(i));
                     if (x > 0) {
                         if (i < need_to_parse.size()) {
@@ -187,15 +187,21 @@ public class Parse {
     }
 
     // implements the law that every occurrences of % or "percentage"
-    private String convPrecent(String s) {
+    private void convPrecent(String s,ArrayList<String>arr,int i) {
         if (s.startsWith("percentage")) {
             s = s.replace("percentage", "percent");
-            return s;
+            if(i>0){
+                arr.set(i,arr.get(i-1)+"" +s);
+                arr.set(i-1,"");
+            }
+
         } else if (s.indexOf('%') > 0) {
             s = s.replaceAll("%", " percent");
-            return s;
-        } else return s;
-
+            if (i > 0) {
+                arr.set(i, arr.get(i - 1) + "" + s);
+                arr.set(i - 1, "");
+            }
+        }
         //  return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
 

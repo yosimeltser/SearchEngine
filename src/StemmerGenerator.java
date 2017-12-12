@@ -13,7 +13,6 @@ public class StemmerGenerator {
     //represents  docs list of 100 files
     //LinkedList<Document> Docs = new LinkedList<>() ;
     public TreeMap<String,LinkedList<Document>> termToDocs;
-
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap <String, Integer>  termDf = new HashMap<>();
     public static HashMap<String,String> already_seen=new HashMap<>();
@@ -97,22 +96,6 @@ public class StemmerGenerator {
             });
         }
 
-        if (i == 73) {
-            //Empty the ram from the df Dictionary
-            //Cut him to the disc
-            try {
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Df.txt"));
-                for (Map.Entry<String, Integer> entry : termDf.entrySet()) {
-                    String key=entry.getKey();
-                    bufferedWriter.write("Key = " + key + ", Value = " + entry.getValue());
-                    bufferedWriter.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            termDf=null;
-            System.gc();
-        }
         index.setDocs(termToDocs);
 
     }
