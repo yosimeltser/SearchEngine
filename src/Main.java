@@ -10,8 +10,7 @@ public class Main {
         ReadFile r = new ReadFile(FILENAME);
         r.fileReader();
         long end = System.currentTimeMillis();
-
-
+        System.out.println(end-start);
     }
 }
 

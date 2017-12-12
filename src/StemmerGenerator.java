@@ -12,7 +12,8 @@ public class StemmerGenerator {
     LinkedList<ArrayList<String> > ParsedDocs;
     //represents  docs list of 100 files
     //LinkedList<Document> Docs = new LinkedList<>() ;
-    public TreeMap<String,LinkedList<Document>> termToDocs;
+    public HashMap<String,LinkedList<Document>> temp;
+    public LinkedHashMap<String,LinkedList<Document>> termToDocs;
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap <String, Integer>  termDf = new HashMap<>();
     public static HashMap<String,String> already_seen=new HashMap<>();
@@ -22,7 +23,8 @@ public class StemmerGenerator {
     public StemmerGenerator(Stemmer _stem,LinkedList<ArrayList<String> > _Docs) {
         this.stem=_stem;
         ParsedDocs=_Docs;
-        termToDocs=new TreeMap<>();
+        termToDocs=new LinkedHashMap<>();
+        temp=new HashMap<>();
         index= new Indexer();
     }
     public StemmerGenerator(){
@@ -54,13 +56,13 @@ public class StemmerGenerator {
                 wordStemmed=already_seen.get(s);
                 //df
                 if ( !wordStemmed.equals("") && !doc.contains(wordStemmed) ){
-                    if (termToDocs.containsKey(wordStemmed)) {
-                        termToDocs.get(wordStemmed).addFirst(doc);
+                    if (temp.containsKey(wordStemmed)) {
+                        temp.get(wordStemmed).addFirst(doc);
                     }
                     else {
                         LinkedList<Document> docs= new LinkedList<>();
                         docs.add(doc);
-                        termToDocs.put(wordStemmed,docs);
+                        temp.put(wordStemmed,docs);
                     }
                     //First time that we see the term in doc
                     if (termDf.containsKey(wordStemmed)){
@@ -75,6 +77,7 @@ public class StemmerGenerator {
                 doc.add(wordStemmed,i);
             }
             doc.setMaxTf();
+
         }
         //Sorts by tf, temp posting list
         for(Map.Entry<String, LinkedList<Document>> entry : termToDocs.entrySet()){
@@ -95,7 +98,15 @@ public class StemmerGenerator {
                 }
             });
         }
-
+        //Sort Hash Map
+        //Replace Tree Map
+        ArrayList <String> arr= new ArrayList<>(temp.keySet());
+        Collections.sort(arr);
+        for (int i=0 ; i<arr.size(); i++) {
+            String s=arr.get(i);
+            LinkedList<Document> val= temp.get(s);
+            termToDocs.put(s,val);
+        }
         index.setDocs(termToDocs);
 
     }

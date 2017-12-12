@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class Indexer {
-    TreeMap<String, LinkedList<Document>> Docs;
+    LinkedHashMap<String, LinkedList<Document>> Docs;
     HashMap<String, Integer> termDf;
     public static int i = 0;
     public int line;
@@ -13,11 +13,10 @@ public class Indexer {
     }
 
 
-    public void setDocs(TreeMap<String, LinkedList<Document>> _docs) {
+    public void setDocs(LinkedHashMap<String, LinkedList<Document>> _docs) {
         this.Docs = _docs;
         tempPosting();
     }
-
     private void tempPosting() {
         BufferedWriter bw = null;
         try {
