@@ -15,7 +15,7 @@ public class StemmerGenerator {
     public TreeMap<String,LinkedList<Document>> termToDocs;
 
     //DOCUMENT FREQUENCY OF THE TERMS
-    private static HashMap <String, Integer>  termDf = new HashMap<>();
+    private static HashMap <String, String>  termDf = new HashMap<>();
     private Indexer index;
     //Dictionary
     int tHold;
@@ -23,7 +23,11 @@ public class StemmerGenerator {
         this.stem=_stem;
         ParsedDocs=_Docs;
         termToDocs=new TreeMap<String,LinkedList<Document>>();
-        index= new Indexer();
+         index= new Indexer();
+    }
+    public StemmerGenerator (){};
+    public  HashMap <String, String> getTermDf (){
+        return termDf;
     }
     public void chunkStem() {
         i++;
@@ -55,10 +59,10 @@ public class StemmerGenerator {
                     }
                     //First time that we see the term in doc
                     if (termDf.containsKey(wordStemmed)){
-                        termDf.put(wordStemmed,termDf.get(wordStemmed)+1);
+                        termDf.put(wordStemmed,(termDf.get(Integer.valueOf(wordStemmed)+1).toString()));
                     }
                     else {
-                        termDf.put(wordStemmed,1);
+                        termDf.put(wordStemmed,"1");
                     }
 
                 }
@@ -86,22 +90,6 @@ public class StemmerGenerator {
             });
         }
 
-        if (i == 73) {
-            //Empty the ram from the df Dictionary
-            //Cut him to the disc
-            try {
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Df.txt"));
-                for (Map.Entry<String, Integer> entry : termDf.entrySet()) {
-                    String key=entry.getKey();
-                    bufferedWriter.write("Key = " + key + ", Value = " + entry.getValue());
-                    bufferedWriter.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            termDf=null;
-            System.gc();
-        }
         index.setDocs(termToDocs);
 
     }
