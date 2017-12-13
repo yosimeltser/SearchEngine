@@ -7,9 +7,10 @@ public class Indexer {
     HashMap<String, Integer> termDf;
     public static int i = 0;
     public int line;
+
     public Indexer() {
         new File("PostingList").mkdir();
-        line=0;
+        line = 0;
     }
 
 
@@ -17,6 +18,7 @@ public class Indexer {
         this.Docs = _docs;
         tempPosting();
     }
+
     private void tempPosting() {
         BufferedWriter bw = null;
         try {
@@ -31,7 +33,7 @@ public class Indexer {
             try {
                 bw.write(key + " ");
                 for (Document document : value) {
-                    bw.write("<" + document.docId + "," + document.terms.get(key).getTf() + "," + document.terms.get(key).getFirst_index()+ ">" + " ");
+                    bw.write("<" + document.docId + "," + document.terms.get(key).getTf() + "," + document.terms.get(key).getFirst_index() + ">" + " ");
                     bw.flush();
                 }
                 bw.newLine();
@@ -46,10 +48,13 @@ public class Indexer {
 
 
     private void mergeFiles() {
-        HashMap<String, Integer> df= new StemmerGenerator().getDf();
+        //Sorting Cache
+        HashMap<String, Integer> cache = new StemmerGenerator().getCache();
+        //Get Document Frequency
+        HashMap<String, Integer> df = new StemmerGenerator().getDf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
-         File folder = new File("PostingList");
+        File folder = new File("PostingList");
         File[] listOfFiles = folder.listFiles();
         try {
             //BUFFER READER FOR EACH FILE
@@ -81,6 +86,7 @@ public class Indexer {
                 //get to the next file
                 k++;
             }
+            BufferedWriter brCache = new BufferedWriter(new FileWriter("Cache.txt"));
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("FinalPostingList.txt"));
             BufferedWriter brDf = new BufferedWriter(new FileWriter("Df.txt"));
             while ((readFromFileHash.size() != 0 || pQ.size() != 0)) {
@@ -89,16 +95,25 @@ public class Indexer {
                 LinkedList<BufferedReader> brArr = readFromFileHash.get(best);
                 //Unique Key
                 if (brArr.size() == 1) {
-                    brDf.write("Key= "+best.term+ " Document Frequency= " + df.get(best.term) + " Line=" +line);
+                    //Write 30% Of The Cache Posting List
+                    if (cache.get(best.term)>=860) {
+                        int spaces=best.Link.length()-best.Link.replaceAll(" ","").length();
+                        spaces = (int) (spaces / 3);
+                        String partialLink=findSpaceSubstring(best.Link, spaces);
+                        brCache.write(best.term + " " + partialLink);
+                        brCache.newLine();
+                    }
+                    //Write The Dictionary
+                    brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " Line=" + line);
                     brDf.newLine();
                     line++;
                     String s = best.term + best.Link;
+                    //Write The Posting List
                     bufferedWriter.write(s);
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
                     //Read The Next Line If Exists
                     BufferedReader br = brArr.getFirst();
-                    //added by zohar
                     if (br != null) {
                         String line = br.readLine();
                         readFromFileHash.remove(best);
@@ -132,13 +147,57 @@ public class Indexer {
                 }
 
             }
-            for (BufferedReader br:bufferedReaderArr) {
-             br.close();
+
+
+            for (BufferedReader br : bufferedReaderArr) {
+                br.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
+
+    private String findSpaceSubstring(String s, int spaces) {
+        int i = 0;
+        if (spaces==0){
+            return s;
+        }
+        String buffer = "";
+        int j=0;
+        while (i <= spaces-1) {
+            j=s.indexOf(" ");
+            buffer += s.substring(0,j+1);
+            s=s.substring(j+1,s.length()-1);
+            i++;
+        }
+        return buffer;
+    }
+
+//    private HashMap<String, Integer> SortCache() {
+//        List sortedCache = sortByValues(new StemmerGenerator().getCache());
+//        int i = 0;
+//        HashMap<String, Integer> cache = new HashMap<>();
+//        for (Iterator it = sortedCache.iterator(); it.hasNext() && i < 10000; ) {
+//            Map.Entry entry = (Map.Entry) it.next();
+//            cache.put((String) entry.getKey(), (Integer) entry.getValue());
+//            System.out.println((String) entry.getKey()+"Value= "+ (Integer) entry.getValue());
+//            i++;
+//        }
+//        return cache;
+//    }
+//
+//    private static List sortByValues(HashMap map) {
+//        List list = new LinkedList(map.entrySet());
+//        // Defined Custom Comparator here
+//        Collections.sort(list, new Comparator() {
+//            public int compare(Object o1, Object o2) {
+//                return ((Comparable) ((Map.Entry) (o2)).getValue())
+//                        .compareTo(((Map.Entry) (o1)).getValue());
+//            }
+//        });
+//        return list;
+//    }
 
     //MERGING VALUES EQUALS KEYS
     //FOR EXAMPLE DOG->D1 AND DOG->D2 => DOG->D1,D2
@@ -152,12 +211,12 @@ public class Indexer {
         while (i < newl0.length && j < newline1.length) {
             index0 = newl0[i].indexOf(',', 0);
             index1 = newline1[j].indexOf(',', 0);
-            close0 = newl0[i].indexOf(',', index0+1);
-            close1 = newline1[j].indexOf(',', index1+1);
+            close0 = newl0[i].indexOf(',', index0 + 1);
+            close1 = newline1[j].indexOf(',', index1 + 1);
             tf0 = newl0[i].substring(index0 + 1, close0);
             tf1 = newline1[j].substring(index1 + 1, close1);
             //-------
-            if(tf0.contains(",")|| tf1.contains(",")){
+            if (tf0.contains(",") || tf1.contains(",")) {
                 System.out.println(link);
                 System.out.println(link1);
                 System.out.println(tf0);
@@ -166,30 +225,30 @@ public class Indexer {
             int x = Integer.parseInt(tf0);
             int y = Integer.parseInt(tf1);
             if (x > y) {
-                s.append(newl0[i]+" ");
+                s.append(newl0[i] + " ");
                 i++;
             } else if (y > x) {
-                s.append(newline1[j]+" ");
+                s.append(newline1[j] + " ");
                 j++;
             } else {
-                s.append(newl0[i]+" ");
-                s.append(newline1[j]+" ");
+                s.append(newl0[i] + " ");
+                s.append(newline1[j] + " ");
                 i++;
                 j++;
             }
         }
-        int k ,q;
-        for ( k = i; k < newl0.length-1; k++) {
-            s.append(newl0[k]+" ");
+        int k, q;
+        for (k = i; k < newl0.length - 1; k++) {
+            s.append(newl0[k] + " ");
         }
-        if(k<newl0.length){
+        if (k < newl0.length) {
             s.append(newl0[k]);
         }
 
-        for ( q = j; q < newline1.length-1; q++) {
-            s.append(newline1[q]+" ");
+        for (q = j; q < newline1.length - 1; q++) {
+            s.append(newline1[q] + " ");
         }
-        if(q<newline1.length){
+        if (q < newline1.length) {
             s.append(newline1[q]);
         }
         return s.toString();

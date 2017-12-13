@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
 public class Parse {
 
     private static Pattern whitespace = Pattern.compile("\\s+");
-    private static HashSet<String> stopword = new HashSet<>();
+
+    public static HashSet<String> stopword = new HashSet<>();
     private LinkedList<ArrayList<String>> Docs;
     Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy, hyphen, dot, days;
     //make data structure for stop words
@@ -35,7 +36,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
+            fr = new FileReader("C:\\Users\\yosef\\IdeaProjects\\stopwords.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -62,8 +63,8 @@ public class Parse {
             for (int i = 1; i < need_to_parse.size(); i++) {
                 delTags(need_to_parse, i);
                 //first thing check if the word isn't a stop word
+                deleteChars(need_to_parse, i);
                 if (deleteStop(i, need_to_parse) && !need_to_parse.get(i).equals("")) {
-                    deleteChars(need_to_parse, i);
                     USA(need_to_parse, i);
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
                     need_to_parse.set(i, convPrecent(need_to_parse.get(i)));
@@ -80,7 +81,7 @@ public class Parse {
         }
         //sendes the chunk of documents into the stemmer
         Stemmer stem = new Stemmer();
-        StemmerGenerator stemGen = new StemmerGenerator(stem, Docs);
+        StemmerGenerator stemGen = new StemmerGenerator(stem, Docs,stopword);
         stemGen.chunkStem();
     }
 
@@ -110,8 +111,8 @@ public class Parse {
         if (!s.equals("") && Character.isUpperCase(s.charAt(0))) {
             //  s = s.replaceAll(dot.toString(), "");
             s = s.toLowerCase();
-            need_to_parse.set(index, s);
             buffer.append(s);
+            need_to_parse.set(index, s);
             flag = true;
             while (flag) {
                 if (index + 1 < need_to_parse.size()) {
