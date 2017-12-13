@@ -35,7 +35,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\Users\\zoharavr\\Downloads\\stopword.txt");
+            fr = new FileReader("C:\\project\\SearchEngine\\src\\resource\\stopword.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -62,11 +62,11 @@ public class Parse {
             for (int i = 1; i < need_to_parse.size(); i++) {
                 delTags(need_to_parse, i);
                 //first thing check if the word isn't a stop word
-                if (deleteStop(i, need_to_parse) && need_to_parse.get(i) != "") {
+                if (deleteStop(i, need_to_parse) && !need_to_parse.get(i).equals("")) {
                     deleteChars(need_to_parse, i);
                     USA(need_to_parse, i);
                     need_to_parse.set(i, roudUp(need_to_parse.get(i)));
-                   convPrecent(need_to_parse.get(i),need_to_parse,i);
+                    need_to_parse.set(i, convPrecent(need_to_parse.get(i)));
                     x = checkIfMonth(need_to_parse.get(i));
                     if (x > 0) {
                         if (i < need_to_parse.size()) {
@@ -187,21 +187,15 @@ public class Parse {
     }
 
     // implements the law that every occurrences of % or "percentage"
-    private void convPrecent(String s,ArrayList<String>arr,int i) {
+    private String convPrecent(String s) {
         if (s.startsWith("percentage")) {
             s = s.replace("percentage", "percent");
-            if(i>0){
-                arr.set(i,arr.get(i-1)+"" +s);
-                arr.set(i-1,"");
-            }
-
+            return s;
         } else if (s.indexOf('%') > 0) {
             s = s.replaceAll("%", " percent");
-            if (i > 0) {
-                arr.set(i, arr.get(i - 1) + "" + s);
-                arr.set(i - 1, "");
-            }
-        }
+            return s;
+        } else return s;
+
         //  return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
 
