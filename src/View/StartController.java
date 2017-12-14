@@ -1,0 +1,49 @@
+package View;
+
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
+
+
+public class StartController {
+    Stage ds;
+    @FXML
+    public TextField txt_corpus, txt_posting;
+
+    public void choose_corpus() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory =
+                directoryChooser.showDialog(ds);
+
+        if (selectedDirectory == null) {
+            txt_corpus.setText("No Directory selected");
+        } else {
+            txt_corpus.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    public void set(Stage sc) {
+        this.ds = sc;
+    }
+
+    public void close_win() {
+        ds.close();
+    }
+
+    public void choose_to_save() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory =
+                directoryChooser.showDialog(ds);
+
+        if (selectedDirectory == null) {
+            txt_posting.setText("No Directory selected");
+        } else {
+            txt_posting.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+}
+
