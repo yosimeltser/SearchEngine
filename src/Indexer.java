@@ -1,3 +1,5 @@
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -6,11 +8,12 @@ public class Indexer {
     LinkedHashMap<String, LinkedList<Document>> Docs;
     HashMap<String, Integer> termDf;
     public static int i = 0;
-    public int line;
+    public int discLine;
+    public int cacheLine;
 
     public Indexer() {
         new File("PostingList").mkdir();
-        line = 0;
+        discLine = 0;
     }
 
 
@@ -49,8 +52,8 @@ public class Indexer {
 
     private void mergeFiles() {
         //Sorting Cache
-        HashMap<String, Integer> cache = new StemmerGenerator().getCache();
-        //Get Document Frequency
+         HashSet <String> cache =readCache();
+               //Get Document Frequency
         HashMap<String, Integer> df = new StemmerGenerator().getDf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
@@ -96,22 +99,26 @@ public class Indexer {
                 //Unique Key
                 if (brArr.size() == 1) {
                     //Write 30% Of The Cache Posting List
-                    if (cache.get(best.term)>=860) {
-                        int spaces=best.Link.length()-best.Link.replaceAll(" ","").length();
-                        spaces = (int) (spaces / 3);
-                        String partialLink=findSpaceSubstring(best.Link, spaces);
-                        brCache.write(best.term + " " + partialLink);
+                    if (cache.contains(best.term)) {
+                        brCache.write(best.term + best.Link);
                         brCache.newLine();
+                        brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " C= " + cacheLine);
+                        brDf.newLine();
+                        brDf.flush();
+                        cacheLine++;
                     }
-                    //Write The Dictionary
-                    brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " Line=" + line);
-                    brDf.newLine();
-                    line++;
-                    String s = best.term + best.Link;
-                    //Write The Posting List
-                    bufferedWriter.write(s);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
+                    else { //Write The Dictionary
+                        //Pointer To Disc
+                        brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " D= " + discLine);
+                        brDf.newLine();
+                        brDf.flush();
+                        discLine++;
+                        String s = best.term + best.Link;
+                        //Write The Posting List
+                        bufferedWriter.write(s);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+                    }
                     //Read The Next Line If Exists
                     BufferedReader br = brArr.getFirst();
                     if (br != null) {
@@ -158,6 +165,20 @@ public class Indexer {
 
     }
 
+    private HashSet<String> readCache() {
+        HashSet <String> cache=new HashSet<>();
+        try {
+            BufferedReader  br = new BufferedReader(new FileReader("cacheWords.txt"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                cache.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cache;
+    }
+
     private String findSpaceSubstring(String s, int spaces) {
         int i = 0;
         if (spaces==0){
@@ -175,14 +196,21 @@ public class Indexer {
     }
 
 //    private HashMap<String, Integer> SortCache() {
+//        BufferedWriter bw;
 //        List sortedCache = sortByValues(new StemmerGenerator().getCache());
 //        int i = 0;
 //        HashMap<String, Integer> cache = new HashMap<>();
-//        for (Iterator it = sortedCache.iterator(); it.hasNext() && i < 10000; ) {
-//            Map.Entry entry = (Map.Entry) it.next();
-//            cache.put((String) entry.getKey(), (Integer) entry.getValue());
-//            System.out.println((String) entry.getKey()+"Value= "+ (Integer) entry.getValue());
-//            i++;
+//        try{
+//            for (Iterator it = sortedCache.iterator(); it.hasNext() && i < 10000; ) {
+//                Map.Entry entry = (Map.Entry) it.next();
+//                cache.put((String) entry.getKey(), (Integer) entry.getValue());
+//                System.out.println((String) entry.getKey());
+//                i++;
+//                bw = new BufferedWriter(new FileWriter("cacheWords.txt"));
+//            }
+//            return cache;
+//        }
+//        catch ( Exception e) {
 //        }
 //        return cache;
 //    }
