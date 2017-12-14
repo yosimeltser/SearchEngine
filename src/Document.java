@@ -12,9 +12,6 @@ public class Document {
         this.docId=_docId;
         terms= new HashMap<>();
     }
-//    public void addTerm (HashMap<String,Integer> _termFr) {
-//        this.termFr=_termFr;
-//    }
     public void addDocLength (int _docLength){
         this.docLength=_docLength;
     }

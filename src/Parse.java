@@ -36,7 +36,7 @@ public class Parse {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader("C:\\Users\\yosef\\IdeaProjects\\stopwords.txt");
+           fr = new FileReader("C:\\Users\\yosefmel\\IdeaProjects\\SearchEngine\\stopword.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -97,10 +97,9 @@ public class Parse {
     //delete everything that is not alphanumeric except dots
     private void deleteChars(ArrayList<String> need_to_parse, int i) {
         need_to_parse.set(i, hyphen.matcher(need_to_parse.get(i)).replaceAll(""));
-        //    String s=need_to_parse.get(i);
         need_to_parse.set(i, del_chars.matcher(need_to_parse.get(i)).replaceAll(""));
     }
-
+    //
     private int capitalLetters(ArrayList<String> need_to_parse, int i) {
         int index = i;
         // deleteChars(need_to_parse,index);
@@ -152,8 +151,8 @@ public class Parse {
     }
 
     //NEW RULE
-//We have noticed that the token U.S has a lot of instances
-//So we decided that there is more chances that the user serached for "usa" instead U.S.
+    //We have noticed that the token U.S has a lot of instances
+    //So we decided that there is more chances that the user serached for "usa" instead U.S.
     private static void USA(ArrayList<String> need_to_parse, int i) {
         if (need_to_parse.get(i).equals("U.S.")) {
             need_to_parse.set(i, "usa");

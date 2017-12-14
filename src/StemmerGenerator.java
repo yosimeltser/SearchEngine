@@ -1,6 +1,5 @@
 
 
-import sun.misc.Cache;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,7 +9,6 @@ import java.util.*;
 
 public class StemmerGenerator {
     private Stemmer stem;
-    private static HashMap<String, Integer> cache = new HashMap<>();
     LinkedList<ArrayList<String>> ParsedDocs;
     //represents  docs list of 100 files
     //LinkedList<Document> Docs = new LinkedList<>() ;
@@ -23,7 +21,9 @@ public class StemmerGenerator {
     //Dictionary
     int tHold;
     HashSet<String> stopword;
-
+    //If we Stem the words after parse => stemOrNot=true Else stem=false
+    public static boolean stemOrNot=true;
+    public static HashMap<String, Integer> cache = new HashMap<>();
     public StemmerGenerator(Stemmer _stem, LinkedList<ArrayList<String>> _Docs, HashSet<String> _stopword) {
         this.stem = _stem;
         ParsedDocs = _Docs;
@@ -57,17 +57,31 @@ public class StemmerGenerator {
                     wordStemmed = s;
                     already_seen.put(s, wordStemmed);
                 }
-                //Exactly one word
-                else if (!already_seen.containsKey(s)) {
-                    stem.add(s.toCharArray(), s.length());
-                    stem.stem();
-                    wordStemmed = stem.toString().trim();
-                    already_seen.put(s, wordStemmed);
+                if (stemOrNot){
+                    //Exactly one word
+                    //First Time
+                    if (!already_seen.containsKey(s)){
+                        stem.add(s.toCharArray(), s.length());
+                        stem.stem();
+                        wordStemmed = stem.toString().trim();
+                        already_seen.put(s, wordStemmed);
+                    }
+                    //Already Seen, At lest one time
+                    else {
+                        wordStemmed = already_seen.get(s);
+                    }
                 }
-//                if (stopword.contains(wordStemmed)){
-//                    wordStemmed="";
-//                }
-                wordStemmed = already_seen.get(s);
+                //Not getting stemmed
+                else {
+                    wordStemmed = s;
+                }
+                //Already seen the world, get from the dictionary
+
+                //Clean Stop Words
+                if (stopword.contains(wordStemmed)){
+                   wordStemmed="";
+                }
+
                 if (!wordStemmed.equals("")) {
                     //df
                     if (!doc.contains(wordStemmed)) {
@@ -126,8 +140,6 @@ public class StemmerGenerator {
             termToDocs.put(s, val);
         }
         temp = null;
-
         index.setDocs(termToDocs);
-
     }
 }

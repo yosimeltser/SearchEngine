@@ -10,12 +10,14 @@ public class Indexer {
     public static int i = 0;
     public int discLine;
     public int cacheLine;
+    public static boolean stemOrNot;
 
     public Indexer() {
         new File("PostingList").mkdir();
         discLine = 0;
+        //Changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+        stemOrNot = true;
     }
-
 
     public void setDocs(LinkedHashMap<String, LinkedList<Document>> _docs) {
         this.Docs = _docs;
@@ -52,8 +54,8 @@ public class Indexer {
 
     private void mergeFiles() {
         //Sorting Cache
-         HashSet <String> cache =readCache();
-               //Get Document Frequency
+        HashSet<String> cache = readCache();
+        //Get Document Frequency
         HashMap<String, Integer> df = new StemmerGenerator().getDf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
@@ -100,25 +102,25 @@ public class Indexer {
                 if (brArr.size() == 1) {
                     //Write 30% Of The Cache Posting List
                     if (cache.contains(best.term)) {
-                        brCache.write(best.term + best.Link);
+                        brCache.write(best.term + PartialPosting(best.Link));
+                        brCache.flush();
                         brCache.newLine();
                         brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " C= " + cacheLine);
                         brDf.newLine();
                         brDf.flush();
                         cacheLine++;
-                    }
-                    else { //Write The Dictionary
+                    } else { //Write The Dictionary
                         //Pointer To Disc
                         brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " D= " + discLine);
                         brDf.newLine();
                         brDf.flush();
                         discLine++;
-                        String s = best.term + best.Link;
-                        //Write The Posting List
-                        bufferedWriter.write(s);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
                     }
+                    //Write The Final Posting List
+                    String s = best.term + best.Link;
+                    bufferedWriter.write(s);
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
                     //Read The Next Line If Exists
                     BufferedReader br = brArr.getFirst();
                     if (br != null) {
@@ -154,8 +156,7 @@ public class Indexer {
                 }
 
             }
-
-
+            //Close All The Buffers
             for (BufferedReader br : bufferedReaderArr) {
                 br.close();
             }
@@ -165,10 +166,28 @@ public class Indexer {
 
     }
 
+    //Return 10 Doc for each term
+    private String PartialPosting(String posting) {
+        int counter = 0;
+        StringBuilder st = new StringBuilder(256);
+        for (int j = 0; j < posting.length() && counter<100; j++) {
+            char c = posting.charAt(j);
+            if ((c == ' '))
+                counter++;
+            st.append(c);
+        }
+        return st.toString();
+    }
+
     private HashSet<String> readCache() {
-        HashSet <String> cache=new HashSet<>();
+        HashSet<String> cache = new HashSet<>();
         try {
-            BufferedReader  br = new BufferedReader(new FileReader("cacheWords.txt"));
+            BufferedReader br;
+            if (stemOrNot) {
+                br = new BufferedReader(new FileReader("cacheWordsStemmed.txt"));
+            } else {
+                br = new BufferedReader(new FileReader("cacheWordsNotStemmed.txt"));
+            }
             String line;
             while ((line = br.readLine()) != null) {
                 cache.add(line);
@@ -178,54 +197,6 @@ public class Indexer {
         }
         return cache;
     }
-
-    private String findSpaceSubstring(String s, int spaces) {
-        int i = 0;
-        if (spaces==0){
-            return s;
-        }
-        String buffer = "";
-        int j=0;
-        while (i <= spaces-1) {
-            j=s.indexOf(" ");
-            buffer += s.substring(0,j+1);
-            s=s.substring(j+1,s.length()-1);
-            i++;
-        }
-        return buffer;
-    }
-
-//    private HashMap<String, Integer> SortCache() {
-//        BufferedWriter bw;
-//        List sortedCache = sortByValues(new StemmerGenerator().getCache());
-//        int i = 0;
-//        HashMap<String, Integer> cache = new HashMap<>();
-//        try{
-//            for (Iterator it = sortedCache.iterator(); it.hasNext() && i < 10000; ) {
-//                Map.Entry entry = (Map.Entry) it.next();
-//                cache.put((String) entry.getKey(), (Integer) entry.getValue());
-//                System.out.println((String) entry.getKey());
-//                i++;
-//                bw = new BufferedWriter(new FileWriter("cacheWords.txt"));
-//            }
-//            return cache;
-//        }
-//        catch ( Exception e) {
-//        }
-//        return cache;
-//    }
-//
-//    private static List sortByValues(HashMap map) {
-//        List list = new LinkedList(map.entrySet());
-//        // Defined Custom Comparator here
-//        Collections.sort(list, new Comparator() {
-//            public int compare(Object o1, Object o2) {
-//                return ((Comparable) ((Map.Entry) (o2)).getValue())
-//                        .compareTo(((Map.Entry) (o1)).getValue());
-//            }
-//        });
-//        return list;
-//    }
 
     //MERGING VALUES EQUALS KEYS
     //FOR EXAMPLE DOG->D1 AND DOG->D2 => DOG->D1,D2
@@ -307,12 +278,4 @@ public class Indexer {
         return new termLine(line.substring(0, index - 1), line.substring(index, line.length()));
     }
 
-    //sorting by tf
-    private void merge(String line0, String line1) {
-        int index0 = 0, index1 = 0, close0 = 0, close1 = 0, i, j;
-        index0 = line0.indexOf(',', index0);
-        index1 = line1.indexOf(',', index1);
-        close0 = line0.indexOf('>', close0);
-        close1 = line1.indexOf('>', close1);
-    }
 }
