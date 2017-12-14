@@ -15,7 +15,7 @@ public class Indexer {
     public Indexer() {
         new File("PostingList").mkdir();
         discLine = 0;
-        //Changeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+        cacheLine=0;
         stemOrNot = true;
     }
 
@@ -42,17 +42,15 @@ public class Indexer {
                     bw.flush();
                 }
                 bw.newLine();
+                bw.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (i == 73) {
-            mergeFiles();
-        }
     }
 
 
-    private void mergeFiles() {
+    public void mergeFiles() {
         //Sorting Cache
         HashSet<String> cache = readCache();
         //Get Document Frequency

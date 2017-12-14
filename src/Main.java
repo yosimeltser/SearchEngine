@@ -1,9 +1,10 @@
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.regex.Pattern;
 
 public class Main {
 
-    private static final String FILENAME = "C:\\Users\\zoharavr\\Downloads\\corpus";
+    private static final String FILENAME = "C:\\Users\\yosefmel\\Downloads\\corpus\\corpus";
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();

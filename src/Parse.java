@@ -11,14 +11,14 @@ public class Parse {
 
     private static Pattern whitespace = Pattern.compile("\\s+");
 
-    public static HashSet<String> stopword = new HashSet<>();
+    public static HashSet<String> stopword;
     private LinkedList<ArrayList<String>> Docs;
+    private Iterator<String> itr;
     Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy, hyphen, dot, days;
     //make data structure for stop words
 
     public Parse() {
         //prepare the hash for all the stop words
-        DSstopwords();
         del_chars = Pattern.compile("[^\\w && [^%.-]]+");
         round_up = Pattern.compile("\\d+\\.\\d+");
         yyyy_yy = Pattern.compile("^\\d{4}?$|^\\d{2}?$");
@@ -30,28 +30,11 @@ public class Parse {
 
     }
 
-    // inserts all the stopwords into a hash
-    private static void DSstopwords() {
-        String line;
-        BufferedReader br = null;
-        FileReader fr = null;
-        try {
-           fr = new FileReader("C:\\Users\\yosefmel\\IdeaProjects\\SearchEngine\\stopword.txt");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        br = new BufferedReader(fr);
-        try {
-            while ((line = br.readLine()) != null) {
-                stopword.add(line);
-            }
-            fr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public  void setStopword(HashSet<String> stopword) {
+        Parse.stopword = stopword;
     }
 
-    public void ParseFile(LinkedList<String> text) {
+    public LinkedList<ArrayList<String>> ParseFile(LinkedList<String> text) {
         Docs = new LinkedList<ArrayList<String>>();
         Iterator<String> itr = text.iterator();
         // iterates all the files that came from readFile
@@ -79,10 +62,11 @@ public class Parse {
             }
             Docs.add(need_to_parse);
         }
-        //sendes the chunk of documents into the stemmer
-        Stemmer stem = new Stemmer();
-        StemmerGenerator stemGen = new StemmerGenerator(stem, Docs,stopword);
-        stemGen.chunkStem();
+        //sends the chunk of documents into the stemmer
+//        Stemmer stem = new Stemmer();
+//        StemmerGenerator stemGen = new StemmerGenerator(stem, Docs,stopword);
+//        stemGen.chunkStem();
+        return Docs;
     }
 
     //Delete Every Tag that you see

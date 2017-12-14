@@ -1,10 +1,6 @@
 
 
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 public class StemmerGenerator {
@@ -20,23 +16,20 @@ public class StemmerGenerator {
     private Indexer index;
     //Dictionary
     int tHold;
-    HashSet<String> stopword;
+    public static HashSet<String> stopword;
     //If we Stem the words after parse => stemOrNot=true Else stem=false
     public static boolean stemOrNot=true;
     public static HashMap<String, Integer> cache = new HashMap<>();
-    public StemmerGenerator(Stemmer _stem, LinkedList<ArrayList<String>> _Docs, HashSet<String> _stopword) {
-        this.stem = _stem;
-        ParsedDocs = _Docs;
-        termToDocs = new LinkedHashMap<>();
-        temp = new HashMap<>();
-        index = new Indexer();
-        stopword = _stopword;
-    }
 
     public StemmerGenerator() {
-
     }
 
+    public StemmerGenerator(Stemmer st){
+        this.stem=st;
+    }
+   public void setStopWords (HashSet<String> sw){
+        this.stopword=sw;
+   }
     public HashMap<String, Integer> getDf() {
         return termDf;
     }
@@ -45,7 +38,9 @@ public class StemmerGenerator {
         return cache;
     }
 
-    public void chunkStem() {
+    public LinkedHashMap<String, LinkedList<Document>> chunkStem(LinkedList<ArrayList<String>> parsedDocs) {
+        ParsedDocs = parsedDocs;
+        temp = new HashMap<>();
         for (ArrayList<String> need_to_parse : ParsedDocs) {
             Document doc = new Document(need_to_parse.get(0));
             doc.setSize(need_to_parse.size() - 1);
@@ -139,7 +134,8 @@ public class StemmerGenerator {
             LinkedList<Document> val = temp.get(s);
             termToDocs.put(s, val);
         }
+        ParsedDocs=null;
         temp = null;
-        index.setDocs(termToDocs);
+        return termToDocs;
     }
 }

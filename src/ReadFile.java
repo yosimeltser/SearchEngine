@@ -12,29 +12,25 @@ public class ReadFile {
     ReadFile(String path ) {
        this.path=path;
    }
-
+    public int i=0;
     //method responsible for reading files and transfer them into data stractures
-   public  void fileReader (){
+   public  LinkedList <String> fileReader (){
        BufferedReader br = null;
        FileReader fr = null;
-       Parse p= new Parse();
        File folder = new File(path);
        File[] listOfFiles = folder.listFiles();
        LinkedList <String> documents= new LinkedList<>();
-       int trashHold=25;
        int counter=0;
-       for (int i = 0; i < listOfFiles.length; i++) {
-           // each time we read 100 files
+       for (; i < listOfFiles.length; i++) {
+           // each time we read 25 files
            //one more file added to the chunk of 100 files
            //transfer a chunk to the parser when reaches to threshold
-           counter+=1;
-           System.out.println(i);
-           if (trashHold==counter || i==1814) {
+           if (counter==25){
                counter=0;
-               p.ParseFile(documents);
-               //check if an object was deleted
-               documents=null;
-               documents=new LinkedList<>();
+               return documents;
+           }
+           else {
+               counter++;
            }
            if (listOfFiles[i].isDirectory()) {
                  try {
@@ -81,6 +77,7 @@ public class ReadFile {
                  }
              }
            }
+           return documents;
        }
 
 
