@@ -1,6 +1,9 @@
 
 
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class StemmerGenerator {
@@ -18,18 +21,21 @@ public class StemmerGenerator {
     int tHold;
     public static HashSet<String> stopword;
     //If we Stem the words after parse => stemOrNot=true Else stem=false
-    public static boolean stemOrNot=true;
+    public static boolean stemOrNot = true;
     public static HashMap<String, Integer> cache = new HashMap<>();
-
+    public static BufferedWriter docProperties;
     public StemmerGenerator() {
+        try {
+            docProperties  = new BufferedWriter(new FileWriter("docProperties.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public StemmerGenerator(Stemmer st){
-        this.stem=st;
+    public void setStopWords(HashSet<String> sw) {
+        this.stopword = sw;
     }
-   public void setStopWords (HashSet<String> sw){
-        this.stopword=sw;
-   }
+
     public HashMap<String, Integer> getDf() {
         return termDf;
     }
@@ -39,8 +45,10 @@ public class StemmerGenerator {
     }
 
     public LinkedHashMap<String, LinkedList<Document>> chunkStem(LinkedList<ArrayList<String>> parsedDocs) {
+        stem = new Stemmer();
         ParsedDocs = parsedDocs;
         temp = new HashMap<>();
+        termToDocs= new LinkedHashMap<>();
         for (ArrayList<String> need_to_parse : ParsedDocs) {
             Document doc = new Document(need_to_parse.get(0));
             doc.setSize(need_to_parse.size() - 1);
@@ -52,10 +60,10 @@ public class StemmerGenerator {
                     wordStemmed = s;
                     already_seen.put(s, wordStemmed);
                 }
-                if (stemOrNot){
+                if (stemOrNot) {
                     //Exactly one word
                     //First Time
-                    if (!already_seen.containsKey(s)){
+                    if (!already_seen.containsKey(s)) {
                         stem.add(s.toCharArray(), s.length());
                         stem.stem();
                         wordStemmed = stem.toString().trim();
@@ -73,8 +81,8 @@ public class StemmerGenerator {
                 //Already seen the world, get from the dictionary
 
                 //Clean Stop Words
-                if (stopword.contains(wordStemmed)){
-                   wordStemmed="";
+                if (stopword.contains(wordStemmed)) {
+                    wordStemmed = "";
                 }
 
                 if (!wordStemmed.equals("")) {
@@ -107,6 +115,12 @@ public class StemmerGenerator {
                 }
             }
             doc.setMaxTf();
+            try {
+                docProperties.write("doc num= " +doc.docId + " unique= " + doc.unique + " Max TF= " + doc.maxTermFr + " doc length="+ doc.docLength);
+                docProperties.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         //Sorts by tf, temp posting list
         for (Map.Entry<String, LinkedList<Document>> entry : temp.entrySet()) {
@@ -130,12 +144,17 @@ public class StemmerGenerator {
         ArrayList<String> arr = new ArrayList<>(temp.keySet());
         Collections.sort(arr);
         for (int i = 0; i < arr.size(); i++) {
+        //    System.out.println("end");
             String s = arr.get(i);
             LinkedList<Document> val = temp.get(s);
             termToDocs.put(s, val);
+
         }
-        ParsedDocs=null;
+
+        stem = null;
+        ParsedDocs = null;
         temp = null;
+
         return termToDocs;
     }
 }

@@ -19,25 +19,22 @@ public class Model {
         try {
             HashSet<String> stopword=null;
             stopword=DSstopwords();
-            Stemmer st = new Stemmer();
             ReadFile Fr = new ReadFile("C:\\Users\\yosefmel\\Downloads\\corpus\\corpus");
             Parse parser = new Parse();
             parser.setStopword(stopword);
-            StemmerGenerator StG = new StemmerGenerator(st);
+            StemmerGenerator  StG= new StemmerGenerator();
             StG.setStopWords(stopword);
             Indexer index= new Indexer();
-            for (int file=0 ; file <=73 ;file++){
-                long start= System.currentTimeMillis();
+            long start= System.currentTimeMillis();
+            for (int file=0 ; file <=72 ;file++){
                 LinkedList<String> Documents = Fr.fileReader();
                 LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
-                Stemmer s=new Stemmer();
-                StemmerGenerator sr=new StemmerGenerator(s);
-                LinkedHashMap<String, LinkedList<Document>> StemmedDocs=sr.chunkStem(ParsedDocs);
+                LinkedHashMap<String, LinkedList<Document>> StemmedDocs=StG.chunkStem(ParsedDocs);
                 index.setDocs(StemmedDocs);
-                long end= System.currentTimeMillis();
-                System.out.println(end-start);
             }
             index.mergeFiles();
+            long end= System.currentTimeMillis();
+            System.out.println(end-start);
         } catch (Exception IO) {
         }
     }

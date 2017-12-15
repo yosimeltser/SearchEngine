@@ -15,7 +15,7 @@ public class Indexer {
     public Indexer() {
         new File("PostingList").mkdir();
         discLine = 0;
-        cacheLine=0;
+        cacheLine = 0;
         stemOrNot = true;
     }
 
@@ -42,7 +42,6 @@ public class Indexer {
                     bw.flush();
                 }
                 bw.newLine();
-                bw.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -103,17 +102,18 @@ public class Indexer {
                         brCache.write(best.term + PartialPosting(best.Link));
                         brCache.flush();
                         brCache.newLine();
-                        brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " C= " + cacheLine);
+                        brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " C = " + cacheLine + " D = " + discLine);
                         brDf.newLine();
                         brDf.flush();
                         cacheLine++;
-                    } else { //Write The Dictionary
-                        //Pointer To Disc
-                        brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " D= " + discLine);
-                        brDf.newLine();
-                        brDf.flush();
-                        discLine++;
                     }
+                    //Write The Dictionary
+                    //Pointer To Disc
+                    // X - represents that we don't have the term in cache
+                    brDf.write("Key= " + best.term + " Document Frequency= " + df.get(best.term) + " C = X" +" D = " + discLine);
+                    brDf.newLine();
+                    brDf.flush();
+                    discLine++;
                     //Write The Final Posting List
                     String s = best.term + best.Link;
                     bufferedWriter.write(s);
@@ -168,7 +168,7 @@ public class Indexer {
     private String PartialPosting(String posting) {
         int counter = 0;
         StringBuilder st = new StringBuilder(256);
-        for (int j = 0; j < posting.length() && counter<100; j++) {
+        for (int j = 0; j < posting.length() && counter < 150; j++) {
             char c = posting.charAt(j);
             if ((c == ' '))
                 counter++;

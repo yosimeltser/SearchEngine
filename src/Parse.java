@@ -62,10 +62,6 @@ public class Parse {
             }
             Docs.add(need_to_parse);
         }
-        //sends the chunk of documents into the stemmer
-//        Stemmer stem = new Stemmer();
-//        StemmerGenerator stemGen = new StemmerGenerator(stem, Docs,stopword);
-//        stemGen.chunkStem();
         return Docs;
     }
 
@@ -175,7 +171,7 @@ public class Parse {
         if (s.startsWith("percentage")) {
             s = s.replace("percentage", "percent");
             return s;
-        } else if (s.indexOf('%') > 0) {
+        } else if (s.indexOf('%') >= 0) {
             s = s.replaceAll("%", " percent");
             return s;
         } else return s;

@@ -7,6 +7,7 @@ public class Document {
     public HashMap<String,TermData> terms;
     public String docId;
     public int maxTermFr;
+    public int unique;
     Map.Entry<String, TermData> maxEntry;
     public Document(String _docId) {
         this.docId=_docId;
@@ -42,5 +43,10 @@ public class Document {
                 maxEntry = entry;
             }
         }
+        maxTermFr= maxEntry.getValue().tf;
+        uniqueWords();
+    }
+    private void uniqueWords() {
+        unique=terms.size();
     }
 }

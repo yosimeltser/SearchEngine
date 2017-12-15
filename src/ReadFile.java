@@ -9,19 +9,21 @@ import java.util.regex.Pattern;
 public class ReadFile {
     private final String path;
     //constructor accepts the path to the corpus
+    File[] listOfFiles;
     ReadFile(String path ) {
        this.path=path;
+        File folder = new File(path);
+        listOfFiles = folder.listFiles();
    }
     public int i=0;
     //method responsible for reading files and transfer them into data stractures
    public  LinkedList <String> fileReader (){
        BufferedReader br = null;
        FileReader fr = null;
-       File folder = new File(path);
-       File[] listOfFiles = folder.listFiles();
        LinkedList <String> documents= new LinkedList<>();
        int counter=0;
        for (; i < listOfFiles.length; i++) {
+           System.out.println(i);
            // each time we read 25 files
            //one more file added to the chunk of 100 files
            //transfer a chunk to the parser when reaches to threshold
