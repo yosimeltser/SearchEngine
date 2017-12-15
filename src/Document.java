@@ -38,7 +38,7 @@ public class Document {
         maxEntry =null;
         for (Map.Entry<String, TermData> entry : terms.entrySet())
         {
-            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
+            if (maxEntry == null || entry.getValue().tf>(maxEntry.getValue().tf))
             {
                 maxEntry = entry;
             }
