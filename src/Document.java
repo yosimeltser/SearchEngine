@@ -40,7 +40,7 @@ public class Document {
         {
             if (maxEntry == null || entry.getValue().tf>(maxEntry.getValue().tf))
             {
-                maxEntry = entry;
+                 maxEntry = entry;
             }
         }
         maxTermFr= maxEntry.getValue().tf;
