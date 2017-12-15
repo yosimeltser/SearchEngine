@@ -1,5 +1,6 @@
 package View;
 
+import Model.Model;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -15,9 +16,13 @@ import java.util.Optional;
 
 public class ViewController {
     Stage primaryStage;
+    Model m;
+    StartController st;
+    //public Model md;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
+        m = new Model();
     }
 
     public void closeProgram() {
@@ -30,7 +35,8 @@ public class ViewController {
             primaryStage.close();
         }
     }
-    public void load_start(){
+
+    public void load_start() {
         try {
             Stage stage = new Stage();
             stage.setTitle("Choose DataSet");
@@ -39,8 +45,8 @@ public class ViewController {
             Scene scene = new Scene(root, 550, 300);
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
-            StartController st=fxmlLoader.getController();
-            st.set(stage);
+            StartController st = fxmlLoader.getController();
+            st.set(stage, m);
             stage.show();
 
 
@@ -48,11 +54,16 @@ public class ViewController {
 
         }
     }
+
+    //zohar!!
+        public void reset(){
+       m.reset(st.txt_posting.getText());
+    }
     public void show_cache() throws IOException {
-        File file =new File("src/resource/stopword.txt");
-        Desktop desktop=Desktop.getDesktop();
-        if(file.exists()) desktop.open(file);
+        File file = new File("src/resource/stopword.txt");
+        Desktop desktop = Desktop.getDesktop();
+        if (file.exists()) desktop.open(file);
 
     }
-    }
+}
 

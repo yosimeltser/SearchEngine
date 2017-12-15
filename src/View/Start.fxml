@@ -12,7 +12,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.StartController">
    <children>
-      <VBox layoutX="83.0" layoutY="48.0" prefHeight="287.0" prefWidth="414.0">
+      <VBox layoutX="84.0" layoutY="50.0" prefHeight="287.0" prefWidth="414.0">
          <children>
             <GridPane>
               <columnConstraints>
@@ -26,6 +26,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <TextField fx:id="txt_corpus" prefHeight="25.0" prefWidth="55.0" GridPane.rowIndex="1" />
@@ -33,12 +34,12 @@
                   <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#choose_corpus" prefHeight="25.0" prefWidth="60.0" text="Browse" textAlignment="JUSTIFY" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <Button mnemonicParsing="false" onAction="#choose_to_save" prefHeight="25.0" prefWidth="59.0" text="Browse" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <Label text="Choose Corpus &amp; StopWords:" textFill="#1a14d1" />
-                  <Label text="Save Inverted Index at:" textFill="#1a14d1" GridPane.rowIndex="2" />
+                  <Label text="Save Posring List, Cache &amp; Dictionary at:" textFill="#1a14d1" GridPane.rowIndex="2" />
                   <CheckBox fx:id="check_stem" mnemonicParsing="false" text="Enable Stemming" GridPane.rowIndex="5" />
+                  <Button alignment="TOP_LEFT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#close_win" prefHeight="25.0" prefWidth="59.0" text="Launch" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                </children>
             </GridPane>
          </children>
       </VBox>
-      <Button alignment="CENTER" contentDisplay="CENTER" layoutX="462.0" layoutY="219.0" mnemonicParsing="false" onAction="#close_win" prefHeight="25.0" prefWidth="59.0" text="Launch" textAlignment="CENTER" />
    </children>
 </AnchorPane>

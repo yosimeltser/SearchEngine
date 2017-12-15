@@ -10,7 +10,7 @@
       <VBox alignment="TOP_CENTER" layoutX="152.0" layoutY="35.0" prefHeight="272.0" prefWidth="260.0" spacing="20.0" AnchorPane.rightAnchor="188.0">
          <children>
             <Button mnemonicParsing="false" onAction="#load_start" prefHeight="25.0" prefWidth="106.0" text="Start Indexing" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="103.0" text="Reset" />
+            <Button mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="103.0" text="Reset" />
             <Button mnemonicParsing="false" onAction="#show_cache" prefHeight="25.0" prefWidth="103.0" text="Show Cache" />
             <Button mnemonicParsing="false" text="Show Dictionary" />
          </children>
