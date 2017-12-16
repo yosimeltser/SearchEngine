@@ -15,7 +15,7 @@ public class Indexer {
         discLine = 0;
         cacheLine = 0;
         stemOrNot = _stemOrNot;
-        if (_path==null || _path.equals("No Directory selected")  ){
+        if (_path.equals("") || _path.equals("No Directory selected")  ){
             Path="";
         }
         else {

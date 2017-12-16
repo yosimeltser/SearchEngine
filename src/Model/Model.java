@@ -17,6 +17,7 @@ public class Model {
     //path_to save tells you where to save the final posting list & the dictionary
     public long start(String path_corpus, String path_tosave, boolean stemOrNot) {
         try {
+            long start = System.currentTimeMillis();
             HashSet<String> stopword = null;
             stopword = DSstopwords(path_corpus);
             ReadFile Fr = new ReadFile(path_corpus + "\\corpus");
@@ -25,7 +26,6 @@ public class Model {
             StemmerGenerator StG = new StemmerGenerator(stemOrNot);
             StG.setStopWords(stopword);
             Indexer index = new Indexer(path_tosave, stemOrNot);
-            long start = System.currentTimeMillis();
             for (int file = 0; file <= 72; file++) {
                 LinkedList<String> Documents = Fr.fileReader();
                 LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
@@ -34,7 +34,7 @@ public class Model {
             }
             index.mergeFiles();
             long end = System.currentTimeMillis();
-            return (end / 10000);
+            return ((end-start )/ 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -94,7 +94,7 @@ public class Model {
     public String[] sizes(String path, boolean StemOrNot) {
         String Path;
         String[] size = new String[2];
-        if (path == null || path.equals("No Directory selected")) {
+        if (path.equals("") || path.equals("No Directory selected")) {
             Path = "";
         } else {
             Path = path + "//";
