@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
@@ -23,12 +24,14 @@ public class ViewController {
     Model m;
     //   StartController st;
     @FXML
+    Button btn_reset,btn_start;
     public TextField txt_corpus, txt_posting;
     public CheckBox check_stem;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
         m = new Model();
+        btn_start.setDisable(true);
     }
 
     public void closeProgram() {
@@ -43,8 +46,9 @@ public class ViewController {
     }
 
     public void load_start() {
-
-        m.start(txt_corpus.getText(),txt_posting.getText(),check_stem.isSelected());
+        btn_reset.setDisable(true);
+      long time=  m.start(txt_corpus.getText(),txt_posting.getText(),check_stem.isSelected());
+      btn_reset.setDisable(false);
         try {
             Stage stage = new Stage();
             stage.setTitle("Summarize");
@@ -54,7 +58,7 @@ public class ViewController {
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             StartController st = fxmlLoader.getController();
-            st.set(stage, m);
+            st.set(stage, m,this,time);
             stage.show();
         } catch (Exception e) {
 
@@ -67,6 +71,7 @@ public class ViewController {
     }
 
     public void show_cache() throws IOException {
+
         File file = new File("src/resource/stopword.txt");
         Desktop desktop = Desktop.getDesktop();
         if (file.exists()) desktop.open(file);
@@ -75,6 +80,7 @@ public class ViewController {
 
     //NOTICE that the corpus & the file of the stopwords need to be at the same directory!
     public void choose_corpus() {
+
         DirectoryChooser directoryChooser = new DirectoryChooser();
         File selectedDirectory =
                 directoryChooser.showDialog(null);
@@ -83,6 +89,7 @@ public class ViewController {
             txt_corpus.setText("No Directory selected");
         } else {
             txt_corpus.setText(selectedDirectory.getAbsolutePath());
+            btn_start.setDisable(false);
         }
     }
 

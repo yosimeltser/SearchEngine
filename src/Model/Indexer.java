@@ -168,16 +168,16 @@ public class Indexer {
 
             }
 //            //Close All The Buffers
-//            for (BufferedReader br : bufferedReaderArr) {
-//                br.close();
-//            }
+            for (BufferedReader br : bufferedReaderArr) {
+                br.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    //Return 10 Doc for each term
+    //Return until 150 Doc for each term
     private String PartialPosting(String posting) {
         int counter = 0;
         StringBuilder st = new StringBuilder(256);
@@ -208,7 +208,6 @@ public class Indexer {
         }
         return cache;
     }
-
     //MERGING VALUES EQUALS KEYS
     //FOR EXAMPLE DOG->D1 AND DOG->D2 => DOG->D1,D2
     private String mergePostEqualTerms(String link, String link1) {
@@ -289,18 +288,28 @@ public class Indexer {
             BufferedWriter br=null;
         HashMap<String, Integer> cache = new HashMap<>();
             try {
-                br = new BufferedWriter(new FileWriter("cacheStemmer.txt"));
-                for (Iterator it = sortedCache.iterator(); it.hasNext() && i < 10000; ) {
+                PrintWriter pw = new PrintWriter(new File("final.csv"));
+                StringBuilder sb = new StringBuilder();
+                sb.append("term");
+                sb.append(',');
+                sb.append("sumTf");
+                sb.append('\n');
+                pw.write(sb.toString());
+                for (Iterator it = sortedCache.iterator(); it.hasNext()&& i < 10000;) {
                     Map.Entry entry = (Map.Entry) it.next();
                     cache.put((String) entry.getKey(), (Integer) entry.getValue());
-                    System.out.println((String) entry.getKey());
-                    br.write((String) entry.getKey());
-                    br.newLine();
-                    br.flush();
+                    sb = new StringBuilder();
+                    sb.append(i);
+                    sb.append(',');
+                    sb.append(( entry.getValue().toString()));
+                    sb.append('\n');
                     i++;
+                    pw.write(sb.toString());
                 }
+                pw.close();
             }
           catch (Exception e){
+              System.out.println("shit");
             }
         return cache;
     }

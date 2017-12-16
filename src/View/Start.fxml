@@ -29,11 +29,11 @@
                   <Label text="Amount of documents" textFill="#1a14d1" />
                   <Label text="Index size ( Posting &amp; Dictionary)" textFill="#1a14d1" GridPane.rowIndex="2" />
                   <Label text="Cache size" textFill="#1a14d1" GridPane.rowIndex="4" />
-                  <Label text="Label" GridPane.columnIndex="1" />
-                  <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  <Label fx:id="lbl_docs" GridPane.columnIndex="1" />
+                  <Label fx:id="lbl_index" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="lbl_cache" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                   <Label text="Total running time in seconds" textFill="#1a14d1" GridPane.rowIndex="6" />
-                  <Label text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                  <Label fx:id="lbl_time" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                </children>
             </GridPane>
          </children>
