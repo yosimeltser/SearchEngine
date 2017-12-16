@@ -1,11 +1,15 @@
 package View;
 
 import Model.Model;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -17,8 +21,10 @@ import java.util.Optional;
 public class ViewController {
     Stage primaryStage;
     Model m;
-    StartController st;
-    //public Model md;
+    //   StartController st;
+    @FXML
+    public TextField txt_corpus, txt_posting;
+    public CheckBox check_stem;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
@@ -37,9 +43,11 @@ public class ViewController {
     }
 
     public void load_start() {
+
+        m.start(txt_corpus.getText(),txt_posting.getText(),check_stem.isSelected());
         try {
             Stage stage = new Stage();
-            stage.setTitle("Choose DataSet");
+            stage.setTitle("Summarize");
             FXMLLoader fxmlLoader = new FXMLLoader();
             Parent root = fxmlLoader.load(getClass().getResource("Start.fxml").openStream());
             Scene scene = new Scene(root, 550, 300);
@@ -48,22 +56,49 @@ public class ViewController {
             StartController st = fxmlLoader.getController();
             st.set(stage, m);
             stage.show();
-
-
         } catch (Exception e) {
 
         }
     }
 
     //zohar!!
-        public void reset(){
-       m.reset(st.txt_posting.getText());
+    public void reset() {
+        m.reset(this.txt_posting.getText());
     }
+
     public void show_cache() throws IOException {
         File file = new File("src/resource/stopword.txt");
         Desktop desktop = Desktop.getDesktop();
         if (file.exists()) desktop.open(file);
 
     }
+
+    //NOTICE that the corpus & the file of the stopwords need to be at the same directory!
+    public void choose_corpus() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory =
+                directoryChooser.showDialog(null);
+
+        if (selectedDirectory == null) {
+            txt_corpus.setText("No Directory selected");
+        } else {
+            txt_corpus.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
+    // gives u the path where to save the the posting & dictionary.
+    //need to check that the return argument isn't null
+    public void choose_to_save() {
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        File selectedDirectory =
+                directoryChooser.showDialog(null);
+
+        if (selectedDirectory == null) {
+            txt_posting.setText("No Directory selected");
+        } else {
+            txt_posting.setText(selectedDirectory.getAbsolutePath());
+        }
+    }
+
 }
 
