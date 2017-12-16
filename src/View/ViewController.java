@@ -5,10 +5,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
@@ -24,7 +22,8 @@ public class ViewController {
     Model m;
     //   StartController st;
     @FXML
-    Button btn_reset,btn_start;
+
+   public Button btn_start;
     public TextField txt_corpus, txt_posting;
     public CheckBox check_stem;
 
@@ -46,9 +45,7 @@ public class ViewController {
     }
 
     public void load_start() {
-        btn_reset.setDisable(true);
       long time=  m.start(txt_corpus.getText(),txt_posting.getText(),check_stem.isSelected());
-      btn_reset.setDisable(false);
         try {
             Stage stage = new Stage();
             stage.setTitle("Summarize");

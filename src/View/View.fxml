@@ -12,11 +12,13 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.ViewController">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="14.0" layoutY="224.0" prefHeight="162.0" prefWidth="226.0" spacing="20.0" AnchorPane.rightAnchor="360.0">
+      <VBox alignment="TOP_CENTER" layoutX="181.0" layoutY="177.0" prefHeight="209.0" prefWidth="261.0" spacing="20.0" AnchorPane.rightAnchor="158.0">
          <children>
             <Button fx:id="btn_reset" mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="103.0" text="Reset" />
             <Button mnemonicParsing="false" onAction="#show_cache" prefHeight="25.0" prefWidth="103.0" text="Show Cache" />
             <Button mnemonicParsing="false" text="Show Dictionary" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="161.0" text="Save dictionary &amp; cache" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="163.0" text="Save dictionary &amp; cache" />
          </children>
       </VBox>
       <GridPane layoutX="18.0" layoutY="23.0" prefHeight="84.0" prefWidth="558.0">
@@ -31,14 +33,14 @@
         </rowConstraints>
          <children>
             <Label text="Choose Corpus &amp; StopWords:" textFill="#1a14d1" />
-            <Label prefHeight="17.0" prefWidth="219.0" text="Save Posring List, Cache &amp; Dictionary at:" textFill="#1a14d1" GridPane.rowIndex="1" />
+            <Label prefHeight="17.0" prefWidth="219.0" text="Save Posting List, Cache &amp; Dictionary at:" textFill="#1a14d1" GridPane.rowIndex="1" />
             <TextField fx:id="txt_corpus" prefHeight="25.0" prefWidth="231.0" GridPane.columnIndex="1" />
             <TextField fx:id="txt_posting" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#choose_corpus" prefHeight="25.0" prefWidth="73.0" text="Browse" GridPane.columnIndex="2" />
+            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#choose_corpus" prefHeight="25.0" prefWidth="73.0" text="Browse" GridPane.columnIndex="2" />
             <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#choose_to_save" prefHeight="25.0" prefWidth="74.0" text="Browse" GridPane.columnIndex="2" GridPane.rowIndex="1" />
          </children>
       </GridPane>
-      <Button fx:id="btn_start" layoutX="300.0" layoutY="126.0" mnemonicParsing="false" onAction="#load_start" prefHeight="25.0" prefWidth="106.0" text="Start Indexing" />
-      <CheckBox fx:id="check_stem" layoutX="153.0" layoutY="130.0" mnemonicParsing="false" text="Enable Stemming" />
+      <Button fx:id="btn_start" layoutX="462.0" layoutY="126.0" mnemonicParsing="false" onAction="#load_start" prefHeight="25.0" prefWidth="106.0" text="Start Indexing" />
+      <CheckBox fx:id="check_stem" layoutX="328.0" layoutY="130.0" mnemonicParsing="false" text="Enable Stemming" />
    </children>
 </AnchorPane>
