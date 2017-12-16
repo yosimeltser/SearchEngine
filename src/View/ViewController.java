@@ -1,5 +1,6 @@
 package View;
 
+import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,10 +21,11 @@ import java.util.Optional;
 public class ViewController {
     Stage primaryStage;
     Model m;
+    Load load;
     //   StartController st;
     @FXML
-
-   public Button btn_start;
+    public ProgressBar prg;
+    public Button btn_start;
     public TextField txt_corpus, txt_posting;
     public CheckBox check_stem;
 
@@ -31,6 +33,7 @@ public class ViewController {
         this.primaryStage = other;
         m = new Model();
         btn_start.setDisable(true);
+
     }
 
     public void closeProgram() {
@@ -45,7 +48,7 @@ public class ViewController {
     }
 
     public void load_start() {
-      long time=  m.start(txt_corpus.getText(),txt_posting.getText(),check_stem.isSelected());
+        long time = m.start(txt_corpus.getText(), txt_posting.getText(), check_stem.isSelected());
         try {
             Stage stage = new Stage();
             stage.setTitle("Summarize");
@@ -55,7 +58,7 @@ public class ViewController {
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             StartController st = fxmlLoader.getController();
-            st.set(stage, m,this,time);
+            st.set(stage, m, this, time);
             stage.show();
         } catch (Exception e) {
 
@@ -69,9 +72,29 @@ public class ViewController {
 
     public void show_cache() throws IOException {
 
-        File file = new File("src/resource/stopword.txt");
+        String path = txt_posting.getText();
+        if (path == null || path.equals("No Directory selected")) {
+            path = "";
+        } else {
+            path = path + "//";
+        }
+        File cache = new File(path + "Cache.txt");
         Desktop desktop = Desktop.getDesktop();
-        if (file.exists()) desktop.open(file);
+        if (cache.exists()) desktop.open(cache);
+
+    }
+
+    public void show_dictionary() throws IOException {
+
+        String path = txt_posting.getText();
+        if (path == null || path.equals("No Directory selected")) {
+            path = "";
+        } else {
+            path = path + "//";
+        }
+        File cache = new File(path + "Dictionary.txt");
+        Desktop desktop = Desktop.getDesktop();
+        if (cache.exists()) desktop.open(cache);
 
     }
 
@@ -102,6 +125,14 @@ public class ViewController {
         } else {
             txt_posting.setText(selectedDirectory.getAbsolutePath());
         }
+    }
+
+    public void load() {
+        load = new Load(txt_posting.getText());
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Loading was Successful");
     }
 
 }
