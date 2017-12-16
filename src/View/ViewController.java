@@ -68,12 +68,17 @@ public class ViewController {
     //zohar!!
     public void reset() {
         m.reset(this.txt_posting.getText());
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Cache, Dictionary & PostingList");
+        alert.show();
     }
 
     public void show_cache() throws IOException {
 
         String path = txt_posting.getText();
-        if (path == null || path.equals("No Directory selected")) {
+        if (path.equals("") || path.equals("No Directory selected")) {
             path = "";
         } else {
             path = path + "//";
@@ -87,7 +92,7 @@ public class ViewController {
     public void show_dictionary() throws IOException {
 
         String path = txt_posting.getText();
-        if (path == null || path.equals("No Directory selected")) {
+        if (path.equals("") || path.equals("No Directory selected")) {
             path = "";
         } else {
             path = path + "//";
@@ -133,6 +138,7 @@ public class ViewController {
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
         alert.setContentText("Loading was Successful");
+        alert.show();;
     }
 
 }
