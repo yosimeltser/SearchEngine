@@ -23,7 +23,6 @@ public class Parse {
         hyphen = Pattern.compile("--+");
         dot = Pattern.compile("[.]+");
         days = Pattern.compile("^\\d{1,2}$");
-
     }
 
     public  void setStopword(HashSet<String> stopword) {
@@ -31,7 +30,7 @@ public class Parse {
     }
 
     public LinkedList<ArrayList<String>> ParseFile(LinkedList<String> text) {
-        Docs = new LinkedList<ArrayList<String>>();
+        Docs = new LinkedList<>();
         Iterator<String> itr = text.iterator();
         // iterates all the files that came from readFile
         while (itr.hasNext()) {
@@ -277,15 +276,6 @@ public class Parse {
         } else {
             return s;
         }
-    }
-
-    //deleting dots & commas from the end of a sentence
-    private static String deleteDots(String s) {
-        if (s.contains(".") || s.contains(",")) {
-            String news = s.substring(0, s.length() - 1);
-            return news;
-        }
-        return s;
     }
 }
 

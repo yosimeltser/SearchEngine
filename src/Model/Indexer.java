@@ -58,6 +58,8 @@ public class Indexer {
         HashSet<String> cache = readCache();
         //Get Document Frequency
         HashMap<String, Integer> df = new StemmerGenerator().getDf();
+        //Get total Tf of a term
+        HashMap<String, Integer> totalTf= new StemmerGenerator().getSumtf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
         File folder = new File("PostingList");
@@ -112,7 +114,7 @@ public class Indexer {
                         brCache.write(best.term + PartialPosting(best.Link));
                         brCache.flush();
                         brCache.newLine();
-                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = " + cacheLine + " D = " + discLine);
+                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = " + cacheLine + " D = " + discLine +" sumTf= " + totalTf.get(best.term));
                         brDf.newLine();
                         brDf.flush();
                         cacheLine++;
@@ -122,7 +124,7 @@ public class Indexer {
                     //Pointer To Disc
                     // X - represents that we don't have the term in cache
                     else {
-                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = X" +" D = " + discLine);
+                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = X" +" D = " + discLine+" sumTf= " + totalTf.get(best.term));
                         brDf.newLine();
                         brDf.flush();
                         discLine++;
@@ -277,13 +279,14 @@ public class Indexer {
             tempList = hashMap.get(key);
             tempList.add(value);
         } else {
-            tempList = new LinkedList<BufferedReader>();
+            tempList = new LinkedList<>();
             tempList.add(value);
         }
         hashMap.put(key, tempList);
     }
-        public HashMap<String, Integer> SortCache() {
-        List sortedCache = sortByValues(new StemmerGenerator().getCache());
+
+/*        public HashMap<String, Integer> SortCache() {
+        List sortedCache = sortByValues(new StemmerGenerator().getSumtf());
         int i = 0;
             BufferedWriter br=null;
         HashMap<String, Integer> cache = new HashMap<>();
@@ -324,7 +327,7 @@ public class Indexer {
             }
         });
         return list;
-    }
+    }*/
     private termLine convertToTermLine(String line) {
         int index = line.indexOf("<");
         return new termLine(line.substring(0, index - 1), line.substring(index, line.length()));

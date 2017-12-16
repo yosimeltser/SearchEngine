@@ -22,7 +22,7 @@ public class StemmerGenerator {
     public static HashSet<String> stopword;
     //If we Stem the words after parse => stemOrNot=true Else stem=false
     public static boolean stemOrNot = true;
-    public static HashMap<String, Integer> cache = new HashMap<>();
+    public static HashMap<String, Integer> Sumtf = new HashMap<>();
     public static BufferedWriter docProperties;
     public StemmerGenerator(boolean _stemOrNot) {
         stemOrNot=_stemOrNot;
@@ -41,8 +41,8 @@ public class StemmerGenerator {
         return termDf;
     }
 
-    public HashMap<String, Integer> getCache() {
-        return cache;
+    public HashMap<String, Integer> getSumtf() {
+        return Sumtf;
     }
 
     public LinkedHashMap<String, LinkedList<Document>> chunkStem(LinkedList<ArrayList<String>> parsedDocs) {
@@ -108,10 +108,10 @@ public class StemmerGenerator {
                     doc.add(wordStemmed, k);
                     //Cache Memory
                     //sum of tf's in the whole corpus
-                    if (cache.containsKey(wordStemmed)) {
-                        cache.put(wordStemmed, cache.get(wordStemmed) + 1);
+                    if (Sumtf.containsKey(wordStemmed)) {
+                        Sumtf.put(wordStemmed, Sumtf.get(wordStemmed) + 1);
                     } else {
-                        cache.put(wordStemmed, 1);
+                        Sumtf.put(wordStemmed, 1);
                     }
                 }
             }

@@ -10,17 +10,13 @@ public class Model {
     public static void main(String[] args) {
 
     }
-
-    //No Directory selected
     public Model() {
         //initial stage
     }
-
     // path_corpus tells u where the corpus directory & the stopword file sits
     //path_to save tells you where to save the final posting list & the dictionary
     public long start(String path_corpus, String path_tosave, boolean stemOrNot) {
         try {
-            init();
             HashSet<String> stopword = null;
             stopword = DSstopwords(path_corpus);
             ReadFile Fr = new ReadFile(path_corpus + "\\corpus");
@@ -36,10 +32,8 @@ public class Model {
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
                 index.setDocs(StemmedDocs);
             }
-            //change
-            index.SortCache();
+            index.mergeFiles();
             long end = System.currentTimeMillis();
-            //delete all the temp posting list
             return (end / 10000);
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,21 +41,7 @@ public class Model {
         //never suppose to get here
         return 1;
     }
-
-    //deletes all files from the previous run
-    private void init() {
-        File tempPost = new File("PostingList");
-        if (!tempPost.exists()) {
-            new File("PostingList").mkdirs();
-        } else {
-            delete(tempPost);
-            new File("PostingList").mkdirs();
-        }
-        File docProp = new File("docProperties.txt");
-        docProp.delete();
-    }
-
-    // inserts all the stopwords into a hash
+    // inserts all the stop words into a hash
     private static HashSet<String> DSstopwords(String path) {
         HashSet<String> stopword = new HashSet<>();
         String line;
@@ -83,21 +63,7 @@ public class Model {
         }
         return stopword;
     }
-
-    private static void delete(File file) {
-        for (File childFile : file.listFiles()) {
-
-            if (childFile.isDirectory()) {
-                delete(childFile);
-            } else {
-                childFile.delete();
-            }
-        }
-        file.delete();
-    }
-
-
-    //delete the dictionary and the posting list, when event reset accursed
+    //delete the Dictionary,Cache and the Posting List, when event reset accursed
     public void reset(String path) {
         String Path;
         if (path == null || path.equals("No Directory selected")) {
@@ -109,12 +75,19 @@ public class Model {
         File postStem = new File(Path + "PostingListStem.txt");
         File postNotStem = new File(Path + "PostingListNoStem.txt");
         File Dictionary = new File(Path + "Dictionary.txt");
-        postStem.delete();
-        postNotStem.delete();
-        Dictionary.delete();
-        cache.delete();
+        if (cache.exists()){
+            cache.delete();
+        }
+        if (postStem.exists()){
+            postStem.delete();
+        }
+        if (postNotStem.exists()){
+            postNotStem.delete();
+        }
+        if (Dictionary.exists()){
+            Dictionary.delete();
+        }
     }
-
     //returns array of string
     //1 element ->  Index Size
     //2 element -> Cache
