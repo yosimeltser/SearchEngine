@@ -21,8 +21,8 @@ public class Screen extends Application {
         Parent root = null;
         try {
             root = fxmlLoader.load(getClass().getResource("View.fxml").openStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+         //   e.printStackTrace();
         }
         Scene scene = new Scene(root, 600, 500);
         primaryStage.setScene(scene);
