@@ -5,23 +5,23 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-
+//this class responsible to stem the chunk if the user choose the option
+//and in addition sorts the data stricture that holds the temp posting list.
 public class StemmerGenerator {
     private Stemmer stem;
     LinkedList<ArrayList<String>> ParsedDocs;
-    //represents  docs list of 100 files
-    //LinkedList<Document> Docs = new LinkedList<>() ;
+    //temp is the unsorted posting list
     public HashMap<String, LinkedList<Document>> temp;
+    //termToDocs is after sorting the temp HashMap
     public LinkedHashMap<String, LinkedList<Document>> termToDocs;
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap<String, Integer> termDf = new HashMap<>();
+    //holds all the words that were stem, for no Stemming them again
     public static HashMap<String, String> already_seen = new HashMap<>();
-    private Indexer index;
-    //Dictionary
-    int tHold;
     public static HashSet<String> stopword;
     //If we Stem the words after parse => stemOrNot=true Else stem=false
     public static boolean stemOrNot = true;
+    //holds all the occurrences of the term in the corpus
     public static HashMap<String, Integer> Sumtf = new HashMap<>();
     public static BufferedWriter docProperties;
     public StemmerGenerator(boolean _stemOrNot) {
@@ -44,7 +44,7 @@ public class StemmerGenerator {
     public HashMap<String, Integer> getSumtf() {
         return Sumtf;
     }
-
+    //stems the whole chunk if asked, and sort the temp posting list
     public LinkedHashMap<String, LinkedList<Document>> chunkStem(LinkedList<ArrayList<String>> parsedDocs) {
         stem = new Stemmer();
         ParsedDocs = parsedDocs;
@@ -80,7 +80,6 @@ public class StemmerGenerator {
                     wordStemmed = s;
                 }
                 //Already seen the world, get from the dictionary
-
                 //Clean Stop Words
                 if (stopword.contains(wordStemmed)) {
                     wordStemmed = "";
@@ -104,7 +103,7 @@ public class StemmerGenerator {
                         }
 
                     }
-                    //tf
+                    //tf , the responsibility of the add function in document
                     doc.add(wordStemmed, k);
                     //Cache Memory
                     //sum of tf's in the whole corpus
@@ -141,8 +140,8 @@ public class StemmerGenerator {
                 }
             });
         }
-        //Sort Hash Map
-        //Replace Tree Map
+        //Sorts the Hash Map
+        //Replace Tree Map, for better prefoemence
         ArrayList<String> arr = new ArrayList<>(temp.keySet());
         Collections.sort(arr);
         for (int i = 0; i < arr.size(); i++) {

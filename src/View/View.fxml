@@ -14,11 +14,10 @@
    <children>
       <VBox alignment="TOP_CENTER" layoutX="181.0" layoutY="177.0" prefHeight="209.0" prefWidth="261.0" spacing="20.0" AnchorPane.rightAnchor="158.0">
          <children>
-            <Button fx:id="btn_reset" alignment="CENTER" mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="103.0" text="Reset" />
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#show_cache" prefHeight="25.0" prefWidth="103.0" text="Show Cache" />
-            <Button alignment="CENTER" mnemonicParsing="false" text="Show Dictionary" />
-            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="161.0" text="Save dictionary &amp; cache" />
-            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="163.0" text="Load dictionary &amp; cache" />
+            <Button fx:id="btn_reset" alignment="CENTER" mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="160.0" text="Reset" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#show_cache" prefHeight="25.0" prefWidth="160.0" text="Show Cache" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#show_dictionary" prefHeight="25.0" prefWidth="160.0" text="Show Dictionary" />
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#load" prefHeight="25.0" prefWidth="160.0" text="Load dictionary &amp; cache" />
          </children>
       </VBox>
       <GridPane layoutX="18.0" layoutY="23.0" prefHeight="84.0" prefWidth="558.0">

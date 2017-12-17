@@ -1,8 +1,9 @@
 package Model;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
-
+//RESPOSIBLE MERGING THE TEMPORERY POSTING LIST
 public class Indexer {
     LinkedHashMap<String, LinkedList<Document>> Docs;
     HashMap<String, Integer> termDf;
@@ -11,15 +12,15 @@ public class Indexer {
     public int cacheLine;
     public static boolean stemOrNot;
     public String Path;
-    public Indexer(String _path , boolean _stemOrNot) {
+
+    public Indexer(String _path, boolean _stemOrNot) {
         discLine = 0;
         cacheLine = 0;
         stemOrNot = _stemOrNot;
-        if (_path.equals("") || _path.equals("No Directory selected")  ){
-            Path="";
-        }
-        else {
-            Path=_path+"//";
+        if (_path.equals("") || _path.equals("No Directory selected")) {
+            Path = "";
+        } else {
+            Path = _path + "//";
         }
     }
 
@@ -30,12 +31,17 @@ public class Indexer {
 
     private void tempPosting() {
         BufferedWriter bw = null;
+        File dir = new File( "TempPostingList");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
         try {
-            bw = new BufferedWriter(new FileWriter("PostingList//postingList" + i + ".txt"));
+            bw = new BufferedWriter(new FileWriter("TempPostingList//postingList" + i + ".txt"));
             i++;
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         for (Map.Entry<String, LinkedList<Document>> entry : Docs.entrySet()) {
             String key = entry.getKey();
             LinkedList<Document> value = entry.getValue();
@@ -51,15 +57,14 @@ public class Indexer {
             }
         }
     }
-
-
+//KIND OF EXTERNAL MERGE SORT
     public void mergeFiles() {
         //Sorting Cache
         HashSet<String> cache = readCache();
         //Get Document Frequency
         HashMap<String, Integer> df = new StemmerGenerator().getDf();
         //Get total Tf of a term
-        HashMap<String, Integer> totalTf= new StemmerGenerator().getSumtf();
+        HashMap<String, Integer> totalTf = new StemmerGenerator().getSumtf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
         File folder = new File("PostingList");
@@ -95,14 +100,13 @@ public class Indexer {
                 k++;
             }
             BufferedWriter bufferedWriter;
-            if (stemOrNot){
-                 bufferedWriter=  new BufferedWriter(new FileWriter(Path+"PostingListStem.txt"));
+            if (stemOrNot) {
+                bufferedWriter = new BufferedWriter(new FileWriter(Path + "PostingListStem.txt"));
+            } else {
+                bufferedWriter = new BufferedWriter(new FileWriter(Path + "PostingListNoStem.txt"));
             }
-            else {
-                bufferedWriter =  new BufferedWriter(new FileWriter(Path+"PostingListNoStem.txt"));
-            }
-            BufferedWriter brCache = new BufferedWriter(new FileWriter(Path+"Cache.txt"));
-            BufferedWriter brDf = new BufferedWriter(new FileWriter(Path+"Dictionary.txt"));
+            BufferedWriter brCache = new BufferedWriter(new FileWriter(Path + "Cache.txt"));
+            BufferedWriter brDf = new BufferedWriter(new FileWriter(Path + "Dictionary.txt"));
             while ((readFromFileHash.size() != 0 || pQ.size() != 0)) {
                 //Move The Best Choice Into The Disc
                 termLine best = pQ.poll();
@@ -114,7 +118,7 @@ public class Indexer {
                         brCache.write(best.term + PartialPosting(best.Link));
                         brCache.flush();
                         brCache.newLine();
-                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = " + cacheLine + " D = " + discLine +" sumTf= " + totalTf.get(best.term));
+                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = " + cacheLine + " D = " + discLine + " sumTf= " + totalTf.get(best.term));
                         brDf.newLine();
                         brDf.flush();
                         cacheLine++;
@@ -124,7 +128,7 @@ public class Indexer {
                     //Pointer To Disc
                     // X - represents that we don't have the term in cache
                     else {
-                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = X" +" D = " + discLine+" sumTf= " + totalTf.get(best.term));
+                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = X" + " D = " + discLine + " sumTf= " + totalTf.get(best.term));
                         brDf.newLine();
                         brDf.flush();
                         discLine++;
@@ -179,7 +183,7 @@ public class Indexer {
 
     }
 
-    //Return until 150 Doc for each term
+    //Return 150 Doc for each term, or less.
     private String PartialPosting(String posting) {
         int counter = 0;
         StringBuilder st = new StringBuilder(256);
@@ -191,7 +195,7 @@ public class Indexer {
         }
         return st.toString();
     }
-
+    //Reads 10,000 words from the files we made pre-running the program.
     private HashSet<String> readCache() {
         HashSet<String> cache = new HashSet<>();
         try {
@@ -210,6 +214,7 @@ public class Indexer {
         }
         return cache;
     }
+
     //MERGING VALUES EQUALS KEYS
     //FOR EXAMPLE DOG->D1 AND DOG->D2 => DOG->D1,D2
     private String mergePostEqualTerms(String link, String link1) {
@@ -284,50 +289,52 @@ public class Indexer {
         }
         hashMap.put(key, tempList);
     }
+    //Help sorting functions that we used before running the program
+    //there are not relevant to the running proccess
 
-/*        public HashMap<String, Integer> SortCache() {
-        List sortedCache = sortByValues(new StemmerGenerator().getSumtf());
-        int i = 0;
-            BufferedWriter br=null;
-        HashMap<String, Integer> cache = new HashMap<>();
-            try {
-                PrintWriter pw = new PrintWriter(new File("final.csv"));
-                StringBuilder sb = new StringBuilder();
-                sb.append("term");
-                sb.append(',');
-                sb.append("sumTf");
-                sb.append('\n');
-                pw.write(sb.toString());
-                for (Iterator it = sortedCache.iterator(); it.hasNext()&& i < 10000;) {
-                    Map.Entry entry = (Map.Entry) it.next();
-                    cache.put((String) entry.getKey(), (Integer) entry.getValue());
-                    sb = new StringBuilder();
-                    sb.append(i);
+    /*        public HashMap<String, Integer> SortCache() {
+            List sortedCache = sortByValues(new StemmerGenerator().getSumtf());
+            int i = 0;
+                BufferedWriter br=null;
+            HashMap<String, Integer> cache = new HashMap<>();
+                try {
+                    PrintWriter pw = new PrintWriter(new File("final.csv"));
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("term");
                     sb.append(',');
-                    sb.append(( entry.getValue().toString()));
+                    sb.append("sumTf");
                     sb.append('\n');
-                    i++;
                     pw.write(sb.toString());
+                    for (Iterator it = sortedCache.iterator(); it.hasNext()&& i < 10000;) {
+                        Map.Entry entry = (Map.Entry) it.next();
+                        cache.put((String) entry.getKey(), (Integer) entry.getValue());
+                        sb = new StringBuilder();
+                        sb.append(i);
+                        sb.append(',');
+                        sb.append(( entry.getValue().toString()));
+                        sb.append('\n');
+                        i++;
+                        pw.write(sb.toString());
+                    }
+                    pw.close();
                 }
-                pw.close();
-            }
-          catch (Exception e){
-              System.out.println("shit");
-            }
-        return cache;
-    }
+              catch (Exception e){
+                  System.out.println("shit");
+                }
+            return cache;
+        }
 
-    private static List sortByValues(HashMap map) {
-        List list = new LinkedList(map.entrySet());
-        // Defined Custom Comparator here
-        Collections.sort(list, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                return ((Comparable) ((Map.Entry) (o2)).getValue())
-                        .compareTo(((Map.Entry) (o1)).getValue());
-            }
-        });
-        return list;
-    }*/
+        private static List sortByValues(HashMap map) {
+            List list = new LinkedList(map.entrySet());
+            // Defined Custom Comparator here
+            Collections.sort(list, new Comparator() {
+                public int compare(Object o1, Object o2) {
+                    return ((Comparable) ((Map.Entry) (o2)).getValue())
+                            .compareTo(((Map.Entry) (o1)).getValue());
+                }
+            });
+            return list;
+        }*/
     private termLine convertToTermLine(String line) {
         int index = line.indexOf("<");
         return new termLine(line.substring(0, index - 1), line.substring(index, line.length()));

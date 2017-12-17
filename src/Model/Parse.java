@@ -2,19 +2,17 @@ package Model;
 import java.util.*;
 import java.util.regex.Pattern;
 
-
+//THE CLASS PARSE IS RESPONSIBLE OF: TRANSFORM TOKEN TO TERMS.
 public class Parse {
 
     private static Pattern whitespace = Pattern.compile("\\s+");
-
     public static HashSet<String> stopword;
     private LinkedList<ArrayList<String>> Docs;
     private Iterator<String> itr;
     Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy, hyphen, dot, days;
-    //make data structure for stop words
 
     public Parse() {
-        //prepare the hash for all the stop words
+        //WE USE THE PATTERN OBJECT BECAUSE WE WANT TO COMPILE THE REGULAR EXPRESSION ONLY ONCE, FOR BETTER PREFOEMENCE
         del_chars = Pattern.compile("[^\\w && [^%.-]]+");
         round_up = Pattern.compile("\\d+\\.\\d+");
         yyyy_yy = Pattern.compile("^\\d{4}?$|^\\d{2}?$");
@@ -32,15 +30,14 @@ public class Parse {
     public LinkedList<ArrayList<String>> ParseFile(LinkedList<String> text) {
         Docs = new LinkedList<>();
         Iterator<String> itr = text.iterator();
-        // iterates all the files that came from readFile
+        // iterates all the files that came from readFile (CHUNK)
         while (itr.hasNext()) {
             String s = itr.next();
             int x;
             ArrayList<String> need_to_parse = new ArrayList<>(Arrays.asList(whitespace.split(s)));
-            //i=1 because the first term in the string is the DOC_NUMBER
+            //i=1 because the first term in the string is the DOC_NUMBER, and we don't won't to parse it
             for (int i = 1; i < need_to_parse.size(); i++) {
                 delTags(need_to_parse, i);
-                //first thing check if the word isn't a stop word
                 deleteChars(need_to_parse, i);
                 if (deleteStop(i, need_to_parse) && !need_to_parse.get(i).equals("")) {
                     USA(need_to_parse, i);
@@ -74,7 +71,9 @@ public class Parse {
         need_to_parse.set(i, hyphen.matcher(need_to_parse.get(i)).replaceAll(""));
         need_to_parse.set(i, del_chars.matcher(need_to_parse.get(i)).replaceAll(""));
     }
-    //
+    //coverts a string of capital letter into lower case
+    //in addition, if there is a couple of words in a row that start with capital letter, we set it is a one enter in the dictionary
+    //for example Zohar Yosi Cry-> zohar,yosi,cry, zohar yosi cry
     private int capitalLetters(ArrayList<String> need_to_parse, int i) {
         int index = i;
         // deleteChars(need_to_parse,index);
@@ -126,7 +125,7 @@ public class Parse {
         return true;
     }
 
-    //NEW RULE
+    //2 NEW RULE
     //We have noticed that the token U.S has a lot of instances
     //So we decided that there is more chances that the user serached for "usa" instead U.S.
     private static void USA(ArrayList<String> need_to_parse, int i) {
@@ -135,11 +134,10 @@ public class Parse {
         }
     }
 
-    //returns the number of a month if  string s is a month
+    //returns the number of a month if the string s represents a month
     private static int checkIfMonth(String s) {
         //check if to define it as static at the beginning of the class
         String[] month = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        //    s = deleteDots(s);
         for (int i = 0; i < month.length; i++) {
             if (month[i].equalsIgnoreCase(s))
                 return i + 1;
@@ -149,7 +147,7 @@ public class Parse {
 
     //Example: from 3.55555 -> 3.56
     //converts the second digit after the floating point up
-    //PLUS IF NOT A NUMBER DELETE THE DOTS
+    //PLUS IF S IS NOT A NUMBER, DELETE THE DOTS
     private String roudUp(String s) {
         if (round_up.matcher(s).matches()) {
             double x = Double.parseDouble(s);
@@ -171,27 +169,23 @@ public class Parse {
             s = s.replaceAll("%", "percent");
             return s;
         } else return s;
-
-        //  return Pattern.compile("%|perecentge").matcher(s).replaceAll(" percent");
     }
 
     private int month_year(int x, ArrayList<String> arr, int i) {
         String s = "";
         // in order to display months with zero
+        //for example 3->03
         if (x < 10)
             s = "0" + x;
 
         else {
             s = x + "";
         }
-
         //fits to the next patterns
         //DDth Month YYYY, DD Month YYYY , DD Month YY , Month Year
-        // TRY
         if (i + 1 < arr.size()) {
             deleteChars(arr, i + 1);
             arr.set(i + 1, roudUp(arr.get(i + 1)));
-
             if (i + 1 < arr.size() && yyyy_yy.matcher(arr.get(i + 1)).matches()) {
                 arr.set(i + 1, /*deleteDots*/(arr.get(i + 1)));
                 //DDth Month YYYY
@@ -257,7 +251,7 @@ public class Parse {
             arr.set(i, "");
             return i;
         }
-        //NEW RULE
+        //NEW RULE 2
         //first rule
         //22-23 January => 22/01 23/01
         if (i > 0 && Pattern.compile("^\\d{2}-\\d{2}$").matcher(arr.get(i - 1)).matches()) {

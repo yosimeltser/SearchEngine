@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-
+//THIS CLASS JOB IS TO CONNECT BETWEEN ALL OF THE CLASSES IN THE WHOLE PROJECT
+//IN ADDITION, THERE IS AN INTERACTION BETWEEN THE MODEL AND THE VIEW CLASSES THAT MAKES THE CODE MODULAR TO CHANGES.
 public class Model {
     public static void main(String[] args) {
 
     }
     public Model() {
-        //initial stage
+        //empty constractor
     }
     // path_corpus tells u where the corpus directory & the stopword file sits
     //path_to save tells you where to save the final posting list & the dictionary
@@ -26,7 +27,7 @@ public class Model {
             StemmerGenerator StG = new StemmerGenerator(stemOrNot);
             StG.setStopWords(stopword);
             Indexer index = new Indexer(path_tosave, stemOrNot);
-            for (int file = 0; file <= 72; file++) {
+            for (int file = 0; file <= 3; file++) {
                 LinkedList<String> Documents = Fr.fileReader();
                 LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);

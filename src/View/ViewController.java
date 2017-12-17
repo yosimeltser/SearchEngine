@@ -65,7 +65,7 @@ public class ViewController {
         }
     }
 
-    //zohar!!
+
     public void reset() {
         m.reset(this.txt_posting.getText());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -138,7 +138,7 @@ public class ViewController {
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
         alert.setContentText("Loading was Successful");
-        alert.show();;
+        alert.show();
     }
 
 }

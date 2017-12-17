@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+//THIS FILES REPRESENTS THE LOAD OF THE FILES FROM THE DISC TO THE DATA STRACTURS
 public class Load {
     ArrayList<String> loadedCache;
     HashMap <String,String> dictionary;
@@ -41,7 +41,7 @@ public class Load {
 
         }
     }
-
+    //BRUTE FORCE LOAD, STRING BY STRING TO THE ARRAY LIST
     public void loadCache(String path ) {
         try{
             BufferedReader br = new BufferedReader(new FileReader(path + "Cache.txt"));

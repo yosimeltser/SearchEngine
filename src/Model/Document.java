@@ -1,7 +1,7 @@
 package Model;
 import java.util.HashMap;
 import java.util.Map;
-
+//THE CLASS REPRESENTS EACH DOCUMENT IN THE CORPUS
 public class Document {
     int docLength;
     // public HashMap <String,Integer> termFr;
@@ -14,10 +14,6 @@ public class Document {
     public Document(String _docId) {
         this.docId = _docId;
         terms = new HashMap<>();
-    }
-
-    public void addDocLength(int _docLength) {
-        this.docLength = _docLength;
     }
 
     public boolean contains(String s) {
@@ -35,10 +31,12 @@ public class Document {
         }
     }
 
+    //sets the size of the document
     public void setSize(int _size) {
         this.docLength = _size;
     }
 
+    //sets the term that has the highest TF
     public void setMaxTf() {
         maxEntry = null;
         for (Map.Entry<String, TermData> entry : terms.entrySet()) {
@@ -57,7 +55,8 @@ public class Document {
         }
 
     }
-
+    //sets the number of word per document
+    //with out repeats
     private void uniqueWords() {
         unique = terms.size();
     }

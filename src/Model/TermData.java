@@ -1,6 +1,6 @@
 package Model;
 import java.util.Comparator;
-
+// saves all the data below about a term
 public class TermData implements Comparator ,Comparable {
     String name;
     int tf;
@@ -12,7 +12,7 @@ public class TermData implements Comparator ,Comparable {
         this.tf = 1;
 
     }
-
+// increment the tf of a word in a document in 1.
     public void increment() {
         this.tf++;
     }
@@ -33,7 +33,7 @@ public class TermData implements Comparator ,Comparable {
         TermData t1 = (TermData) o;
         return this.name.compareTo(t1.name);
     }
-
+// returns the index where the word appeared in the document for the first time
     public int getFirst_index() {
         return first_index;
     }

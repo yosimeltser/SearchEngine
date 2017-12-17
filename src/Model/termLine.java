@@ -1,6 +1,9 @@
 package Model;
 import java.util.Comparator;
-
+//holds one line of a posting list
+//term represents the key
+//link represents all the documents that the term is occurrence
+//both the hash function and the compare function are activated on the string term only.
 public class termLine implements Comparator, Comparable {
     String term;
     String Link;

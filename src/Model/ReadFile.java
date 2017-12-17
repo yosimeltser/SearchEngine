@@ -17,7 +17,7 @@ public class ReadFile {
         listOfFiles = folder.listFiles();
    }
     public int i=0;
-    //method responsible for reading files and transfer them into data stractures
+    //this method responsible for reading files and transfer them into data stracturs
    public  LinkedList <String> fileReader (){
        BufferedReader br = null;
        FileReader fr = null;
@@ -26,8 +26,7 @@ public class ReadFile {
        for (; i < listOfFiles.length; i++) {
            System.out.println(i);
            // each time we read 25 files
-           //one more file added to the chunk of 100 files
-           //transfer a chunk to the parser when reaches to threshold
+           //transfer a chunk to the parser when the counter reaches to threshold
            if (counter==25){
                counter=0;
                return documents;
