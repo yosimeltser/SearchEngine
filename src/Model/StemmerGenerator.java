@@ -88,14 +88,17 @@ public class StemmerGenerator {
                 if (!wordStemmed.equals("")) {
                     //df
                     if (!doc.contains(wordStemmed)) {
+                        //ADDS THE NEW DOC TO THE LIST
                         if (temp.containsKey(wordStemmed)) {
                             temp.get(wordStemmed).addFirst(doc);
                         } else {
+                            // IT'S NOT IN TEMP. CREATE NEW LIST AND ADD IT TO TEMP
                             LinkedList<Document> docs = new LinkedList<>();
                             docs.add(doc);
                             temp.put(wordStemmed, docs);
                         }
-                        //First time that we see the term in doc
+
+                        //First time that we see the term in THIS CHUNK
                         if (termDf.containsKey(wordStemmed)) {
                             termDf.put(wordStemmed, termDf.get(wordStemmed) + 1);
                         } else {

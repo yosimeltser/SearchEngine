@@ -16,7 +16,7 @@ public class Screen extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("My Application!");
+        primaryStage.setTitle("Information Retrieval");
         FXMLLoader fxmlLoader = new FXMLLoader();
         Parent root = null;
         try {

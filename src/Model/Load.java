@@ -12,7 +12,7 @@ public class Load {
         if (path.equals("") || path.equals("No Directory selected")) {
             path = "";
         } else {
-            path = path + "//";
+            path = path + "\\";
         }
         dictionary=new HashMap<>();
         loadedCache= new ArrayList<>();
@@ -27,15 +27,15 @@ public class Load {
             BufferedReader br = new BufferedReader(new FileReader(path + "Dictionary.txt"));
             String line="";
             while ((line = br.readLine()) != null) {
-                String []arr= line.split(" ");
-                System.out.println(line);
-                if (arr[4]=="C=X"){
-                    dictionary.put( arr[1],arr[3]+"D"+arr[6]);
+                String []arr= line.split("\\*");
+                if (arr[4].equals("C=X")){
+                    dictionary.put( arr[1],arr[3]+"D"+arr[6]+"TTF"+arr[8]);
                 }
                 else {
-                    dictionary.put(arr[1],arr[3]+"C"+arr[5]+"D"+arr[7]);
+                    dictionary.put(arr[1],arr[3]+"C"+arr[5]+"D"+arr[7]+"TTF"+arr[9]);
                 }
             }
+            br.close();
         }
         catch (Exception e){
 
@@ -47,7 +47,6 @@ public class Load {
             BufferedReader br = new BufferedReader(new FileReader(path + "Cache.txt"));
             String line="";
             while ((line = br.readLine()) != null) {
-                System.out.println(line);
                 loadedCache.add(line);
             }
             br.close();

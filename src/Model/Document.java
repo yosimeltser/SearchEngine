@@ -17,6 +17,7 @@ public class Document {
     }
 
     public boolean contains(String s) {
+
         return terms.containsKey(s);
     }
 

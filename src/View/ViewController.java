@@ -48,7 +48,13 @@ public class ViewController {
     }
 
     public void load_start() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Please wait for the process to end");
+        alert.show();
         long time = m.start(txt_corpus.getText(), txt_posting.getText(), check_stem.isSelected());
+        alert.close();
         try {
             Stage stage = new Stage();
             stage.setTitle("Summarize");
@@ -71,7 +77,7 @@ public class ViewController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-        alert.setContentText("Cache, Dictionary & PostingList");
+        alert.setContentText("Cache, Dictionary & PostingList deleted");
         alert.show();
     }
 

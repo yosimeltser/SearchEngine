@@ -8,9 +8,7 @@ import java.util.LinkedList;
 //THIS CLASS JOB IS TO CONNECT BETWEEN ALL OF THE CLASSES IN THE WHOLE PROJECT
 //IN ADDITION, THERE IS AN INTERACTION BETWEEN THE MODEL AND THE VIEW CLASSES THAT MAKES THE CODE MODULAR TO CHANGES.
 public class Model {
-    public static void main(String[] args) {
 
-    }
     public Model() {
         //empty constractor
     }
@@ -27,7 +25,7 @@ public class Model {
             StemmerGenerator StG = new StemmerGenerator(stemOrNot);
             StG.setStopWords(stopword);
             Indexer index = new Indexer(path_tosave, stemOrNot);
-            for (int file = 0; file <= 3; file++) {
+            for (int file = 0; file <= 72; file++) {
                 LinkedList<String> Documents = Fr.fileReader();
                 LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
@@ -67,10 +65,10 @@ public class Model {
     //delete the Dictionary,Cache and the Posting List, when event reset accursed
     public void reset(String path) {
         String Path;
-        if (path == null || path.equals("No Directory selected")) {
+        if (path.equals("")|| path.equals("No Directory selected")) {
             Path = "";
         } else {
-            Path = path + "//";
+            Path = path + "\\";
         }
         File cache = new File(Path + "Cache.txt");
         File postStem = new File(Path + "PostingListStem.txt");
@@ -88,6 +86,7 @@ public class Model {
         if (Dictionary.exists()){
             Dictionary.delete();
         }
+        System.gc();
     }
     //returns array of string
     //1 element ->  Index Size
@@ -98,7 +97,7 @@ public class Model {
         if (path.equals("") || path.equals("No Directory selected")) {
             Path = "";
         } else {
-            Path = path + "//";
+            Path = path + "\\";
         }
         long postSize;
         if (StemOrNot) {

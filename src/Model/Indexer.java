@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 //RESPOSIBLE MERGING THE TEMPORERY POSTING LIST
 public class Indexer {
     LinkedHashMap<String, LinkedList<Document>> Docs;
-    HashMap<String, Integer> termDf;
     public static int i = 0;
     public int discLine;
     public int cacheLine;
@@ -20,8 +19,9 @@ public class Indexer {
         if (_path.equals("") || _path.equals("No Directory selected")) {
             Path = "";
         } else {
-            Path = _path + "//";
+            Path = _path + "\\";
         }
+        i=0;
     }
 
     public void setDocs(LinkedHashMap<String, LinkedList<Document>> _docs) {
@@ -36,7 +36,7 @@ public class Indexer {
             dir.mkdir();
         }
         try {
-            bw = new BufferedWriter(new FileWriter("TempPostingList//postingList" + i + ".txt"));
+            bw = new BufferedWriter(new FileWriter("TempPostingList\\postingList" + i + ".txt"));
             i++;
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,7 +67,7 @@ public class Indexer {
         HashMap<String, Integer> totalTf = new StemmerGenerator().getSumtf();
         //Initial Stage
         //Upload 3 LINE FROM EACH FILE
-        File folder = new File("PostingList");
+        File folder = new File("TempPostingList");
         File[] listOfFiles = folder.listFiles();
         try {
             //BUFFER READER FOR EACH FILE
@@ -118,7 +118,7 @@ public class Indexer {
                         brCache.write(best.term + PartialPosting(best.Link));
                         brCache.flush();
                         brCache.newLine();
-                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = " + cacheLine + " D = " + discLine + " sumTf= " + totalTf.get(best.term));
+                        brDf.write("Key=*" +best.term+ "*DF=*"+ df.get(best.term) + "*C=*" + cacheLine + "*D=*" + discLine + "*sumTf=*" + totalTf.get(best.term));
                         brDf.newLine();
                         brDf.flush();
                         cacheLine++;
@@ -128,7 +128,7 @@ public class Indexer {
                     //Pointer To Disc
                     // X - represents that we don't have the term in cache
                     else {
-                        brDf.write("Key= " + best.term + " DF= " + df.get(best.term) + " C = X" + " D = " + discLine + " sumTf= " + totalTf.get(best.term));
+                        brDf.write("Key=*" + best.term + "*DF=*" + df.get(best.term) + "*C=X" + "*D=*" + discLine + "*sumTf=*" + totalTf.get(best.term));
                         brDf.newLine();
                         brDf.flush();
                         discLine++;

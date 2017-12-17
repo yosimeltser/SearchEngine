@@ -11,12 +11,14 @@ public class ReadFile {
     private final String path;
     //constructor accepts the path to the corpus
     File[] listOfFiles;
+    public int i=0;
     ReadFile(String path ) {
        this.path=path;
         File folder = new File(path);
         listOfFiles = folder.listFiles();
+        i=0;
    }
-    public int i=0;
+
     //this method responsible for reading files and transfer them into data stracturs
    public  LinkedList <String> fileReader (){
        BufferedReader br = null;
