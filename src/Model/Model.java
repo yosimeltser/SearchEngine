@@ -30,7 +30,7 @@ public class Model {
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
                 index.setDocs(StemmedDocs);
             }
-            index.mergeFiles();
+            //index.mergeFiles();
             long end = System.currentTimeMillis();
             return ((end-start )/ 1000);
         } catch (Exception e) {
@@ -41,20 +41,20 @@ public class Model {
     }
     //part2 engine engine!!!!
     //parse query
-    private  ArrayList<String> ParseQuery (String st){
-        LinkedList <String> arr=new LinkedList<>();
-        //not having doc number
-        String q="* " + st;
-        arr.addFirst(q);
-        Parse queryParse = new Parse();
-        queryParse.setStopword(stopword);
-        LinkedList<ArrayList<String>> ParsedQuery=queryParse.ParseFile(arr);
-        Stemmer s= new Stemmer();
-        Model.Searcher StQ = new Model.Searcher(stopword,s);
-        StQ.setParsedQuery(ParsedQuery.getFirst());
-        ArrayList<String> StemmedQuery=StQ.stem();
-        return StemmedQuery;
-    }
+//    private  ArrayList<String> ParseQuery (String st){
+//        LinkedList <String> arr=new LinkedList<>();
+//        //not having doc number
+//        String q="* " + st;
+//        arr.addFirst(q);
+//        Parse queryParse = new Parse();
+//        queryParse.setStopword(stopword);
+//        LinkedList<ArrayList<String>> ParsedQuery=queryParse.ParseFile(arr);
+//        Stemmer s= new Stemmer();
+//        Model.Searcher StQ = new Model.Searcher(stopword,s);
+//        StQ.setParsedQuery(ParsedQuery.getFirst());
+//        ArrayList<String> StemmedQuery=StQ.stem();
+//        return StemmedQuery;
+//    }
     // inserts all the stop words into a hash
     private static HashSet<String> DSstopwords(String path) {
         HashSet<String> stopword = new HashSet<>();

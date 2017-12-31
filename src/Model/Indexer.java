@@ -190,7 +190,7 @@ public class Indexer {
     private String PartialPosting(String posting) {
         int counter = 0;
         StringBuilder st = new StringBuilder(256);
-        for (int j = 0; j < posting.length() && counter < 150; j++) {
+        for (int j = 0; j < posting.length() && counter < 70; j++) {
             char c = posting.charAt(j);
             if ((c == ' '))
                 counter++;
