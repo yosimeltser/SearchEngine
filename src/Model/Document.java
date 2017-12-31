@@ -66,28 +66,45 @@ public class Document {
     private void uniqueWords() {
         unique = terms.size();
     }
-    private void DocWeight() {
+    public void DocWeight() {
         Load l = new Load();
         HashMap<String, String> dic= l.getDictionary();
         for (Map.Entry<String, TermData> entry : terms.entrySet()) {
-            int df=Integer.parseInt(dic.get(entry.getKey()));
-            int N= this.docLength;
-            int maxTf=this.maxTermFr;
-            int tf= entry.getValue().tf;
-            int index = entry.getValue().getFirst_index();
-            DocWeight=+func(df,N,maxTf,tf,index);
+            double df=getTermDF(entry.getKey(),dic);
+            if (df==-1) {
+                continue;
+            }
+            double N= this.docLength;
+            double maxTf=this.maxTermFr;
+            double tf= entry.getValue().tf;
+            double index = entry.getValue().getFirst_index();
+            DocWeight+=func(df,N,maxTf,tf,index);
         }
         DocWeight=Math.sqrt(DocWeight);
 
         try {
             BufferedWriter bufferedWriter= new BufferedWriter(new FileWriter("docs_weights.txt",true));
             bufferedWriter.write(docId + " "+DocWeight);
+            bufferedWriter.newLine();
             bufferedWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public double func(int df,int N,int tmaxTf,int tf,int index ){
-        return Math.pow((tf/tmaxTf)*((N-index)/N)*(Math.log10((N/df))),2);
+    private int getTermDF(String term, HashMap<String, String> dictionary) {
+        String s=dictionary.get(term);
+        int j=0;
+        String df="";
+        while (s!=null && !s.equals("")&& s.charAt(j)!='C' && s.charAt(j)!='D' ){
+            df+=s.charAt(j);
+            j++;
+        }
+        if (df.equals("")) {
+            return -1;
+        }
+        return Integer.parseInt(df);
+    }
+    public double func(double df,double N,double tmaxTf,double tf,double index ){
+        return Math.pow ((tf/tmaxTf)*((N-index)/N)*(Math.log10((N/df))),2);
     }
 }
