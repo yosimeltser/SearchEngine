@@ -1,9 +1,12 @@
 package Model;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 //THE CLASS REPRESENTS EACH DOCUMENT IN THE CORPUS
 public class Document {
-    int sumDocument;
+
     double DocWeight;
     int docLength;
     // public HashMap <String,Integer> termFr;
@@ -75,6 +78,14 @@ public class Document {
             DocWeight=+func(df,N,maxTf,tf,index);
         }
         DocWeight=Math.sqrt(DocWeight);
+
+        try {
+            BufferedWriter bufferedWriter= new BufferedWriter(new FileWriter("docs_weights.txt",true));
+            bufferedWriter.write(docId + " "+DocWeight);
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public double func(int df,int N,int tmaxTf,int tf,int index ){
         return Math.pow((tf/tmaxTf)*((N-index)/N)*(Math.log10((N/df))),2);
