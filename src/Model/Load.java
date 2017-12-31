@@ -7,7 +7,8 @@ import java.util.HashMap;
 //THIS FILES REPRESENTS THE LOAD OF THE FILES FROM THE DISC TO THE DATA STRACTURS
 public class Load {
     ArrayList<String> loadedCache;
-    HashMap <String,String> dictionary;
+    public static HashMap <String,String> dictionary;
+    public Load (){}
     public Load(String path ) {
         if (path.equals("") || path.equals("No Directory selected")) {
             path = "";
@@ -52,5 +53,9 @@ public class Load {
             br.close();
         }
         catch (Exception e){}
+    }
+
+    public HashMap<String, String> getDictionary() {
+        return dictionary;
     }
 }

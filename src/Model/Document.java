@@ -3,6 +3,8 @@ import java.util.HashMap;
 import java.util.Map;
 //THE CLASS REPRESENTS EACH DOCUMENT IN THE CORPUS
 public class Document {
+    int sumDocument;
+    double DocWeight;
     int docLength;
     // public HashMap <String,Integer> termFr;
     public HashMap<String, TermData> terms;
@@ -60,5 +62,21 @@ public class Document {
     //with out repeats
     private void uniqueWords() {
         unique = terms.size();
+    }
+    private void DocWeight() {
+        Load l = new Load();
+        HashMap<String, String> dic= l.getDictionary();
+        for (Map.Entry<String, TermData> entry : terms.entrySet()) {
+            int df=Integer.parseInt(dic.get(entry.getKey()));
+            int N= this.docLength;
+            int maxTf=this.maxTermFr;
+            int tf= entry.getValue().tf;
+            int index = entry.getValue().getFirst_index();
+            DocWeight=+func(df,N,maxTf,tf,index);
+        }
+        DocWeight=Math.sqrt(DocWeight);
+    }
+    public double func(int df,int N,int tmaxTf,int tf,int index ){
+        return Math.pow((tf/tmaxTf)*((N-index)/N)*(Math.log10((N/df))),2);
     }
 }

@@ -1,14 +1,13 @@
 package Model;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
+import java.util.*;
+
 //THIS CLASS JOB IS TO CONNECT BETWEEN ALL OF THE CLASSES IN THE WHOLE PROJECT
 //IN ADDITION, THERE IS AN INTERACTION BETWEEN THE MODEL AND THE VIEW CLASSES THAT MAKES THE CODE MODULAR TO CHANGES.
-public class Model {
 
+public class Model {
+    HashSet<String> stopword = null;
     public Model() {
         //empty constractor
     }
@@ -17,7 +16,7 @@ public class Model {
     public long start(String path_corpus, String path_tosave, boolean stemOrNot) {
         try {
             long start = System.currentTimeMillis();
-            HashSet<String> stopword = null;
+
             stopword = DSstopwords(path_corpus);
             ReadFile Fr = new ReadFile(path_corpus + "\\corpus");
             Parse parser = new Parse();
@@ -39,6 +38,22 @@ public class Model {
         }
         //never suppose to get here
         return 1;
+    }
+    //part2 engine engine!!!!
+    //parse query
+    private  ArrayList<String> ParseQuery (String st){
+        LinkedList <String> arr=new LinkedList<>();
+        //not having doc number
+        String q="* " + st;
+        arr.addFirst(q);
+        Parse queryParse = new Parse();
+        queryParse.setStopword(stopword);
+        LinkedList<ArrayList<String>> ParsedQuery=queryParse.ParseFile(arr);
+        Stemmer s= new Stemmer();
+        Model.Searcher StQ = new Model.Searcher(stopword,s);
+        StQ.setParsedQuery(ParsedQuery.getFirst());
+        ArrayList<String> StemmedQuery=StQ.stem();
+        return StemmedQuery;
     }
     // inserts all the stop words into a hash
     private static HashSet<String> DSstopwords(String path) {

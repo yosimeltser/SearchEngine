@@ -57,7 +57,7 @@ public class Indexer {
             }
         }
     }
-//KIND OF EXTERNAL MERGE SORT
+    //KIND OF EXTERNAL MERGE SORT
     public void mergeFiles() {
         //Sorting Cache
         HashSet<String> cache = readCache();
@@ -112,32 +112,35 @@ public class Indexer {
                 termLine best = pQ.poll();
                 LinkedList<BufferedReader> brArr = readFromFileHash.get(best);
                 //Unique Key
-                if (brArr.size() == 1) {
-                    //Write 30% Of The Cache Posting List
-                    if (cache.contains(best.term)) {
-                        brCache.write(best.term + PartialPosting(best.Link));
-                        brCache.flush();
-                        brCache.newLine();
-                        brDf.write("Key=*" +best.term+ "*DF=*"+ df.get(best.term) + "*C=*" + cacheLine + "*D=*" + discLine + "*sumTf=*" + totalTf.get(best.term));
-                        brDf.newLine();
-                        brDf.flush();
-                        cacheLine++;
-                        discLine++;
+                if (brArr.size() == 1 ) {
+                    if (totalTf.get(best.term)>2) {
+                        //Write 30% Of The Cache Posting List
+                        if (cache.contains(best.term)) {
+                            brCache.write(best.term + PartialPosting(best.Link));
+                            brCache.flush();
+                            brCache.newLine();
+                            brDf.write("Key=*" + best.term + "*DF=*" + df.get(best.term) + "*C=*" + cacheLine + "*D=*" + discLine + "*sumTf=*" + totalTf.get(best.term));
+                            brDf.newLine();
+                            brDf.flush();
+                            cacheLine++;
+                            discLine++;
+                        }
+                        //Write The Dictionary
+                        //Pointer To Disc
+                        // X - represents that we don't have the term in cache
+                        else {
+                            brDf.write("Key=*" + best.term + "*DF=*" + df.get(best.term) + "*C=X" + "*D=*" + discLine + "*sumTf=*" + totalTf.get(best.term));
+                            brDf.newLine();
+                            brDf.flush();
+                            discLine++;
+                        }
+
+                        //Write The Final Posting List
+                        String s = best.term + best.Link;
+                        bufferedWriter.write(s);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
                     }
-                    //Write The Dictionary
-                    //Pointer To Disc
-                    // X - represents that we don't have the term in cache
-                    else {
-                        brDf.write("Key=*" + best.term + "*DF=*" + df.get(best.term) + "*C=X" + "*D=*" + discLine + "*sumTf=*" + totalTf.get(best.term));
-                        brDf.newLine();
-                        brDf.flush();
-                        discLine++;
-                    }
-                    //Write The Final Posting List
-                    String s = best.term + best.Link;
-                    bufferedWriter.write(s);
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
                     //Read The Next Line If Exists
                     BufferedReader br = brArr.getFirst();
                     if (br != null) {
