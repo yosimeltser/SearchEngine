@@ -17,7 +17,7 @@ public class ExpandQuery {
         term_weight = new HashMap<>();
     }
 
-    public void expand() {
+    public HashMap<String,Double> expand() {
         try {
             String wikipediaApiJSON = "https://en.wikipedia.org/wiki/" + query;
             //connect to wikipedia with the one word query
@@ -46,6 +46,7 @@ public class ExpandQuery {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return term_weight;
     }
 
     private void insert_bolds(Elements bs) {
@@ -62,6 +63,7 @@ public class ExpandQuery {
     }
 
     private void insert_anchors(Elements as) {
+        int i=1;
         for (Element e :as) {
             if (term_weight.size() < 6) {
                 Element divGuarantee = e.parent();
@@ -69,7 +71,8 @@ public class ExpandQuery {
                     continue;
                 else {
                     //REMEMBER TO CHANGE
-                   term_weight.put(e.text(),0.7);
+                   term_weight.put(e.text(),Math.pow(0.7,i));
+                   i++;
                 }
             }
             else break;
@@ -77,6 +80,7 @@ public class ExpandQuery {
     }
 
     private void multiple_values(Elements data) {
+        int i=1;
         Elements li = data.select("ul").not("h2");
         Elements as = li.select("a");
         for (Element e : as) {
@@ -84,7 +88,7 @@ public class ExpandQuery {
                 Elements f = e.select("span");
                 if (f.size() > 0)
                     continue;
-                System.out.println(e.attr("title"));
+                term_weight.put(e.attr("title"),Math.pow(0.7,i));
             } else break;
         }
 
