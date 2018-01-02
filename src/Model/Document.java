@@ -84,7 +84,7 @@ public class Document {
 
         try {
             BufferedWriter bufferedWriter= new BufferedWriter(new FileWriter("docs_weights.txt",true));
-            bufferedWriter.write(docId + " "+DocWeight);
+            bufferedWriter.write(docId +"*"+DocWeight+"*"+maxTermFr+"*"+docLength);
             bufferedWriter.newLine();
             bufferedWriter.close();
         } catch (IOException e) {
