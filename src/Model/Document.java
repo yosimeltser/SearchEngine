@@ -105,6 +105,6 @@ public class Document {
         return Integer.parseInt(df);
     }
     public double func(double df,double N,double tmaxTf,double tf,double index ){
-        return Math.pow ((tf/tmaxTf)*((N-index)/N)*(Math.log10((N/df))),2);
+        return Math.pow ((tf/tmaxTf)*((N-index)/N)*(Math.log10((467767/df))),2);
     }
 }
