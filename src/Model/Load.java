@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 //THIS FILES REPRESENTS THE LOAD OF THE FILES FROM THE DISC TO THE DATA STRACTURS
 public class Load {
-    ArrayList<String> loadedCache;
+    public static ArrayList<String> loadedCache;
     public static HashMap <String,String> dictionary;
     public Load (){}
     public Load(String path ) {
@@ -23,6 +23,11 @@ public class Load {
     //Loads the dictionary into an hash map
     // key -> term
     // value -> df , pointer to cache if exists, pointer to disc
+
+    public static ArrayList<String> getLoadedCache() {
+        return loadedCache;
+    }
+
     public void loadDictionary(String path ) {
         try{
             BufferedReader br = new BufferedReader(new FileReader(path + "Dictionary.txt"));
