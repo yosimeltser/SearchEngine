@@ -17,7 +17,7 @@ public class ExpandQuery {
         term_weight = new HashMap<>();
     }
 
-    public HashMap<String,Double> expand() {
+    public HashMap<String, Double> expand() {
         try {
             String wikipediaApiJSON = "https://en.wikipedia.org/wiki/" + query;
             //connect to wikipedia with the one word query
@@ -27,7 +27,7 @@ public class ExpandQuery {
             //selects all the paragraphs
             Elements paragraphs = data.select("p");
             //checks if we have the query Can be interpreted to more than one term
-            if (paragraphs.first().text().contains(" may refer to:")) {
+            if (check_if_multipleValues(data)) {
                 multiple_values(data);
             } else {
                 //iterates the paragraphs and takes words that are in bold or anchor
@@ -37,7 +37,7 @@ public class ExpandQuery {
                         //check if we got any
                         if (bolds.size() > 0)
                             insert_bolds(bolds);
-                        insert_anchors( p.getElementsByTag("a"));
+                        insert_anchors(p.getElementsByTag("a"));
 
                     } else break;
                 }
@@ -63,24 +63,30 @@ public class ExpandQuery {
     }
 
     private void insert_anchors(Elements as) {
-        int i=1;
-        for (Element e :as) {
+        int i = 1;
+        for (Element e : as) {
             if (term_weight.size() < 6) {
                 Element divGuarantee = e.parent();
                 if (divGuarantee.is("sup"))
                     continue;
                 else {
                     //REMEMBER TO CHANGE
-                   term_weight.put(e.text(),Math.pow(0.7,i));
-                   i++;
+                    term_weight.put(e.text(), Math.pow(0.7, i));
+                    i++;
                 }
-            }
-            else break;
+            } else break;
         }
     }
 
+    private boolean check_if_multipleValues(Elements elements) {
+       Elements f= elements.select("td.mbox-text");
+       if(f.text().contains("disambiguation"))
+            return true;
+        else return false;
+    }
+
     private void multiple_values(Elements data) {
-        int i=1;
+        int i = 1;
         Elements li = data.select("ul").not("h2");
         Elements as = li.select("a");
         for (Element e : as) {
@@ -88,7 +94,7 @@ public class ExpandQuery {
                 Elements f = e.select("span");
                 if (f.size() > 0)
                     continue;
-                term_weight.put(e.attr("title"),Math.pow(0.7,i));
+                term_weight.put(e.attr("title"), Math.pow(0.7, i));
             } else break;
         }
 
