@@ -1,5 +1,6 @@
 package Model;
 import java.io.*;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import java.util.regex.Pattern;
 
 public class ReadFile {
     private final String path;
+    public static HashMap<String,String> docs_path= new HashMap<>();
     //constructor accepts the path to the corpus
     File[] listOfFiles;
     public int i=0;
@@ -51,6 +53,7 @@ public class ReadFile {
                                  line=Pattern.compile("<DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile("</DOCNO>").matcher(line).replaceAll("");
                                  line=Pattern.compile(" ").matcher(line).replaceAll("");
+                                 insert(line,s[0]);
                                  doc.append(line);
                                   doc.append(" ");
                              }
@@ -97,4 +100,22 @@ private static String moveForwardLines(BufferedReader line) throws IOException {
     else return "";
 
 }
+    public void insert(String doc,String path){
+       docs_path.put(doc,path);
+    }
+    public void print(){
+        try {
+            FileWriter fileWriter = new FileWriter("docs_path.txt");
+            BufferedWriter bufferedWriter=new BufferedWriter(fileWriter);
+            for(HashMap.Entry<String,String> entry : docs_path.entrySet()){
+                bufferedWriter.write(entry.getKey()+" "+entry.getValue());
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.close();
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
