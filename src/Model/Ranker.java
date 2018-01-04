@@ -1,8 +1,6 @@
 package Model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -10,7 +8,6 @@ import java.util.stream.Stream;
 
 public class Ranker {
     int querySize;
-
     public void setQuerySize(int querySize) {
         this.querySize = querySize;
     }
@@ -62,21 +59,26 @@ public class Ranker {
 
     public void rankWord(String term) {
         String s= dictionary.get(term);
+        if (s==null) {
+            return;
+        }
         int j=s.indexOf('C');
         String [] postLine={};
         //If the world is in the disc but not in the cache
         if (j==-1) {
             j=s.indexOf('D');
-            postLine = readFromFile(Integer.parseInt(s.substring(j+1,s.indexOf('s'))),"Dictionary");
+            int line=Integer.parseInt(s.substring(j+1,s.indexOf('S')));
+            postLine = readFromFile(line,"PostingListNoStem.txt");
         }
         //if the word is in the cache
         else {
             int line= Integer.parseInt(s.substring(j+1,s.indexOf('D')));
-            postLine=cache.get(line).split("[<>,//s+]");
+            String d=cache.get(line);
+            postLine=cache.get(line).split("[<>,\\s+]");
         }
         //starts from 1 hence the term in the 0 place
         for (int i=1;i<postLine.length;i++){
-            if (!postLine[i].equals(" ")) {
+            if (!postLine[i].equals(" ") && !postLine[i].equals("")) {
                 String docNumber=postLine[i];
                 long tf= Long.parseLong(postLine[++i]);
                 long index = Long.parseLong(postLine[++i]);
@@ -84,8 +86,26 @@ public class Ranker {
             }
         }
         docToRamkSorted=sortByValue(docToRank);;
+        writeTofile(docToRamkSorted);
     }
 
+    private void writeTofile(LinkedHashMap<String, Double> docToRamkSorted) {
+        try{
+            BufferedWriter rs = new BufferedWriter(new FileWriter("results.txt"));
+            for(Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
+                rs.write("374");
+                rs.write(" 0");
+                rs.write(" " + entry.getKey());
+                rs.write(" 100");
+                rs.write(" 0.1");
+                rs.write(" mt");
+                rs.newLine();
+                rs.flush();
+            }
+        }
+        catch (Exception e ) {
+        }
+    }
 
 
     private void weight(long df,String docNumber, long tf, long index) {
@@ -93,6 +113,7 @@ public class Ranker {
         double maxDocTf;
         double docSize;
         double oneWordQuery;
+        double place=0;
         try (BufferedReader br = new BufferedReader(new FileReader("docs_weights_NoStem.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -104,7 +125,14 @@ public class Ranker {
                     docRank = Double.parseDouble(docProp[1]);
                     maxDocTf = Double.parseDouble(docProp[2]);
                     docSize = Double.parseDouble(docProp[3]);
-                    oneWordQuery=(tf/maxDocTf)*((docSize-index)/docSize)*(Math.log10((467767/df)));
+                    //zohar+10 points
+                    if (place<200){
+                        place=Math.sqrt((docSize-index)/docSize);
+                    }
+                    else {
+                        place= (docSize-index)/docSize;
+                    }
+                    oneWordQuery=(tf/maxDocTf)*(place)*(Math.log10((467767/df)));
                     double cossin=oneWordQuery/((Math.sqrt(querySize))* docRank);
                     if (docToRank.containsKey(docNumber)) {
                         double addedValue=docToRank.get(docNumber)+cossin;
