@@ -24,7 +24,7 @@ public class Screen extends Application {
         } catch (Exception e) {
          //   e.printStackTrace();
         }
-        Scene scene = new Scene(root, 600, 500);
+        Scene scene = new Scene(root, 700, 500);
         primaryStage.setScene(scene);
         //--------------
         ViewController view = fxmlLoader.getController();

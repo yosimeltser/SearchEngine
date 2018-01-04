@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -24,7 +25,6 @@ public class ViewController {
     Load load;
     //   StartController st;
     @FXML
-    public ProgressBar prg;
     public Button btn_start;
     public TextField txt_corpus, txt_posting;
     public CheckBox check_stem;
@@ -81,32 +81,25 @@ public class ViewController {
         alert.show();
     }
 
-    public void show_cache() throws IOException {
+//    public void show_cache() throws IOException {
+//
+//        String path = txt_posting.getText();
+//        if (path.equals("") || path.equals("No Directory selected")) {
+//            path = "";
+//        } else {
+//            path = path + "//";
+//        }
+//        File cache = new File(path + "Cache.txt");
+//        Desktop desktop = Desktop.getDesktop();
+//        if (cache.exists()) desktop.open(cache);
+//
+//    }
 
-        String path = txt_posting.getText();
-        if (path.equals("") || path.equals("No Directory selected")) {
-            path = "";
-        } else {
-            path = path + "//";
-        }
-        File cache = new File(path + "Cache.txt");
-        Desktop desktop = Desktop.getDesktop();
-        if (cache.exists()) desktop.open(cache);
-
-    }
-
-    public void show_dictionary() throws IOException {
-
-        String path = txt_posting.getText();
-        if (path.equals("") || path.equals("No Directory selected")) {
-            path = "";
-        } else {
-            path = path + "//";
-        }
-        File cache = new File(path + "Dictionary.txt");
-        Desktop desktop = Desktop.getDesktop();
-        if (cache.exists()) desktop.open(cache);
-
+    public void choose_query() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose Queries File");
+        fileChooser.showOpenDialog(primaryStage);
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("TXT", "*.txt"));
     }
 
     //NOTICE that the corpus & the file of the stopwords need to be at the same directory!
@@ -126,17 +119,17 @@ public class ViewController {
 
     // gives u the path where to save the the posting & dictionary.
     //need to check that the return argument isn't null
-    public void choose_to_save() {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        File selectedDirectory =
-                directoryChooser.showDialog(null);
-
-        if (selectedDirectory == null) {
-            txt_posting.setText("No Directory selected");
-        } else {
-            txt_posting.setText(selectedDirectory.getAbsolutePath());
-        }
-    }
+//    public void choose_to_save() {
+//        DirectoryChooser directoryChooser = new DirectoryChooser();
+//        File selectedDirectory =
+//                directoryChooser.showDialog(null);
+//
+//        if (selectedDirectory == null) {
+//            txt_posting.setText("No Directory selected");
+//        } else {
+//            txt_posting.setText(selectedDirectory.getAbsolutePath());
+//        }
+//    }
 
     public void load() {
         load = new Load(txt_posting.getText());
