@@ -118,7 +118,7 @@ public class StemmerGenerator {
                 }
             }
             doc.setMaxTf();
-            doc.DocWeight();
+            //doc.DocWeight();
             try {
                 docProperties.write("doc num= " +doc.docId + " unique= " + doc.unique + " Max TF= " + doc.maxTermFr + " doc length="+ doc.docLength);
                 docProperties.newLine();

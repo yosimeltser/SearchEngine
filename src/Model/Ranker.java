@@ -8,6 +8,11 @@ import java.util.stream.Stream;
 
 public class Ranker {
     int querySize;
+    boolean stemOrNot;
+    public Ranker(boolean _stemOrNot) {
+        stemOrNot=_stemOrNot;
+    }
+
     public void setQuerySize(int querySize) {
         this.querySize = querySize;
     }
@@ -62,13 +67,20 @@ public class Ranker {
         if (s==null) {
             return;
         }
-        int j=s.indexOf('C');
+        int j=0;
+        j=s.indexOf('C');
         String [] postLine={};
         //If the world is in the disc but not in the cache
         if (j==-1) {
             j=s.indexOf('D');
             int line=Integer.parseInt(s.substring(j+1,s.indexOf('S')));
-            postLine = readFromFile(line,"PostingListNoStem.txt");
+            if (stemOrNot) {
+                postLine = readFromFile(line,"Stemmer\\PostingListStem.txt");
+            }
+            else {
+                postLine = readFromFile(line,"noStemmer\\PostingListNoStem.txt");
+            }
+
         }
         //if the word is in the cache
         else {
@@ -76,6 +88,7 @@ public class Ranker {
             String d=cache.get(line);
             postLine=cache.get(line).split("[<>,\\s+]");
         }
+        int count=0;
         //starts from 1 hence the term in the 0 place
         for (int i=1;i<postLine.length;i++){
             if (!postLine[i].equals(" ") && !postLine[i].equals("")) {
@@ -83,6 +96,11 @@ public class Ranker {
                 long tf= Long.parseLong(postLine[++i]);
                 long index = Long.parseLong(postLine[++i]);
                 weight (getTermDF(term),docNumber,tf,index);
+                if (count==300) {
+                    count=0;
+                    break;
+                }
+                count++;
             }
         }
         docToRamkSorted=sortByValue(docToRank);;
@@ -93,7 +111,7 @@ public class Ranker {
         try{
             BufferedWriter rs = new BufferedWriter(new FileWriter("results.txt"));
             for(Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
-                rs.write("374");
+                rs.write("367");
                 rs.write(" 0");
                 rs.write(" " + entry.getKey());
                 rs.write(" 100");
@@ -114,24 +132,31 @@ public class Ranker {
         double docSize;
         double oneWordQuery;
         double place=0;
-        try (BufferedReader br = new BufferedReader(new FileReader("docs_weights_NoStem.txt"))) {
+        int counter=0;
+        String docWeight;
+        if (!stemOrNot) {
+            docWeight="docs_weights_NoStem.txt";
+        }
+        else {
+            docWeight="docs_weightsStem.txt";
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(docWeight))) {
             String line;
             while ((line = br.readLine()) != null) {
+
                 int space=line.indexOf("*");
                 String docN = line.substring(0,space);
                 //if the document found break
                 if (docN.equals(docNumber)) {
+                    counter++;
+                    if (counter==50){
+                        break;
+                    }
                     String [] docProp= line.split("\\*");
                     docRank = Double.parseDouble(docProp[1]);
                     maxDocTf = Double.parseDouble(docProp[2]);
                     docSize = Double.parseDouble(docProp[3]);
-                    //zohar+10 points
-                    if (place<200){
-                        place=Math.sqrt((docSize-index)/docSize);
-                    }
-                    else {
-                        place= (docSize-index)/docSize;
-                    }
+                    place= (docSize-index)/docSize;
                     oneWordQuery=(tf/maxDocTf)*(place)*(Math.log10((467767/df)));
                     double cossin=oneWordQuery/((Math.sqrt(querySize))* docRank);
                     if (docToRank.containsKey(docNumber)) {

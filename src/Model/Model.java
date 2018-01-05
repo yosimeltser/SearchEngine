@@ -16,7 +16,6 @@ public class Model {
     public long start(String path_corpus, String path_tosave, boolean stemOrNot) {
         try {
             long start = System.currentTimeMillis();
-
             stopword = DSstopwords(path_corpus);
             ReadFile Fr = new ReadFile(path_corpus + "\\corpus");
             Parse parser = new Parse();
@@ -30,7 +29,7 @@ public class Model {
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
                 index.setDocs(StemmedDocs);
             }
-            //index.mergeFiles();
+            index.mergeFiles();
             long end = System.currentTimeMillis();
             return ((end-start )/ 1000);
         } catch (Exception e) {
@@ -39,22 +38,31 @@ public class Model {
         //never suppose to get here
         return 1;
     }
-    //part2 engine engine!!!!
-    //parse query
-//    private  ArrayList<String> ParseQuery (String st){
-//        LinkedList <String> arr=new LinkedList<>();
-//        //not having doc number
-//        String q="* " + st;
-//        arr.addFirst(q);
-//        Parse queryParse = new Parse();
-//        queryParse.setStopword(stopword);
-//        LinkedList<ArrayList<String>> ParsedQuery=queryParse.ParseFile(arr);
-//        Stemmer s= new Stemmer();
-//        Model.Searcher StQ = new Model.Searcher(stopword,s);
-//        StQ.setParsedQuery(ParsedQuery.getFirst());
-//        ArrayList<String> StemmedQuery=StQ.stem();
-//        return StemmedQuery;
-//    }
+
+
+
+    //PART 2
+    public  void findDocs (String st, boolean stemOrNot){
+        stopword=DSstopwords("C:\\Users\\yosef\\IdeaProjects");
+        Searcher s = new Searcher(stopword,st);
+        s.ParseQuery(st);
+        ArrayList<String>  Query;
+        if (stemOrNot) {
+            Query= s.stem();
+        }
+        else {
+            //without stem
+            Query=s.getParsedQuery();
+        }
+        Ranker r= new Ranker(stemOrNot);
+        r.setQuery(Query);
+        r.Cosin();
+    }
+
+
+
+
+
     // inserts all the stop words into a hash
     private static HashSet<String> DSstopwords(String path) {
         HashSet<String> stopword = new HashSet<>();

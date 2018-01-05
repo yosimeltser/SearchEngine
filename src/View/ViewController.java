@@ -1,5 +1,5 @@
 package View;
-
+import Model.Searcher;
 import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
@@ -23,16 +23,16 @@ public class ViewController {
     Stage primaryStage;
     Model m;
     Load load;
-    //   StartController st;
     @FXML
-    public Button btn_start;
-    public TextField txt_corpus, txt_posting;
+    public Button btn_start,run_query;
+    public TextField txt_corpus, txt_posting,txt_query;
     public CheckBox check_stem;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
         m = new Model();
         btn_start.setDisable(true);
+
 
     }
 
@@ -46,7 +46,15 @@ public class ViewController {
             primaryStage.close();
         }
     }
-
+    public void query_start(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Please wait for the retrieval");
+        alert.show();
+        m.findDocs(txt_query.getText(),check_stem.isSelected());
+        alert.close();
+    }
     public void load_start() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
@@ -132,7 +140,11 @@ public class ViewController {
 //    }
 
     public void load() {
-        load = new Load(txt_posting.getText());
+        String path="";
+        if (txt_posting!=null) {
+            path = txt_posting.getText();
+        }
+        load = new Load(path,check_stem.isSelected());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);

@@ -9,11 +9,17 @@ public class Load {
     public static ArrayList<String> loadedCache;
     public static HashMap <String,String> dictionary;
     public Load (){}
-    public Load(String path ) {
+    public Load(String path,boolean stemOrNot ) {
         if (path.equals("") || path.equals("No Directory selected")) {
             path = "";
         } else {
             path = path + "\\";
+        }
+        if (stemOrNot) {
+            path+="Stemmer\\";
+        }
+        else {
+            path+="noStemmer\\";
         }
         dictionary=new HashMap<>();
         loadedCache= new ArrayList<>();
@@ -35,10 +41,10 @@ public class Load {
             while ((line = br.readLine()) != null) {
                 String []arr= line.split("\\*");
                 if (arr[4].equals("C=X")){
-                    dictionary.put( arr[1],arr[3]+"D"+arr[6]+"TTF"+arr[8]);
+                    dictionary.put( arr[1],arr[3]+"D"+arr[6]+"STF"+arr[8]);
                 }
                 else {
-                    dictionary.put(arr[1],arr[3]+"C"+arr[5]+"D"+arr[7]+"TTF"+arr[9]);
+                    dictionary.put(arr[1],arr[3]+"C"+arr[5]+"D"+arr[7]+"STF"+arr[9]);
                 }
             }
             br.close();

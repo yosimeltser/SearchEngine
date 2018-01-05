@@ -11,9 +11,13 @@ public class Searcher {
     ArrayList<String> ParsedQuery;
     boolean stemOrNot = true;
 
-    public Searcher(HashSet<String> _stopword, Stemmer _stem) {
-        this.stem = _stem;
-        stopword = _stopword;
+    public Searcher (String s) {
+
+    }
+
+    public Searcher(HashSet<String> _stopword, String st) {
+        stopword=_stopword;
+        stem=new Stemmer();
     }
 
     public void setParsedQuery(ArrayList<String> parsedQuery) {
@@ -23,7 +27,7 @@ public class Searcher {
     //Stemmer for a Query
     public ArrayList<String> stem() {
         ArrayList<String> StemmedQuery = new ArrayList<>();
-        for (int k = 1; k < ParsedQuery.size(); k++) {
+        for (int k = 0; k < ParsedQuery.size(); k++) {
             String s = ParsedQuery.get(k);
             String wordStemmed = "";
             if (stemOrNot) {
@@ -36,5 +40,30 @@ public class Searcher {
             StemmedQuery.add(wordStemmed);
         }
         return StemmedQuery;
+    }
+
+    public ArrayList<String> getParsedQuery() {
+        return ParsedQuery;
+    }
+
+    //part2 engine engine!!!!
+    //parse query
+    public  void ParseQuery (String st){
+        LinkedList <String> arr=new LinkedList<>();
+        //not having doc number
+        String q="* " + st;
+        arr.addFirst(q);
+        Parse queryParse = new Parse();
+        queryParse.setStopword(stopword);
+        LinkedList<ArrayList<String>> ParsedQuery=queryParse.ParseFile(arr);
+        //remove the *
+        ArrayList<String> PQ=ParsedQuery.getFirst();
+        ArrayList<String> query=new ArrayList<>();
+        for (String s: PQ) {
+            if (!s.equals("") && !s.equals("*")) {
+                query.add(s);
+            }
+        }
+        setParsedQuery(query);
     }
 }
