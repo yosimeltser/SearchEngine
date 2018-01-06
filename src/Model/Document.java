@@ -66,7 +66,7 @@ public class Document {
     private void uniqueWords() {
         unique = terms.size();
     }
-    public void DocWeight() {
+    public void DocWeightfunc() {
         Load l = new Load();
         HashMap<String, String> dic= l.getDictionary();
         for (Map.Entry<String, TermData> entry : terms.entrySet()) {
@@ -105,6 +105,6 @@ public class Document {
         return Integer.parseInt(df);
     }
     public double func(double df,double N,double tmaxTf,double tf,double index ){
-        return Math.pow ((tf/tmaxTf)*((N-index)/N)*(Math.log10((467767/df))),2);
+        return Math.pow ((tf/tmaxTf)*((N-index)/N)*(Math.log(467767/df)/Math.log(2)),2);
     }
 }

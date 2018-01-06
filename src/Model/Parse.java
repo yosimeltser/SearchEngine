@@ -1,4 +1,7 @@
 package Model;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -10,6 +13,7 @@ public class Parse {
     private LinkedList<ArrayList<String>> Docs;
     private Iterator<String> itr;
     Pattern del_chars, round_up, yyyy_yy, dd_th, yyyy, hyphen, dot, days;
+    private   BufferedWriter writer;
 
     public Parse() {
         //WE USE THE PATTERN OBJECT BECAUSE WE WANT TO COMPILE THE REGULAR EXPRESSION ONLY ONCE, FOR BETTER PREFOEMENCE
@@ -21,6 +25,12 @@ public class Parse {
         hyphen = Pattern.compile("--+");
         dot = Pattern.compile("[.]+");
         days = Pattern.compile("^\\d{1,2}$");
+        try {
+            writer=new BufferedWriter(new FileWriter("check.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public  void setStopword(HashSet<String> stopword) {
@@ -51,6 +61,13 @@ public class Parse {
                     }
                     i = capitalLetters(need_to_parse, i);
                 }
+            }
+
+            try {
+                writer.write(need_to_parse.get(0));
+                writer.newLine();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             Docs.add(need_to_parse);
         }

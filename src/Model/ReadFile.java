@@ -1,6 +1,7 @@
 package Model;
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,7 @@ public class ReadFile {
         File folder = new File(path);
         listOfFiles = folder.listFiles();
         i=0;
+
    }
 
     //this method responsible for reading files and transfer them into data stracturs

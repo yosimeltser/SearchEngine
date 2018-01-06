@@ -52,7 +52,7 @@
       <HBox layoutX="68.0" layoutY="151.0" prefHeight="39.0" prefWidth="580.0">
          <children>
             <CheckBox mnemonicParsing="false" prefHeight="27.0" prefWidth="156.0" text="Expend query" />
-            <CheckBox fx:id="check_stem" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="27.0" prefWidth="113.0" text="Enable Stemming">
+            <CheckBox fx:id="check_stem" mnemonicParsing="false" prefHeight="27.0" prefWidth="133.0" text="Enable Stemming">
                <HBox.margin>
                   <Insets right="50.0" />
                </HBox.margin></CheckBox>

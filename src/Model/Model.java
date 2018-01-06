@@ -22,14 +22,15 @@ public class Model {
             parser.setStopword(stopword);
             StemmerGenerator StG = new StemmerGenerator(stemOrNot);
             StG.setStopWords(stopword);
-            Indexer index = new Indexer(path_tosave, stemOrNot);
+          //  Indexer index = new Indexer(path_tosave, stemOrNot);
             for (int file = 0; file <= 72; file++) {
                 LinkedList<String> Documents = Fr.fileReader();
                 LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
-                index.setDocs(StemmedDocs);
+          //      index.setDocs(StemmedDocs);
             }
-            index.mergeFiles();
+
+        //    index.mergeFiles();
             long end = System.currentTimeMillis();
             return ((end-start )/ 1000);
         } catch (Exception e) {
@@ -43,7 +44,7 @@ public class Model {
 
     //PART 2
     public  void findDocs (String st, boolean stemOrNot){
-        stopword=DSstopwords("C:\\Users\\yosef\\IdeaProjects");
+        stopword=DSstopwords("");
         Searcher s = new Searcher(stopword,st);
         s.ParseQuery(st);
         ArrayList<String>  Query;
@@ -70,7 +71,7 @@ public class Model {
         BufferedReader br = null;
         FileReader fr = null;
         try {
-            fr = new FileReader(path + "\\stopword.txt");
+            fr = new FileReader(path + "stopword.txt");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

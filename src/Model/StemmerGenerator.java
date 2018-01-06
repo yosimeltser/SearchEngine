@@ -16,6 +16,8 @@ public class StemmerGenerator {
     public LinkedHashMap<String, LinkedList<Document>> termToDocs;
     //DOCUMENT FREQUENCY OF THE TERMS
     private static HashMap<String, Integer> termDf = new HashMap<>();
+    // HELPS TO CALCULATE THE AVERAGE LENGTH OF A DOCUMENT IN THE CORPUS
+    public static long avg_len;
     //holds all the words that were stem, for no Stemming them again
     public static HashMap<String, String> already_seen = new HashMap<>();
     public static HashSet<String> stopword;
@@ -31,6 +33,9 @@ public class StemmerGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public long get_avf(){
+        return avg_len;
     }
     public StemmerGenerator(){}
     public void setStopWords(HashSet<String> sw) {
@@ -118,7 +123,8 @@ public class StemmerGenerator {
                 }
             }
             doc.setMaxTf();
-            //doc.DocWeight();
+            doc.DocWeightfunc();
+           // compute_avg(doc.docLength);
             try {
                 docProperties.write("doc num= " +doc.docId + " unique= " + doc.unique + " Max TF= " + doc.maxTermFr + " doc length="+ doc.docLength);
                 docProperties.newLine();
@@ -158,5 +164,12 @@ public class StemmerGenerator {
         temp = null;
 
         return termToDocs;
+    }
+    public static void compute_avg(int d){
+        avg_len+=(long)d;
+
+    }
+    public long getAvgLen(){
+        return avg_len/467767;
     }
 }

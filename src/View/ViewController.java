@@ -61,7 +61,7 @@ public class ViewController {
         alert.setHeaderText(null);
         alert.setContentText("Please wait for the process to end");
         alert.show();
-        long time = m.start(txt_corpus.getText(), txt_posting.getText(), check_stem.isSelected());
+        long time = m.start(txt_corpus.getText(), null, check_stem.isSelected());
         alert.close();
         try {
             Stage stage = new Stage();
