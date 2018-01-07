@@ -36,6 +36,10 @@ public class Document {
             terms.put(s, td);
         }
     }
+    public int getTf(String term){
+       TermData td= terms.get(term);
+       return td.tf;
+    }
 
     //sets the size of the document
     public void setSize(int _size) {
