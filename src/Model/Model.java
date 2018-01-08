@@ -2,15 +2,18 @@ package Model;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 //THIS CLASS JOB IS TO CONNECT BETWEEN ALL OF THE CLASSES IN THE WHOLE PROJECT
 //IN ADDITION, THERE IS AN INTERACTION BETWEEN THE MODEL AND THE VIEW CLASSES THAT MAKES THE CODE MODULAR TO CHANGES.
 
 public class Model {
     HashSet<String> stopword = null;
+
     public Model() {
         //empty constractor
     }
+
     // path_corpus tells u where the corpus directory & the stopword file sits
     //path_to save tells you where to save the final posting list & the dictionary
     public long start(String path_corpus, String path_tosave, boolean stemOrNot) {
@@ -22,17 +25,17 @@ public class Model {
             parser.setStopword(stopword);
             StemmerGenerator StG = new StemmerGenerator(stemOrNot);
             StG.setStopWords(stopword);
-          //  Indexer index = new Indexer(path_tosave, stemOrNot);
+            //  Indexer index = new Indexer(path_tosave, stemOrNot);
             for (int file = 0; file <= 72; file++) {
                 LinkedList<String> Documents = Fr.fileReader();
                 LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
                 LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
-          //      index.setDocs(StemmedDocs);
+                //      index.setDocs(StemmedDocs);
             }
 
-        //    index.mergeFiles();
+            //    index.mergeFiles();
             long end = System.currentTimeMillis();
-            return ((end-start )/ 1000);
+            return ((end - start) / 1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,27 +44,23 @@ public class Model {
     }
 
 
-
     //PART 2
-    public  void findDocs (String st, boolean stemOrNot){
-        stopword=DSstopwords("");
-        Searcher s = new Searcher(stopword,st);
+    public void findDocs(String st, boolean stemOrNot,int queryNumber) {
+
+        stopword = DSstopwords("");
+        Searcher s = new Searcher(stopword, st);
         s.ParseQuery(st);
-        ArrayList<String>  Query;
+        ArrayList<String> Query;
         if (stemOrNot) {
-            Query= s.stem();
-        }
-        else {
+            Query = s.stem();
+        } else {
             //without stem
-            Query=s.getParsedQuery();
+            Query = s.getParsedQuery();
         }
-        Ranker r= new Ranker(stemOrNot);
+        Ranker r = new Ranker(stemOrNot,queryNumber);
         r.setQuery(Query);
         r.Cosin();
     }
-
-
-
 
 
     // inserts all the stop words into a hash
@@ -86,10 +85,11 @@ public class Model {
         }
         return stopword;
     }
+
     //delete the Dictionary,Cache and the Posting List, when event reset accursed
     public void reset(String path) {
         String Path;
-        if (path.equals("")|| path.equals("No Directory selected")) {
+        if (path.equals("") || path.equals("No Directory selected")) {
             Path = "";
         } else {
             Path = path + "\\";
@@ -98,20 +98,21 @@ public class Model {
         File postStem = new File(Path + "PostingListStem.txt");
         File postNotStem = new File(Path + "PostingListNoStem.txt");
         File Dictionary = new File(Path + "Dictionary.txt");
-        if (cache.exists()){
+        if (cache.exists()) {
             cache.delete();
         }
-        if (postStem.exists()){
+        if (postStem.exists()) {
             postStem.delete();
         }
-        if (postNotStem.exists()){
+        if (postNotStem.exists()) {
             postNotStem.delete();
         }
-        if (Dictionary.exists()){
+        if (Dictionary.exists()) {
             Dictionary.delete();
         }
         System.gc();
     }
+
     //returns array of string
     //1 element ->  Index Size
     //2 element -> Cache
@@ -138,6 +139,31 @@ public class Model {
         size[0] = index.toString();
         size[1] = cache.toString();
         return size;
+    }
+
+    public void queryChooser(String text,boolean stemOrNot) {
+        try {
+            FileReader f = new FileReader(text);
+            BufferedReader br = new BufferedReader(f);
+            StringBuilder doc = new StringBuilder();
+            String line = "";
+            int queryNum;
+            String query;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("<num>")) {
+                    String[] number=line.split(" ");
+                    queryNum=Integer.parseInt(number[2]);
+                    line=br.readLine();
+                    query=line.replaceAll("<title> ","");
+                    findDocs(query,stemOrNot,queryNum);
+                }
+            }
+            //free resources
+            br.close();
+            f.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

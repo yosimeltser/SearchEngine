@@ -25,7 +25,7 @@ public class ViewController {
     Load load;
     @FXML
     public Button btn_start,run_query;
-    public TextField txt_corpus, txt_posting,txt_query;
+    public TextField txt_corpus, txt_posting,txt_query,query_path;
     public CheckBox check_stem;
 
     public void setStage(Stage other) {
@@ -52,7 +52,7 @@ public class ViewController {
         alert.setHeaderText(null);
         alert.setContentText("Please wait for the retrieval");
         alert.show();
-        m.findDocs(txt_query.getText(),check_stem.isSelected());
+        m.findDocs(txt_query.getText(),check_stem.isSelected(),0);
         alert.close();
     }
     public void load_start() {
@@ -78,8 +78,6 @@ public class ViewController {
 
         }
     }
-
-
     public void reset() {
         m.reset(this.txt_posting.getText());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -106,8 +104,16 @@ public class ViewController {
     public void choose_query() throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Queries File");
-        fileChooser.showOpenDialog(primaryStage);
+        File f=fileChooser.showOpenDialog(primaryStage);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("TXT", "*.txt"));
+        query_path.setText(f.getPath());
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("Please wait for the retrieval");
+        alert.show();
+        m.queryChooser(query_path.getText(),check_stem.isSelected());
+        alert.close();
     }
 
     //NOTICE that the corpus & the file of the stopwords need to be at the same directory!

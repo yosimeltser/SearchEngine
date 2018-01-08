@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class Load {
     public static ArrayList<String> loadedCache;
     public static HashMap <String,String> dictionary;
+    public static HashMap <String,String> docWeightDic;
     public Load (){}
     public Load(String path,boolean stemOrNot ) {
         if (path.equals("") || path.equals("No Directory selected")) {
@@ -23,6 +24,8 @@ public class Load {
         }
         dictionary=new HashMap<>();
         loadedCache= new ArrayList<>();
+        docWeightDic=new HashMap<>();
+        loadDocWeight(stemOrNot);
         loadCache(path);
         loadDictionary(path);
     }
@@ -68,5 +71,29 @@ public class Load {
 
     public HashMap<String, String> getDictionary() {
         return dictionary;
+    }
+    public void loadDocWeight(boolean stemOrNot){
+        String docWeight;
+        if (!stemOrNot) {
+            docWeight="docs_weights_NoStem.txt";
+        }
+        else {
+            docWeight="docs_weightsStem.txt";
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader(docWeight))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                int space = line.indexOf("*");
+                String docN = line.substring(0,space);
+                String details=line.substring(space+1,line.length());
+                docWeightDic.put(docN,details);
+            }
+        }
+    catch(Exception e) {
+            }
+        }
+
+    public static HashMap<String, String> getDocWeightDic() {
+        return docWeightDic;
     }
 }
