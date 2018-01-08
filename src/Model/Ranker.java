@@ -170,8 +170,8 @@ public class Ranker {
         maxDocTf = Double.parseDouble(docProp[1]);
         docSize = Double.parseDouble(docProp[2]);
         place = (docSize - index) / docSize;
-        oneWordQuery = 0 * (computeTfIdfWeighted( df,tf, docSize)) + 1 * (((tf / maxDocTf)  * (Math.log(467767 / df) / Math.log(2)))*place);
-        double cossin = oneWordQuery / ((Math.sqrt(querySize)) * docRank);
+        oneWordQuery =   (((tf / maxDocTf)  * (Math.log(467767 / df) / Math.log(2)))*place);
+        double cossin = 0.3*(oneWordQuery / ((Math.sqrt(querySize)) * docRank))+ 0.7*(computeTfIdfWeighted( df,tf, docSize));
         if (docToRank.containsKey(docNumber)) {
             double addedValue = docToRank.get(docNumber) + cossin;
             docToRank.put(docNumber, addedValue);
@@ -212,15 +212,11 @@ public class Ranker {
         return result;
     }
 
-    private double computeTfIdfWeighted( long df,long tf, double len) {
-        //double idf = Math.log((467767 - df + 0.5) / (df + 0.5)) / Math.log(2);
-        //k=1.2
-        double idf=Math.log(467767/df)/Math.log(2);
-        double weight =12* (len) / (469.3722708);
-        double wtf=tf/(tf+weight);
-       // double mone = tf * (1.0 + 1);
+    private double computeTfIdfWeighted (long df, long tf,double len){
+        double idf= (Math.log((467767-df+0.5)/(df+0.5)))/(Math.log(2));
+        double mone=tf*(2.4);
+        double mechane=tf+1.4*(1-0.75+0.75*(len/469.3722708));
+        return idf*(mone/mechane);
 
-        //double mechane = tf + 1.0 *(1 - 0.75 +(0.75 * weight));
-        return idf * wtf;
     }
 }
