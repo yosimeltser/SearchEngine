@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-
+//
 public class Searcher {
     HashSet<String> stopword;
     Stemmer stem;
+    //query after parse
     ArrayList<String> ParsedQuery;
     boolean stemOrNot = true;
-
-    public Searcher (String s) {
-
-    }
 
     public Searcher(HashSet<String> _stopword, String st) {
         stopword=_stopword;
@@ -23,7 +20,6 @@ public class Searcher {
     public void setParsedQuery(ArrayList<String> parsedQuery) {
         ParsedQuery = parsedQuery;
     }
-
     //Stemmer for a Query
     public ArrayList<String> stem() {
         ArrayList<String> StemmedQuery = new ArrayList<>();
@@ -46,8 +42,7 @@ public class Searcher {
         return ParsedQuery;
     }
 
-    //part2 engine engine!!!!
-    //parse query
+    //Parse Query
     public  void ParseQuery (String st){
         LinkedList <String> arr=new LinkedList<>();
         //not having doc number
@@ -56,7 +51,7 @@ public class Searcher {
         Parse queryParse = new Parse();
         queryParse.setStopword(stopword);
         LinkedList<ArrayList<String>> ParsedQuery=queryParse.ParseFile(arr);
-        //remove the *
+        //remove the * array list
         ArrayList<String> PQ=ParsedQuery.getFirst();
         ArrayList<String> query=new ArrayList<>();
         for (String s: PQ) {

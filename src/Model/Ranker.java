@@ -25,8 +25,6 @@ public class Ranker {
     HashMap<String, String> DocWeightDic;
     //maps from doc name to query rank...
     HashMap<String, Double> docToRank;
-    //maps from doc -> how much of the query words found in to doc
-    HashMap<String, Integer> docToWordsFound;
     //sorted docToRank
     LinkedHashMap<String, Double> docToRamkSorted;
     //all the words returned from the query after parse and stem
@@ -38,11 +36,12 @@ public class Ranker {
         //just for getting fields from the load class
         Load l = new Load();
         dictionary = l.getDictionary();
+        //For future use
+        //right now not in use
         cache = l.getLoadedCache();
         docToRank = new HashMap<String, Double>();
         DocWeightDic = l.getDocWeightDic();
         setQuerySize(query.size());
-        docToWordsFound = new HashMap<>();
         for (String term : query) {
             //get rank for each term
             //put the value to the dictionary
@@ -51,7 +50,7 @@ public class Ranker {
         docToRamkSorted = sortByValue(docToRank);
         writeTofile(docToRamkSorted);
     }
-
+    //get term df from the dictionary
     private long getTermDF(String term) {
         String s = dictionary.get(term);
         int j = 0;
@@ -73,17 +72,17 @@ public class Ranker {
     public void setQuery(ArrayList<String> query) {
         this.query = query;
     }
-
+    //rank one word that exists in the query and in the document
     public void rankWord(String term) {
         String s = dictionary.get(term);
+        //if the word not exist in the dictionary, Stop!
         if (s == null) {
             return;
         }
-        //int j=0;
-        //j=s.indexOf('C');
+        //Variable postLine will contain the whole information from the line that relevant to the term in the posting list
         String[] postLine = {};
-        //If the world is in the disc but not in the cache
-        //if (j==-1) {
+        //read from disc
+        //cache is not in use right now
         int j = s.indexOf('D');
         int line = Integer.parseInt(s.substring(j + 1, s.indexOf('S')));
         if (stemOrNot) {
@@ -91,13 +90,7 @@ public class Ranker {
         } else {
             postLine = readFromFile(line, "noStemmer\\PostingListNoStem.txt");
         }
-        //}
-        //if the word is in the cache
-//        else {
-//            int line= Integer.parseInt(s.substring(j+1,s.indexOf('D')));
-//            String d=cache.get(line);
-//            postLine=cache.get(line).split("[<>,\\s+]");
-//        }
+
         //starts from 1 hence the term in the 0 place
         for (int i = 1; i < postLine.length; i++) {
             if (!postLine[i].equals(" ") && !postLine[i].equals("")) {
@@ -112,30 +105,14 @@ public class Ranker {
     private void writeTofile(LinkedHashMap<String, Double> docToRamkSorted) {
         try {
             int line = 0;
+
             BufferedWriter rs = new BufferedWriter(new FileWriter("C:\\trec\\results.txt",true));
-            if (querySize > 1) {
-                for (Map.Entry<String, Integer> entry : docToWordsFound.entrySet()) {
-                    if (entry.getValue() == querySize) {
-                        docToRamkSorted.remove(entry.getKey());
-                        if (line==50) break;
-                        line++;
-                        rs.write(String.valueOf(queryNumber));
-                        rs.write(" 0");
-                        rs.write(" " + entry.getKey());
-                        rs.write(" 100");
-                        rs.write(" 0.1");
-                        rs.write(" mt");
-                        rs.newLine();
-                        rs.flush();
-                    }
-                }
-            }
-
-
             for (Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
+                //write 50 line from each query to the file
                 if (line >= 50) {
                     break;
                 }
+            //FORMAT OF TRECEVAL
                 rs.write(String.valueOf(queryNumber));
                 rs.write(" 0");
                 rs.write(" " + entry.getKey());
@@ -151,7 +128,7 @@ public class Ranker {
         }
     }
 
-
+    //wight each word by the doc
     private void weight(long df, String docNumber, long tf, long index) {
         double docRank;
         double maxDocTf;
@@ -160,6 +137,8 @@ public class Ranker {
         double place = 0;
         int counter = 0;
         String docWeight;
+        //get the document weight
+        //for cos similarity denominator
         if (!stemOrNot) {
             docWeight = "docs_weights_NoStem.txt";
         } else {
@@ -169,16 +148,20 @@ public class Ranker {
         docRank = Double.parseDouble(docProp[0]);
         maxDocTf = Double.parseDouble(docProp[1]);
         docSize = Double.parseDouble(docProp[2]);
+        //new weight parameter for cos similarity
+        //as closer to the start of the document as higher the rank of the word
         place = (docSize - index) / docSize;
+        //467767 -> the number of documents in the corpus
         oneWordQuery =   (((tf / maxDocTf)  * (Math.log(467767 / df) / Math.log(2)))*place);
-        double cossin = 0.3*(oneWordQuery / ((Math.sqrt(querySize)) * docRank))+ 0.7*(computeTfIdfWeighted( df,tf, docSize));
+        double cossin = (oneWordQuery / ((Math.sqrt(querySize)) * docRank));
+        double MB25=(computeTfIdfWeighted( df,tf, docSize));
+        //half from cossin and half from MB25
+        double OurFormula= 0.5*cossin + 0.5*MB25;
         if (docToRank.containsKey(docNumber)) {
-            double addedValue = docToRank.get(docNumber) + cossin;
+            double addedValue = docToRank.get(docNumber) + OurFormula;
             docToRank.put(docNumber, addedValue);
-            docToWordsFound.put(docNumber, docToWordsFound.get(docNumber) + 1);
         } else {
-            docToRank.put(docNumber, cossin);
-            docToWordsFound.put(docNumber, 1);
+            docToRank.put(docNumber, OurFormula);
         }
         return;
     }
@@ -194,7 +177,7 @@ public class Ranker {
         return s;
     }
 
-    //code from
+    //Sort hash map
     private <K, V> LinkedHashMap<K, V> sortByValue(HashMap<K, V> map) {
         List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
         Collections.sort(list, new Comparator<Object>() {
@@ -211,7 +194,7 @@ public class Ranker {
         }
         return result;
     }
-
+    //BM25
     private double computeTfIdfWeighted (long df, long tf,double len){
         double idf= (Math.log((467767-df+0.5)/(df+0.5)))/(Math.log(2));
         double mone=tf*(2.4);

@@ -140,12 +140,11 @@ public class Model {
         size[1] = cache.toString();
         return size;
     }
-
+    //run all the queries from the query text file
     public void queryChooser(String text,boolean stemOrNot) {
         try {
             FileReader f = new FileReader(text);
             BufferedReader br = new BufferedReader(f);
-            StringBuilder doc = new StringBuilder();
             String line = "";
             int queryNum;
             String query;
@@ -155,6 +154,7 @@ public class Model {
                     queryNum=Integer.parseInt(number[2]);
                     line=br.readLine();
                     query=line.replaceAll("<title> ","");
+                    //run the query
                     findDocs(query,stemOrNot,queryNum);
                 }
             }
