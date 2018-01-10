@@ -10,12 +10,8 @@ public class Load {
     public static HashMap <String,String> dictionary;
     public static HashMap <String,String> docWeightDic;
     public Load (){}
-    public Load(String path,boolean stemOrNot ) {
-        if (path.equals("") || path.equals("No Directory selected")) {
-            path = "";
-        } else {
-            path = path + "\\";
-        }
+    public Load(boolean stemOrNot ) {
+        String path="";
         if (stemOrNot) {
             path+="Stemmer\\";
         }

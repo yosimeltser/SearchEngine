@@ -25,7 +25,7 @@ public class ViewController {
     Load load;
     @FXML
     public Button btn_start,run_query;
-    public TextField txt_posting,txt_query,query_path;
+    public TextField txt_posting,txt_query,query_path,save_path;
     public CheckBox check_stem, ckc_expend, ckc_summerize;
 
     public void setStage(Stage other) {
@@ -97,7 +97,9 @@ public class ViewController {
         alert.show();
         txt_query=null;
         query_path=null;
-        m.reset(query_path.getStyle());
+        File f=new File(save_path.getText());
+        m.reset(f.getPath());
+        System.gc();
     }
 
     public void save_results(){
@@ -107,6 +109,7 @@ public class ViewController {
         fileChooser.getExtensionFilters().add(extFilter);
         //Show save file dialog
         File file = fileChooser.showSaveDialog(primaryStage);
+        save_path.setText(file.getPath());
         m.save(file.getPath());
     }
 

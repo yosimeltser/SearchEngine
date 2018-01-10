@@ -13,43 +13,29 @@ public class Ranker {
     public Ranker(boolean _stemOrNot, int _queryNumber) {
         stemOrNot = _stemOrNot;
         queryNumber=_queryNumber;
+        Load l= new Load();
+        dictionary=l.getDictionary();
+        HashMap<String, String> dictionary=l.getDictionary();
+        docToRank = new HashMap<String, Double>();
+        DocWeightDic = l.getDocWeightDic();
     }
 
     public void setQuerySize(int querySize) {
         this.querySize = querySize;
     }
 
-    //dictionary loaded from the Load class
-    HashMap<String, String> dictionary;
+    public HashMap<String, Double> getDocToRank() {
+        return docToRank;
+    }
+
     //dictionary loaded from the Load Class
     HashMap<String, String> DocWeightDic;
     //maps from doc name to query rank...
     HashMap<String, Double> docToRank;
-    //sorted docToRank
-    LinkedHashMap<String, Double> docToRamkSorted;
     //all the words returned from the query after parse and stem
     ArrayList<String> query;
-    //cache loaded from the Load Class
-    ArrayList<String> cache;
+    HashMap<String, String> dictionary;
 
-    public void Cosin() {
-        //just for getting fields from the load class
-        Load l = new Load();
-        dictionary = l.getDictionary();
-        //For future use
-        //right now not in use
-        cache = l.getLoadedCache();
-        docToRank = new HashMap<String, Double>();
-        DocWeightDic = l.getDocWeightDic();
-        setQuerySize(query.size());
-        for (String term : query) {
-            //get rank for each term
-            //put the value to the dictionary
-            rankWord(term);
-        }
-        docToRamkSorted = sortByValue(docToRank);
-        writeTofile(docToRamkSorted);
-    }
     //get term df from the dictionary
     private long getTermDF(String term) {
         String s = dictionary.get(term);
@@ -72,25 +58,9 @@ public class Ranker {
     public void setQuery(ArrayList<String> query) {
         this.query = query;
     }
-    //rank one word that exists in the query and in the document
-    public void rankWord(String term) {
-        String s = dictionary.get(term);
-        //if the word not exist in the dictionary, Stop!
-        if (s == null) {
-            return;
-        }
-        //Variable postLine will contain the whole information from the line that relevant to the term in the posting list
-        String[] postLine = {};
-        //read from disc
-        //cache is not in use right now
-        int j = s.indexOf('D');
-        int line = Integer.parseInt(s.substring(j + 1, s.indexOf('S')));
-        if (stemOrNot) {
-            postLine = readFromFile(line, "Stemmer\\PostingListStem.txt");
-        } else {
-            postLine = readFromFile(line, "noStemmer\\PostingListNoStem.txt");
-        }
 
+    //rank one word that exists in the query and in the document
+    public void rankWord(String [] postLine,String term) {
         //starts from 1 hence the term in the 0 place
         for (int i = 1; i < postLine.length; i++) {
             if (!postLine[i].equals(" ") && !postLine[i].equals("")) {
@@ -102,33 +72,7 @@ public class Ranker {
         }
     }
 
-    private void writeTofile(LinkedHashMap<String, Double> docToRamkSorted) {
-        try {
-            int line = 0;
-
-            BufferedWriter rs = new BufferedWriter(new FileWriter("C:\\trec\\results.txt",true));
-            for (Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
-                //write 50 line from each query to the file
-                if (line >= 50) {
-                    break;
-                }
-            //FORMAT OF TRECEVAL
-                rs.write(String.valueOf(queryNumber));
-                rs.write(" 0");
-                rs.write(" " + entry.getKey());
-                rs.write(" 100");
-                rs.write(" 0.1");
-                rs.write(" mt");
-                rs.newLine();
-                rs.flush();
-                line++;
-            }
-            rs.close();
-        } catch (Exception e) {
-        }
-    }
-
-    //wight each word by the doc
+    //wight of the word in the document
     private void weight(long df, String docNumber, long tf, long index) {
         double docRank;
         double maxDocTf;
@@ -163,36 +107,6 @@ public class Ranker {
         } else {
             docToRank.put(docNumber, OurFormula);
         }
-        return;
-    }
-
-
-    public String[] readFromFile(int line, String path) {
-        String[] s = {};
-        try (Stream<String> lines = Files.lines(Paths.get(path))) {
-            return lines.skip(line).findFirst().get().split("[<>, ]");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return s;
-    }
-
-    //Sort hash map
-    private <K, V> LinkedHashMap<K, V> sortByValue(HashMap<K, V> map) {
-        List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
-        Collections.sort(list, new Comparator<Object>() {
-            @SuppressWarnings("unchecked")
-            public int compare(Object o1, Object o2) {
-                return ((Comparable<V>) ((Map.Entry<K, V>) (o2)).getValue()).compareTo(((Map.Entry<K, V>) (o1)).getValue());
-            }
-        });
-
-        LinkedHashMap<K, V> result = new LinkedHashMap<>();
-        for (Iterator<Map.Entry<K, V>> it = list.iterator(); it.hasNext(); ) {
-            Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
-            result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
     }
     //BM25
     private double computeTfIdfWeighted (long df, long tf,double len){
