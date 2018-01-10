@@ -1,5 +1,5 @@
 package View;
-import Model.ExpandQuery;
+//import Model.ExpandQuery;
 import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
@@ -13,6 +13,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -23,15 +25,12 @@ public class ViewController {
     Load load;
     @FXML
     public Button btn_start,run_query;
-    public TextField txt_corpus, txt_posting,txt_query,query_path;
+    public TextField txt_posting,txt_query,query_path;
     public CheckBox check_stem, ckc_expend, ckc_summerize;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
         m = new Model();
-        btn_start.setDisable(true);
-
-
     }
 
     public void closeProgram() {
@@ -45,12 +44,14 @@ public class ViewController {
         }
     }
     public void query_start() {
+        long startTime=System.currentTimeMillis();
         if (ckc_summerize.isSelected()) {
             openSummer(txt_query.getText());
         } else if (ckc_expend.isSelected()) {
-            ExpandQuery ex = new ExpandQuery(txt_query.getText());
-            ex.expand();
-        } else {
+//            ExpandQuery ex = new ExpandQuery(txt_query.getText());
+//            ex.expand();
+        }
+        else if (query_path.getText().equals("")){
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText(null);
@@ -59,96 +60,72 @@ public class ViewController {
             m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
             alert.close();
         }
-    }
-    public void load_start() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Please wait for the process to end");
-        alert.show();
-        long time = m.start(txt_corpus.getText(), null, check_stem.isSelected());
-        alert.close();
-        try {
-            Stage stage = new Stage();
-            stage.setTitle("Summarize");
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            Parent root = fxmlLoader.load(getClass().getResource("Start.fxml").openStream());
-            Scene scene = new Scene(root, 550, 300);
-            stage.setScene(scene);
-            stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
-            StartController st = fxmlLoader.getController();
-            st.set(stage, m, this, time);
-            stage.show();
-        } catch (Exception e) {
-
+        else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Please wait for the retrieval");
+            alert.show();
+            m.queryChooser(query_path.getText(),check_stem.isSelected());
+            alert.close();
         }
+        long endTime=System.currentTimeMillis();
+        long total=(startTime-endTime)/1000;
+        //show file
+        File show = new File("C:\\trec\\showFile.txt");
+        Desktop desktop = Desktop.getDesktop();
+        if (show.exists()) {
+            try {
+                desktop.open(show);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Running Time");
+        alert.setHeaderText(null);
+        alert.setContentText("The total running time is: " +total+ " seconds");
+        alert.showAndWait();
+        alert.close();
+
     }
     public void reset() {
-        m.reset(this.txt_posting.getText());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-        alert.setContentText("Cache, Dictionary & PostingList deleted");
+        alert.setContentText("results file was deleted");
         alert.show();
+        txt_query=null;
+        query_path=null;
+        m.reset(query_path.getStyle());
     }
 
-//    public void show_cache() throws IOException {
-//
-//        String path = txt_posting.getText();
-//        if (path.equals("") || path.equals("No Directory selected")) {
-//            path = "";
-//        } else {
-//            path = path + "//";
-//        }
-//        File cache = new File(path + "Cache.txt");
-//        Desktop desktop = Desktop.getDesktop();
-//        if (cache.exists()) desktop.open(cache);
-//
-//    }
+    public void save_results(){
+        FileChooser fileChooser = new FileChooser();
+        //Set extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (.txt)", ".txt");
+        fileChooser.getExtensionFilters().add(extFilter);
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(primaryStage);
+        m.save(file.getPath());
+    }
 
-    public void choose_query() throws IOException {
+    public void choose_query() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Queries File");
         File f=fileChooser.showOpenDialog(primaryStage);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("TXT", "*.txt"));
         query_path.setText(f.getPath());
+    }
+
+    public void load() {
+        load = new Load(check_stem.isSelected());
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText(null);
-        alert.setContentText("Please wait for the retrieval");
+        alert.setContentText("Loading was Successful");
         alert.show();
-        m.queryChooser(query_path.getText(),check_stem.isSelected());
-        alert.close();
     }
-
-    //NOTICE that the corpus & the file of the stopwords need to be at the same directory!
-    public void choose_corpus() {
-
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        File selectedDirectory =
-                directoryChooser.showDialog(null);
-
-        if (selectedDirectory == null) {
-            txt_corpus.setText("No Directory selected");
-        } else {
-            txt_corpus.setText(selectedDirectory.getAbsolutePath());
-            btn_start.setDisable(false);
-        }
-    }
-
-    // gives u the path where to save the the posting & dictionary.
-    //need to check that the return argument isn't null
-//    public void choose_to_save() {
-//        DirectoryChooser directoryChooser = new DirectoryChooser();
-//        File selectedDirectory =
-//                directoryChooser.showDialog(null);
-//
-//        if (selectedDirectory == null) {
-//            txt_posting.setText("No Directory selected");
-//        } else {
-//            txt_posting.setText(selectedDirectory.getAbsolutePath());
-//        }
-//    }
     public void openSummer(String q) {
         try {
             Stage stage = new Stage();
@@ -166,17 +143,5 @@ public class ViewController {
         }
     }
 
-    public void load() {
-        String path="";
-        if (txt_posting!=null) {
-            path = txt_posting.getText();
-        }
-        load = new Load(path,check_stem.isSelected());
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Loading was Successful");
-        alert.show();
-    }
 
 }

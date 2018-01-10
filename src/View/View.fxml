@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="516.0" prefWidth="766.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.ViewController">
+<AnchorPane prefHeight="516.0" prefWidth="766.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.ViewController">
     <children>
         <GridPane layoutX="15.0" layoutY="14.0" prefHeight="128.0" prefWidth="691.0">
             <columnConstraints>
@@ -25,12 +25,9 @@
                 <RowConstraints maxHeight="70.0" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label prefHeight="42.0" prefWidth="212.0" text="Choose Corpus &amp; StopWords:" textFill="#1a14d1" />
-                <TextField fx:id="txt_corpus" prefHeight="25.0" prefWidth="241.0" GridPane.columnIndex="1" />
-                <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#choose_corpus" prefHeight="16.0" prefWidth="95.0" text="Browse" GridPane.columnIndex="2" />
-                <Button fx:id="btn_start" contentDisplay="CENTER" mnemonicParsing="false" onAction="#load_start" prefHeight="25.0" prefWidth="202.0" text="Start Indexing" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label prefHeight="42.0" prefWidth="212.0" text="Save results" textFill="#1a14d1" />
+                <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#save_results" prefHeight="39.0" prefWidth="140.0" text="save" GridPane.columnIndex="1" />
                 <TextField fx:id="txt_query" prefHeight="17.0" prefWidth="372.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <Button fx:id="run_query" alignment="CENTER" mnemonicParsing="false" onAction="#query_start" prefHeight="17.0" prefWidth="95.0" text="Run" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                 <Label prefHeight="27.0" prefWidth="185.0" text="Insert query manually:" textFill="#3913e1" GridPane.rowIndex="2" />
             </children>
         </GridPane>
@@ -49,25 +46,26 @@
                 <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#choose_query" prefHeight="25.0" prefWidth="95.0" text="Browse" GridPane.columnIndex="2" />
             </children>
         </GridPane>
-        <HBox layoutX="68.0" layoutY="151.0" prefHeight="39.0" prefWidth="580.0">
+        <HBox layoutX="68.0" layoutY="151.0" prefHeight="39.0" prefWidth="634.0">
             <children>
                 <CheckBox fx:id="ckc_expend" mnemonicParsing="false" prefHeight="27.0" prefWidth="156.0" text="Expend query" />
-                <CheckBox fx:id="check_stem" mnemonicParsing="false" prefHeight="27.0" prefWidth="133.0" text="Enable Stemming">
+                <CheckBox fx:id="check_stem" mnemonicParsing="false" prefHeight="27.0" prefWidth="186.0" text="Enable Stemming">
                     <HBox.margin>
                         <Insets right="50.0" />
                     </HBox.margin></CheckBox>
-                <CheckBox fx:id="ckc_summerize" mnemonicParsing="false" prefHeight="27.0" prefWidth="195.0" text="Summerize Document" />
+                <CheckBox fx:id="ckc_summerize" mnemonicParsing="false" prefHeight="27.0" prefWidth="228.0" text="Summerize Document" />
             </children>
         </HBox>
-        <HBox layoutX="193.0" layoutY="316.0" prefHeight="42.0" prefWidth="414.0">
+        <HBox layoutX="193.0" layoutY="316.0" prefHeight="42.0" prefWidth="382.0">
             <children>
                 <Button fx:id="btn_reset" alignment="CENTER" mnemonicParsing="false" onAction="#reset" prefHeight="25.0" prefWidth="160.0" text="Reset">
                     <HBox.margin>
                         <Insets right="50.0" />
                     </HBox.margin>
                 </Button>
-                <Button alignment="CENTER" mnemonicParsing="false" onAction="#load" prefHeight="25.0" prefWidth="165.0" text="Load dictionary &amp; cache" />
+                <Button fx:id="run_query" alignment="CENTER" mnemonicParsing="false" onAction="#query_start" prefHeight="39.0" prefWidth="156.0" text="Run" />
             </children>
         </HBox>
+      <Button layoutX="238.0" layoutY="401.0" mnemonicParsing="false" text="Load Dictionary &amp; Cache"  onAction="#load" />
     </children>
 </AnchorPane>
