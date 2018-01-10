@@ -196,8 +196,11 @@ public class Ranker {
     }
     //BM25
     private double computeTfIdfWeighted (long df, long tf,double len){
+        //in our computation of BM25 k=1.4 , b=0.75
         double idf= (Math.log((467767-df+0.5)/(df+0.5)))/(Math.log(2));
+        //tf*(k+1)
         double mone=tf*(2.4);
+        // tf  + k*(1-b +b* document_length/avg document length)
         double mechane=tf+1.4*(1-0.75+0.75*(len/469.3722708));
         return idf*(mone/mechane);
 

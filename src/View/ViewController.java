@@ -1,5 +1,5 @@
 package View;
-import Model.Searcher;
+import Model.ExpandQuery;
 import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
@@ -13,8 +13,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -26,7 +24,7 @@ public class ViewController {
     @FXML
     public Button btn_start,run_query;
     public TextField txt_corpus, txt_posting,txt_query,query_path;
-    public CheckBox check_stem;
+    public CheckBox check_stem, ckc_expend, ckc_summerize;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
@@ -46,14 +44,21 @@ public class ViewController {
             primaryStage.close();
         }
     }
-    public void query_start(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Please wait for the retrieval");
-        alert.show();
-        m.findDocs(txt_query.getText(),check_stem.isSelected(),0);
-        alert.close();
+    public void query_start() {
+        if (ckc_summerize.isSelected()) {
+            openSummer(txt_query.getText());
+        } else if (ckc_expend.isSelected()) {
+            ExpandQuery ex = new ExpandQuery(txt_query.getText());
+            ex.expand();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Please wait for the retrieval");
+            alert.show();
+            m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
+            alert.close();
+        }
     }
     public void load_start() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -144,6 +149,22 @@ public class ViewController {
 //            txt_posting.setText(selectedDirectory.getAbsolutePath());
 //        }
 //    }
+    public void openSummer(String q) {
+        try {
+            Stage stage = new Stage();
+            stage.setTitle("Summarize");
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            Parent root = fxmlLoader.load(getClass().getResource("Sentences.fxml").openStream());
+            Scene scene = new Scene(root, 550, 300);
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+            SentencesController st = fxmlLoader.getController();
+            st.set(stage, q);
+            stage.show();
+        } catch (Exception e) {
+
+        }
+    }
 
     public void load() {
         String path="";
@@ -159,4 +180,3 @@ public class ViewController {
     }
 
 }
-

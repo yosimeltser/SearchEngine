@@ -2,8 +2,7 @@ package Model;
 
 import java.io.*;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class SearchDoc {
@@ -14,7 +13,8 @@ public class SearchDoc {
         weight_sen = new LinkedHashMap<>();
     }
 
-    public void rank(String doc) {
+    //rank each sentence
+    public LinkedHashMap rank(String doc) {
         String document = geText(doc);
         Document d = new Document(doc);
         //split to words in the sentences
@@ -29,7 +29,6 @@ public class SearchDoc {
             weight_sen.put(sen[j], 0.0);
         }
         int counter = 0;
-
         for (Map.Entry<String, Double> entry : weight_sen.entrySet()) {
             counter++;
             int place = 0;
@@ -48,18 +47,36 @@ public class SearchDoc {
             }
             weight_sen.put(sent, w);
         }
+        weight_sen = sortByValue(weight_sen);
+        return weight_sen;
+    }
 
+    //sort the linkedHashMap that maps between sentence to its weight
+    private <K, V> LinkedHashMap<K, V> sortByValue(LinkedHashMap<K, V> map) {
+        List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Object>() {
+            @SuppressWarnings("unchecked")
+            public int compare(Object o1, Object o2) {
+                return ((Comparable<V>) ((Map.Entry<K, V>) (o2)).getValue()).compareTo(((Map.Entry<K, V>) (o1)).getValue());
+            }
+        });
 
+        LinkedHashMap<K, V> result = new LinkedHashMap<>();
+        for (Iterator<Map.Entry<K, V>> it = list.iterator(); it.hasNext(); ) {
+            Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
+            result.put(entry.getKey(), entry.getValue());
+        }
+        return result;
     }
 
 
-    //CHANGE TO THAT THE PATH TO THE CORPUS IS THE PATH OF THE PROJECT
+    //finds the text of the specific document
     private String geText(String d) {
         String file = getDirectory(d);
         String path = file + "\\" + file;
         StringBuilder doc = new StringBuilder();
         try {
-            BufferedReader br = new BufferedReader(new FileReader("D:\\שנה ג\\IR\\corpus\\" + path));
+            BufferedReader br = new BufferedReader(new FileReader("corpus\\" + path));
             String line = "";
             while ((line = br.readLine()) != null) {
                 // takes the doc ID and checks if it's the desirable document
