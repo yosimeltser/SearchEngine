@@ -245,5 +245,9 @@ public class Model {
         }
         System.gc();
     }
+    public void expand(String q){
+        ExpandQuery ex = new ExpandQuery(q);
+        ex.expand();
+    }
 }
 
