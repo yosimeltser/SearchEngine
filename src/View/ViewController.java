@@ -14,7 +14,6 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +129,7 @@ public class ViewController {
         load = new Load(check_stem.isSelected());
         showInfo("Loading was Successful");
     }
-
+// new screen to show the results of the 5 most significant sentences in doc
     public void openSummer(String q) {
         try {
             Stage stage = new Stage();
@@ -147,7 +146,7 @@ public class ViewController {
 
         }
     }
-
+// opens ERROR dialog when called
     private Alert showError(String data) {
         Alert error = new Alert(Alert.AlertType.ERROR);
         error.setTitle("Error");
@@ -155,7 +154,7 @@ public class ViewController {
         error.show();
         return error;
     }
-
+//opens information dialog when called
     private Alert showInfo(String data) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");

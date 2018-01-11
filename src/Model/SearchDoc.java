@@ -1,7 +1,6 @@
 package Model;
 
 import java.io.*;
-
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,7 +33,7 @@ public class SearchDoc {
             int place = 0;
             if (counter > 1 && counter < 16)
                 place = 1;
-            //to check if the sentence is between 2-20
+            //to check if the sentence is between 2-15
             String sent = entry.getKey();
             String[] word_sen = sent.split(whitespace.toString());
             //iterate on each word in the sentence

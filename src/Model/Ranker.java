@@ -1,10 +1,6 @@
 package Model;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Ranker {
     int querySize;
