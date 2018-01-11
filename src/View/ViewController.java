@@ -49,11 +49,34 @@ public class ViewController {
 
     public void query_start() {
         if (pressed) {
+            m.init();
             long startTime = System.currentTimeMillis();
             if (ckc_summerize.isSelected()) {
+                Alert alert = showInfo("Please wait for the summary");
                 openSummer(txt_query.getText());
+                alert.close();
             } else if (ckc_expend.isSelected()) {
-                m.expand(txt_query.getText());
+                Alert alert = showInfo("Please wait for the retrieval");
+                m.expand(txt_query.getText(),check_stem.isSelected());
+                alert.close();
+                //show file
+                File show = new File("C:\\trec\\showFile.txt");
+                Desktop desktop = Desktop.getDesktop();
+                long endTime = System.currentTimeMillis();
+                long total = (startTime - endTime) / 1000;
+                if (show.exists()) {
+                    try {
+                        desktop.open(show);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                alert1.setTitle("Running Time");
+                alert1.setHeaderText(null);
+                alert1.setContentText("The total running time is: " + total + " seconds");
+                alert1.showAndWait();
+                alert1.close();
             } else if (query_path != null) {
                 if (query_path.getText().equals("")) {
                     if (txt_query.getText().equals("")) {
@@ -63,31 +86,50 @@ public class ViewController {
                         Alert alert = showInfo("Please wait for the retrieval");
                         m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
                         alert.close();
+                        //show file
+                        File show = new File("C:\\trec\\showFile.txt");
+                        Desktop desktop = Desktop.getDesktop();
+                        long endTime = System.currentTimeMillis();
+                        long total = (startTime - endTime) / 1000;
+                        if (show.exists()) {
+                            try {
+                                desktop.open(show);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                        alert1.setTitle("Running Time");
+                        alert1.setHeaderText(null);
+                        alert1.setContentText("The total running time is: " + total + " seconds");
+                        alert1.showAndWait();
+                        alert1.close();
                     }
                 } else {
                     Alert alert = showInfo("Please wait for the retrieval");
                     m.queryChooser(query_path.getText(), check_stem.isSelected());
                     alert.close();
+                    //show file
+                    File show = new File("C:\\trec\\showFile.txt");
+                    Desktop desktop = Desktop.getDesktop();
+                    long endTime = System.currentTimeMillis();
+                    long total = (startTime - endTime) / 1000;
+                    if (show.exists()) {
+                        try {
+                            desktop.open(show);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                    alert1.setTitle("Running Time");
+                    alert1.setHeaderText(null);
+                    alert1.setContentText("The total running time is: " + total + " seconds");
+                    alert1.showAndWait();
+                    alert1.close();
                 }
 
-                long endTime = System.currentTimeMillis();
-                long total = (startTime - endTime) / 1000;
-                //show file
-                File show = new File("C:\\trec\\showFile.txt");
-                Desktop desktop = Desktop.getDesktop();
-                if (show.exists()) {
-                    try {
-                        desktop.open(show);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Running Time");
-                alert.setHeaderText(null);
-                alert.setContentText("The total running time is: " + total + " seconds");
-                alert.showAndWait();
-                alert.close();
+
             }
         }
     }

@@ -20,36 +20,6 @@ public class Model {
         saved=new LinkedHashMap<>();
     }
 
-    // path_corpus tells u where the corpus directory & the stopword file sits
-    //path_to save tells you where to save the final posting list & the dictionary
-    public long start(String path_corpus, String path_tosave, boolean stemOrNot) {
-        try {
-            long start = System.currentTimeMillis();
-            stopword = DSstopwords(path_corpus);
-            ReadFile Fr = new ReadFile(path_corpus + "\\corpus");
-            Parse parser = new Parse();
-            parser.setStopword(stopword);
-            StemmerGenerator StG = new StemmerGenerator(stemOrNot);
-            StG.setStopWords(stopword);
-            //  Indexer index = new Indexer(path_tosave, stemOrNot);
-            for (int file = 0; file <= 72; file++) {
-                LinkedList<String> Documents = Fr.fileReader();
-                LinkedList<ArrayList<String>> ParsedDocs = parser.ParseFile(Documents);
-                LinkedHashMap<String, LinkedList<Document>> StemmedDocs = StG.chunkStem(ParsedDocs);
-                //      index.setDocs(StemmedDocs);
-            }
-
-            //    index.mergeFiles();
-            long end = System.currentTimeMillis();
-            return ((end - start) / 1000);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //never suppose to get here
-        return 1;
-    }
-
-
     //find all the docs that are relevant to the query
     public void findDocs(String st, boolean stemOrNot, int queryNumber) {
         stopword = DSstopwords("");
@@ -72,12 +42,38 @@ public class Model {
                 r.rankWord(postLine, term);
             }
         }
-        //sorted docToRank
         LinkedHashMap<String, Double> docToRamkSorted = sortByValue(r.getDocToRank());
         saved.put(queryNumber,docToRamkSorted);
         showResults(docToRamkSorted, queryNumber);
     }
-
+    //run all the queries from the query text file
+    public void queryChooser(String text, boolean stemOrNot) {
+        try {
+            if (text==null) return;
+            FileReader f = new FileReader(text);
+            BufferedReader br = new BufferedReader(f);
+            String line = "";
+            int queryNum;
+            String query;
+            while ((line = br.readLine()) != null) {
+                if (line.startsWith("<num>")) {
+                    String[] number = line.split(" ");
+                    queryNum = Integer.parseInt(number[2]);
+                    line = br.readLine();
+                    query = line.replaceAll("<title> ", "");
+                    //run the query
+                    findDocs(query, stemOrNot, queryNum);
+                }
+            }
+            //free resources
+            br.close();
+            f.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    //write the results to a temp file
+    //when the run finished the file opens
     private void showResults(LinkedHashMap<String, Double> docToRamkSorted, int queryNumber) {
         try {
             int line = 0;
@@ -104,6 +100,59 @@ public class Model {
             writeTofile(entry.getValue(),entry.getKey(),path);
         }
         saved=null;
+    }
+
+    // inserts all the stop words into a hash
+    private static HashSet<String> DSstopwords(String path) {
+        HashSet<String> stopword = new HashSet<>();
+        String line;
+        BufferedReader br = null;
+        FileReader fr = null;
+        try {
+            fr = new FileReader(path + "stopword.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        br = new BufferedReader(fr);
+        try {
+            while ((line = br.readLine()) != null) {
+                stopword.add(line);
+            }
+            fr.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return stopword;
+    }
+
+    //wikipedia expansion
+    public void expand(String q, boolean StemOrNot){
+        ExpandQuery ex = new ExpandQuery(q);
+        ArrayList <String> arr= ex.expand();
+        if (arr.size()==0) return;
+        String query="";
+        for (String s : arr) {
+            query=query+" "+ s;
+        }
+        findDocs(query,StemOrNot,0);
+    }
+
+    //clear from old files to show
+    public void init (){
+        try {
+            Files.delete(Paths.get("C:\\trec\\showFile.txt"));
+        } catch (IOException e) {
+        }
+    }
+    //delete data stractures
+    public void reset(String path) {
+        saved=null;
+        try {
+            Files.delete(Paths.get(path));
+        } catch (IOException e) {
+
+        }
+        System.gc();
     }
     //writes 50 documents that retrieved from the query
     //by the format of track val
@@ -132,7 +181,6 @@ public class Model {
         } catch (Exception e) {
         }
     }
-
     //Sort hash map
     private <K, V> LinkedHashMap<K, V> sortByValue(HashMap<K, V> map) {
         List<Map.Entry<K, V>> list = new LinkedList<>(map.entrySet());
@@ -149,105 +197,6 @@ public class Model {
             result.put(entry.getKey(), entry.getValue());
         }
         return result;
-    }
-
-    // inserts all the stop words into a hash
-    private static HashSet<String> DSstopwords(String path) {
-        HashSet<String> stopword = new HashSet<>();
-        String line;
-        BufferedReader br = null;
-        FileReader fr = null;
-        try {
-            fr = new FileReader(path + "stopword.txt");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        br = new BufferedReader(fr);
-        try {
-            while ((line = br.readLine()) != null) {
-                stopword.add(line);
-            }
-            fr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return stopword;
-    }
-
-
-    //run all the queries from the query text file
-    public void queryChooser(String text, boolean stemOrNot) {
-        try {
-            init();
-            FileReader f = new FileReader(text);
-            BufferedReader br = new BufferedReader(f);
-            String line = "";
-            int queryNum;
-            String query;
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith("<num>")) {
-                    String[] number = line.split(" ");
-                    queryNum = Integer.parseInt(number[2]);
-                    line = br.readLine();
-                    query = line.replaceAll("<title> ", "");
-                    //run the query
-                    findDocs(query, stemOrNot, queryNum);
-                }
-            }
-            //free resources
-            br.close();
-            f.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    //clear from old files to show
-    public void init (){
-        try {
-            Files.delete(Paths.get("C:\\trec\\showFile.txt"));
-        } catch (IOException e) {
-        }
-    }
-    //returns array of string
-    //1 element ->  Index Size
-    //2 element -> Cache
-    public String[] sizes(String path, boolean StemOrNot) {
-        String Path;
-        String[] size = new String[2];
-        if (path.equals("") || path.equals("No Directory selected")) {
-            Path = "";
-        } else {
-            Path = path + "\\";
-        }
-        long postSize;
-        if (StemOrNot) {
-            File postStem = new File(Path + "PostingListStem.txt");
-            postSize = postStem.length();
-        } else {
-            File postNotStem = new File(Path + "PostingListNoStem.txt");
-            postSize = postNotStem.length();
-        }
-        File Dictionary = new File(Path + "Dictionary.txt");
-        File Cache = new File(Path + "Cache.txt");
-        Long index = (Dictionary.length() + postSize);
-        Long cache = Cache.length();
-        size[0] = index.toString();
-        size[1] = cache.toString();
-        return size;
-    }
-    //delete data stractures
-    public void reset(String path) {
-        saved=null;
-        try {
-            Files.delete(Paths.get(path));
-        } catch (IOException e) {
-
-        }
-        System.gc();
-    }
-    public void expand(String q){
-        ExpandQuery ex = new ExpandQuery(q);
-        ex.expand();
     }
 }
 

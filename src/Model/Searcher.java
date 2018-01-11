@@ -28,10 +28,12 @@ public class Searcher {
         cache = l.getLoadedCache();
     }
 
+    //set the query after parse
     public void setParsedQuery(ArrayList<String> parsedQuery) {
         ParsedQuery = parsedQuery;
     }
-    //Stemmer for a Query
+
+    //Stemmer for the Query
     public ArrayList<String> stem() {
         ArrayList<String> StemmedQuery = new ArrayList<>();
         for (int k = 0; k < ParsedQuery.size(); k++) {
