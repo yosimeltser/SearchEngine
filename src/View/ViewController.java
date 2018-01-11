@@ -1,7 +1,4 @@
 package View;
-
-import Model.ExpandQuery;
-
 import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
@@ -24,7 +21,6 @@ public class ViewController {
     Stage primaryStage;
     Model m;
     Load load;
-    boolean pressed;
     @FXML
     public Button run_query;
     public TextField txt_query, query_path, save_path;
@@ -33,7 +29,6 @@ public class ViewController {
     public void setStage(Stage other) {
         this.primaryStage = other;
         m = new Model();
-        pressed = false;
     }
 
     public void closeProgram() {
@@ -48,7 +43,7 @@ public class ViewController {
     }
 
     public void query_start() {
-        if (pressed) {
+
             m.init();
             long startTime = System.currentTimeMillis();
             if (ckc_summerize.isSelected()) {
@@ -60,10 +55,10 @@ public class ViewController {
                 m.expand(txt_query.getText(),check_stem.isSelected());
                 alert.close();
                 //show file
-                File show = new File("C:\\trec\\showFile.txt");
+                File show = new File("showFile.txt");
                 Desktop desktop = Desktop.getDesktop();
                 long endTime = System.currentTimeMillis();
-                long total = (startTime - endTime) / 1000;
+                long total = ( endTime-startTime) / 1000;
                 if (show.exists()) {
                     try {
                         desktop.open(show);
@@ -87,10 +82,10 @@ public class ViewController {
                         m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
                         alert.close();
                         //show file
-                        File show = new File("C:\\trec\\showFile.txt");
+                        File show = new File("showFile.txt");
                         Desktop desktop = Desktop.getDesktop();
                         long endTime = System.currentTimeMillis();
-                        long total = (startTime - endTime) / 1000;
+                        long total = ( endTime-startTime) / 1000;
                         if (show.exists()) {
                             try {
                                 desktop.open(show);
@@ -110,10 +105,10 @@ public class ViewController {
                     m.queryChooser(query_path.getText(), check_stem.isSelected());
                     alert.close();
                     //show file
-                    File show = new File("C:\\trec\\showFile.txt");
+                    File show = new File("showFile.txt");
                     Desktop desktop = Desktop.getDesktop();
                     long endTime = System.currentTimeMillis();
-                    long total = (startTime - endTime) / 1000;
+                    long total = ( endTime-startTime) / 1000;
                     if (show.exists()) {
                         try {
                             desktop.open(show);
@@ -132,13 +127,13 @@ public class ViewController {
 
             }
         }
-    }
+
 
     public void reset() {
-        txt_query = null;
-        query_path = null;
+        txt_query.setText("");
+        query_path.setText("");
+        save_path.setText("");
         File f = new File(save_path.getText());
-        pressed = false;
         m.reset(f.getPath());
         showInfo("Results file were deleted");
         System.gc();
@@ -167,7 +162,6 @@ public class ViewController {
     }
 
     public void load() {
-        pressed = true;
         load = new Load(check_stem.isSelected());
         showInfo("Loading was Successful");
     }
@@ -179,7 +173,7 @@ public class ViewController {
             stage.setTitle("Summarize");
             FXMLLoader fxmlLoader = new FXMLLoader();
             Parent root = fxmlLoader.load(getClass().getResource("Sentences.fxml").openStream());
-            Scene scene = new Scene(root, 550, 300);
+            Scene scene = new Scene(root, 650, 450);
             stage.setScene(scene);
             stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
             SentencesController st = fxmlLoader.getController();

@@ -15,9 +15,11 @@ import java.util.regex.Pattern;
 
 public class Model {
     HashSet<String> stopword = null;
+    boolean expand;
     public LinkedHashMap<Integer,LinkedHashMap<String, Double>> saved;
     public Model() {
         saved=new LinkedHashMap<>();
+        expand=false;
     }
 
     //find all the docs that are relevant to the query
@@ -76,13 +78,17 @@ public class Model {
     //when the run finished the file opens
     private void showResults(LinkedHashMap<String, Double> docToRamkSorted, int queryNumber) {
         try {
+            int trashHold=50;
+            if (expand) {
+                trashHold=70;
+            }
             int line = 0;
-            BufferedWriter rs = new BufferedWriter(new FileWriter("C:\\trec\\showFile.txt",true));
+            BufferedWriter rs = new BufferedWriter(new FileWriter("showFile.txt",true));
             rs.write("---" + String.valueOf(queryNumber) + "---");
             rs.newLine();
             for (Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
                 //write 50 line from each query to the file
-                if (line >= 50) {
+                if (line >= trashHold) {
                     break;
                 }
                 rs.write(entry.getKey());
@@ -91,6 +97,7 @@ public class Model {
                 line++;
             }
             rs.close();
+            expand=false;
         } catch (Exception e) {
         }
     }
@@ -99,7 +106,8 @@ public class Model {
         for (Map.Entry<Integer,LinkedHashMap<String, Double>> entry:saved.entrySet()) {
             writeTofile(entry.getValue(),entry.getKey(),path);
         }
-        saved=null;
+        saved=new LinkedHashMap<>();
+
     }
 
     // inserts all the stop words into a hash
@@ -134,19 +142,20 @@ public class Model {
         for (String s : arr) {
             query=query+" "+ s;
         }
+        expand=true;
         findDocs(query,StemOrNot,0);
     }
 
     //clear from old files to show
     public void init (){
         try {
-            Files.delete(Paths.get("C:\\trec\\showFile.txt"));
+            Files.delete(Paths.get("showFile.txt"));
         } catch (IOException e) {
         }
     }
     //delete data stractures
     public void reset(String path) {
-        saved=null;
+        saved=new LinkedHashMap<>();
         try {
             Files.delete(Paths.get(path));
         } catch (IOException e) {
@@ -159,11 +168,15 @@ public class Model {
     private void writeTofile(LinkedHashMap<String, Double> docToRamkSorted, int queryNumber,String path) {
         try {
 
+            int trashHold=50;
+            if (expand) {
+                trashHold=70;
+            }
             int line = 0;
             BufferedWriter rs = new BufferedWriter(new FileWriter(path, true));
             for (Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
                 //write 50 line from each query to the file
-                if (line >= 50) {
+                if (line >= trashHold) {
                     break;
                 }
                 //FORMAT OF TRECEVAL
