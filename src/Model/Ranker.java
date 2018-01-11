@@ -98,9 +98,9 @@ public class Ranker {
         //467767 -> the number of documents in the corpus
         oneWordQuery =   (((tf / maxDocTf)  * (Math.log(467767 / df) / Math.log(2)))*place);
         double cossin = (oneWordQuery / ((Math.sqrt(querySize)) * docRank));
-        double MB25=(computeTfIdfWeighted( df,tf, docSize));
-        //half from cossin and half from MB25
-        double OurFormula= 0.5*cossin + 0.5*MB25;
+        double BM25=(bm25( df,tf, docSize));
+        //half from cossin and half from BM25
+        double OurFormula= 0.5*cossin + 0.5*BM25;
         if (docToRank.containsKey(docNumber)) {
             double addedValue = docToRank.get(docNumber) + OurFormula;
             docToRank.put(docNumber, addedValue);
@@ -109,7 +109,7 @@ public class Ranker {
         }
     }
     //BM25
-    private double computeTfIdfWeighted (long df, long tf,double len){
+    private double bm25 (long df, long tf,double len){
         //in our computation of BM25 k=1.4 , b=0.75
         double idf= (Math.log((467767-df+0.5)/(df+0.5)))/(Math.log(2));
         //tf*(k+1)

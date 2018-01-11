@@ -1,5 +1,7 @@
 package View;
-//import Model.ExpandQuery;
+
+import Model.ExpandQuery;
+
 import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
@@ -9,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -23,14 +24,16 @@ public class ViewController {
     Stage primaryStage;
     Model m;
     Load load;
+    boolean pressed;
     @FXML
-    public Button btn_start,run_query;
-    public TextField txt_posting,txt_query,query_path,save_path;
+    public Button run_query;
+    public TextField txt_query, query_path, save_path;
     public CheckBox check_stem, ckc_expend, ckc_summerize;
 
     public void setStage(Stage other) {
         this.primaryStage = other;
         m = new Model();
+        pressed = false;
     }
 
     public void closeProgram() {
@@ -43,92 +46,91 @@ public class ViewController {
             primaryStage.close();
         }
     }
+
     public void query_start() {
-        long startTime=System.currentTimeMillis();
-        if (ckc_summerize.isSelected()) {
-            openSummer(txt_query.getText());
-        } else if (ckc_expend.isSelected()) {
-//            ExpandQuery ex = new ExpandQuery(txt_query.getText());
-//            ex.expand();
-        }
-        else if (query_path.getText().equals("")){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText(null);
-            alert.setContentText("Please wait for the retrieval");
-            alert.show();
-            m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
-            alert.close();
-        }
-        else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Information Dialog");
-            alert.setHeaderText(null);
-            alert.setContentText("Please wait for the retrieval");
-            alert.show();
-            m.queryChooser(query_path.getText(),check_stem.isSelected());
-            alert.close();
-        }
-        long endTime=System.currentTimeMillis();
-        long total=(startTime-endTime)/1000;
-        //show file
-        File show = new File("C:\\trec\\showFile.txt");
-        Desktop desktop = Desktop.getDesktop();
-        if (show.exists()) {
-            try {
-                desktop.open(show);
-            } catch (IOException e) {
-                e.printStackTrace();
+        if (pressed) {
+            long startTime = System.currentTimeMillis();
+            if (ckc_summerize.isSelected()) {
+                openSummer(txt_query.getText());
+            } else if (ckc_expend.isSelected()) {
+                ExpandQuery ex = new ExpandQuery(txt_query.getText());
+                ex.expand();
+            } else if (query_path != null) {
+                if (query_path.getText().equals("")) {
+                    if (txt_query.getText().equals("")) {
+                        showError("Please insert a query");
+                        return;
+                    } else {
+                        Alert alert = showInfo("Please wait for the retrieval");
+                        m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
+                        alert.close();
+                    }
+                } else {
+                    Alert alert = showInfo("Please wait for the retrieval");
+                    m.queryChooser(query_path.getText(), check_stem.isSelected());
+                    alert.close();
+                }
+
+                long endTime = System.currentTimeMillis();
+                long total = (startTime - endTime) / 1000;
+                //show file
+                File show = new File("C:\\trec\\showFile.txt");
+                Desktop desktop = Desktop.getDesktop();
+                if (show.exists()) {
+                    try {
+                        desktop.open(show);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Running Time");
+                alert.setHeaderText(null);
+                alert.setContentText("The total running time is: " + total + " seconds");
+                alert.showAndWait();
+                alert.close();
             }
         }
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Running Time");
-        alert.setHeaderText(null);
-        alert.setContentText("The total running time is: " +total+ " seconds");
-        alert.showAndWait();
-        alert.close();
-
     }
+
     public void reset() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("results file was deleted");
-        alert.show();
-        txt_query=null;
-        query_path=null;
-        File f=new File(save_path.getText());
+        txt_query = null;
+        query_path = null;
+        File f = new File(save_path.getText());
+        pressed = false;
         m.reset(f.getPath());
+        showInfo("Results file were deleted");
         System.gc();
     }
 
-    public void save_results(){
+    public void save_results() {
         FileChooser fileChooser = new FileChooser();
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (.txt)", ".txt");
         fileChooser.getExtensionFilters().add(extFilter);
         //Show save file dialog
         File file = fileChooser.showSaveDialog(primaryStage);
-        save_path.setText(file.getPath());
-        m.save(file.getPath());
+        if (file != null) {
+            save_path.setText(file.getPath());
+            m.save(file.getPath());
+        }
     }
 
     public void choose_query() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Queries File");
-        File f=fileChooser.showOpenDialog(primaryStage);
+        File f = fileChooser.showOpenDialog(primaryStage);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("TXT", "*.txt"));
-        query_path.setText(f.getPath());
+        if (f != null)
+            query_path.setText(f.getPath());
     }
 
     public void load() {
+        pressed = true;
         load = new Load(check_stem.isSelected());
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("Loading was Successful");
-        alert.show();
+        showInfo("Loading was Successful");
     }
+
     public void openSummer(String q) {
         try {
             Stage stage = new Stage();
@@ -144,6 +146,23 @@ public class ViewController {
         } catch (Exception e) {
 
         }
+    }
+
+    private Alert showError(String data) {
+        Alert error = new Alert(Alert.AlertType.ERROR);
+        error.setTitle("Error");
+        error.setContentText(data);
+        error.show();
+        return error;
+    }
+
+    private Alert showInfo(String data) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText(data);
+        alert.show();
+        return alert;
     }
 
 

@@ -15,7 +15,7 @@ public class SearchDoc {
 
     //rank each sentence
     public LinkedHashMap rank(String doc) {
-        String document = geText(doc);
+        String document = getText(doc);
         Document d = new Document(doc);
         //split to words in the sentences
         String[] words = document.split(whitespace.toString());
@@ -71,7 +71,7 @@ public class SearchDoc {
 
 
     //finds the text of the specific document
-    private String geText(String d) {
+    private String getText(String d) {
         String file = getDirectory(d);
         String path = file + "\\" + file;
         StringBuilder doc = new StringBuilder();
