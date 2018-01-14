@@ -58,7 +58,13 @@ public class Ranker {
     //rank one word that exists in the query and in the document
     public void rankWord(String [] postLine,String term) {
         //starts from 1 hence the term in the 0 place
-        for (int i = 1; i < postLine.length; i++) {
+        int i=1;
+        String termPost=postLine[0];
+        while (!term.equals(termPost)){
+            termPost+=" "+postLine[i];
+            i++;
+        }
+        for (; i < postLine.length; i++) {
             if (!postLine[i].equals(" ") && !postLine[i].equals("")) {
                 String docNumber = postLine[i];
                 long tf = Long.parseLong(postLine[++i]);

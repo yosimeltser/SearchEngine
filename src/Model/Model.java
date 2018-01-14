@@ -1,14 +1,10 @@
 package Model;
-
-import com.sun.org.apache.xpath.internal.SourceTree;
-
-import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
-import java.util.regex.Pattern;
+
 
 //THIS CLASS JOB IS TO CONNECT BETWEEN ALL OF THE CLASSES IN THE WHOLE PROJECT
 //IN ADDITION, THERE IS AN INTERACTION BETWEEN THE MODEL AND THE VIEW CLASSES THAT MAKES THE CODE MODULAR TO CHANGES.
@@ -25,7 +21,7 @@ public class Model {
     //find all the docs that are relevant to the query
     public void findDocs(String st, boolean stemOrNot, int queryNumber) {
         stopword = DSstopwords("");
-        Searcher s = new Searcher(stopword, st);
+        Searcher s = new Searcher(stopword, st,stemOrNot);
         s.ParseQuery(st);
         ArrayList<String> Query;
         if (stemOrNot) {
@@ -85,6 +81,8 @@ public class Model {
             int line = 0;
             BufferedWriter rs = new BufferedWriter(new FileWriter("showFile.txt",true));
             rs.write("---" + String.valueOf(queryNumber) + "---");
+            rs.newLine();
+            rs.write("--- The Number Of Retrieved Documents : " +String.valueOf(trashHold)+"---");
             rs.newLine();
             for (Map.Entry<String, Double> entry : docToRamkSorted.entrySet()) {
                 //write 50 line from each query to the file

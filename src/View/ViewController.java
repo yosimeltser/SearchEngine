@@ -1,4 +1,5 @@
 package View;
+
 import Model.Load;
 import Model.Model;
 import javafx.fxml.FXML;
@@ -21,6 +22,7 @@ public class ViewController {
     Stage primaryStage;
     Model m;
     Load load;
+    boolean browser = false;
     @FXML
     public Button run_query;
     public TextField txt_query, query_path, save_path;
@@ -44,89 +46,61 @@ public class ViewController {
 
     public void query_start() {
 
-            m.init();
-            long startTime = System.currentTimeMillis();
-            if (ckc_summerize.isSelected()) {
-                Alert alert = showInfo("Please wait for the summary");
-                openSummer(txt_query.getText());
-                alert.close();
-            } else if (ckc_expend.isSelected()) {
-                Alert alert = showInfo("Please wait for the retrieval");
-                m.expand(txt_query.getText(),check_stem.isSelected());
-                alert.close();
-                //show file
-                File show = new File("showFile.txt");
-                Desktop desktop = Desktop.getDesktop();
-                long endTime = System.currentTimeMillis();
-                long total = ( endTime-startTime) / 1000;
-                if (show.exists()) {
-                    try {
-                        desktop.open(show);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        m.init();
+        long startTime = System.currentTimeMillis();
+        if (ckc_summerize.isSelected()) {
+            Alert alert = showInfo("Please wait for the summary");
+            openSummer(txt_query.getText());
+            alert.close();
+        } else if (ckc_expend.isSelected()) {
+            Alert alert = showInfo("Please wait for the retrieval");
+            m.expand(txt_query.getText(), check_stem.isSelected());
+            alert.close();
+            //show file
+            File show = new File("showFile.txt");
+            Desktop desktop = Desktop.getDesktop();
+            long endTime = System.currentTimeMillis();
+            long total = (endTime - startTime) / 1000;
+            if (show.exists()) {
+                try {
+                    desktop.open(show);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                alert1.setTitle("Running Time");
-                alert1.setHeaderText(null);
-                alert1.setContentText("The total running time is: " + total + " seconds");
-                alert1.showAndWait();
-                alert1.close();
-            } else if (query_path != null) {
-                if (query_path.getText().equals("")) {
-                    if (txt_query.getText().equals("")) {
-                        showError("Please insert a query");
-                        return;
-                    } else {
-                        Alert alert = showInfo("Please wait for the retrieval");
-                        m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
-                        alert.close();
-                        //show file
-                        File show = new File("showFile.txt");
-                        Desktop desktop = Desktop.getDesktop();
-                        long endTime = System.currentTimeMillis();
-                        long total = ( endTime-startTime) / 1000;
-                        if (show.exists()) {
-                            try {
-                                desktop.open(show);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                        alert1.setTitle("Running Time");
-                        alert1.setHeaderText(null);
-                        alert1.setContentText("The total running time is: " + total + " seconds");
-                        alert1.showAndWait();
-                        alert1.close();
-                    }
-                } else {
-                    Alert alert = showInfo("Please wait for the retrieval");
-                    m.queryChooser(query_path.getText(), check_stem.isSelected());
-                    alert.close();
-                    //show file
-                    File show = new File("showFile.txt");
-                    Desktop desktop = Desktop.getDesktop();
-                    long endTime = System.currentTimeMillis();
-                    long total = ( endTime-startTime) / 1000;
-                    if (show.exists()) {
-                        try {
-                            desktop.open(show);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-                    alert1.setTitle("Running Time");
-                    alert1.setHeaderText(null);
-                    alert1.setContentText("The total running time is: " + total + " seconds");
-                    alert1.showAndWait();
-                    alert1.close();
-                }
-
-
             }
+            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+            alert1.setTitle("Running Time");
+            alert1.setHeaderText(null);
+            alert1.setContentText("The total running time is: " + total + " seconds");
+            alert1.showAndWait();
+            alert1.close();
+        } else if (txt_query.getText().equals("")) {
+            showError("Please insert a query");
+            return;
+        } else {
+            Alert alert = showInfo("Please wait for the retrieval");
+            m.findDocs(txt_query.getText(), check_stem.isSelected(), 0);
+            alert.close();
+            //show file
+            File show = new File("showFile.txt");
+            Desktop desktop = Desktop.getDesktop();
+            long endTime = System.currentTimeMillis();
+            long total = (endTime - startTime) / 1000;
+            if (show.exists()) {
+                try {
+                    desktop.open(show);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+            alert1.setTitle("Running Time");
+            alert1.setHeaderText(null);
+            alert1.setContentText("The total running time is: " + total + " seconds");
+            alert1.showAndWait();
+            alert1.close();
         }
+    }
 
 
     public void reset() {
@@ -153,12 +127,36 @@ public class ViewController {
     }
 
     public void choose_query() {
+        m.init();
+        browser = true;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choose Queries File");
         File f = fileChooser.showOpenDialog(primaryStage);
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("TXT", "*.txt"));
         if (f != null)
             query_path.setText(f.getPath());
+        long startTime = System.currentTimeMillis();
+        Alert alert = showInfo("Please wait for the retrieval");
+        m.queryChooser(query_path.getText(), check_stem.isSelected());
+        alert.close();
+        //show file
+        File show = new File("showFile.txt");
+        Desktop desktop = Desktop.getDesktop();
+        long endTime = System.currentTimeMillis();
+        long total = (endTime - startTime) / 1000;
+        if (show.exists()) {
+            try {
+                desktop.open(show);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+        alert1.setTitle("Running Time");
+        alert1.setHeaderText(null);
+        alert1.setContentText("The total running time is: " + total + " seconds");
+        alert1.showAndWait();
+        alert1.close();
     }
 
     public void load() {
@@ -185,7 +183,7 @@ public class ViewController {
     }
 
     // opens ERROR dialog when called
-    private Alert showError(String data) {
+    public Alert showError(String data) {
         Alert error = new Alert(Alert.AlertType.ERROR);
         error.setTitle("Error");
         error.setContentText(data);

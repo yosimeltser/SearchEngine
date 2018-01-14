@@ -1,5 +1,7 @@
 package Model;
 
+import View.ViewController;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +19,7 @@ public class Searcher {
     //cache loaded from the Load Class
     ArrayList<String> cache;
     HashMap<String, String> dictionary;
-    public Searcher(HashSet<String> _stopword, String st) {
+    public Searcher(HashSet<String> _stopword, String st, boolean _stemOrNot) {
         stopword=_stopword;
         stem=new Stemmer();
         //just for getting fields from the load class
@@ -26,6 +28,7 @@ public class Searcher {
         //For future use
         //right now not in use
         cache = l.getLoadedCache();
+        stemOrNot=_stemOrNot;
     }
 
     //set the query after parse
@@ -74,15 +77,19 @@ public class Searcher {
         }
         setParsedQuery(query);
     }
+
     //rank one word that exists in the query and in the document
     public String[] searchPostingList(String term) {
+        //must load first
+        if (dictionary == null) {
+            return null;
+        }
         String s = dictionary.get(term);
         //if the word not exist in the dictionary, Stop!
         if (s == null) {
             return null;
         }
         //Variable postLine will contain the whole information from the line that relevant to the term in the posting list
-        String[] postLine = {};
         //read from disc
         //cache is not in use right now
         int j = s.indexOf('D');
@@ -90,7 +97,7 @@ public class Searcher {
         if (stemOrNot) {
             return readFromFile(line, "Stemmer\\PostingListStem.txt");
         } else {
-            return postLine = readFromFile(line, "noStemmer\\PostingListNoStem.txt");
+            return  readFromFile(line, "noStemmer\\PostingListNoStem.txt");
         }
     }
     //func from java 8, seeks the line in the file given a line number
