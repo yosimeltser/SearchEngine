@@ -47,7 +47,7 @@ public class Model {
     //run all the queries from the query text file
     public void queryChooser(String text, boolean stemOrNot) {
         try {
-            if (text==null) return;
+            if (text==null || text.equals("")) return;
             FileReader f = new FileReader(text);
             BufferedReader br = new BufferedReader(f);
             String line = "";
